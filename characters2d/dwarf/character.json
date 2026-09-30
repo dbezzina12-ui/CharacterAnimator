@@ -6365,7 +6365,7 @@
    },
    "status": {
     "level": "needs-art",
-    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 11% of its length (points at/away from the camera): art is squashed along the bone","hand_L: the other side of the hand turns toward the camera; the default hand art shows the wrong side — add palm/back-side hand art or a swap"]
+    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_L: the other side of the hand turns toward the camera; the default hand art shows the wrong side — add palm/back-side hand art or a swap"]
    }
   },
   {
@@ -7049,8 +7049,8 @@
     "events": []
    },
    "status": {
-    "level": "attention",
-    "notes": ["prop_R foreshortens to 19% of its length (points at/away from the camera): art is squashed along the bone"]
+    "level": "ok",
+    "notes": []
    }
   },
   {
@@ -7740,8 +7740,8 @@
     "events": []
    },
    "status": {
-    "level": "attention",
-    "notes": ["prop_R foreshortens to 15% of its length (points at/away from the camera): art is squashed along the bone"]
+    "level": "ok",
+    "notes": []
    }
   },
   {
@@ -10053,7 +10053,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["prop_R foreshortens to 16% of its length (points at/away from the camera): art is squashed along the bone","7 draw-order changes (limbs cross in front of/behind each other)"]
+    "notes": ["7 draw-order changes (limbs cross in front of/behind each other)"]
    }
   },
   {
@@ -10627,7 +10627,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["forearm_R foreshortens to 16% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 11% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 11% of its length (points at/away from the camera): art is squashed along the bone"]
+    "notes": ["forearm_R foreshortens to 16% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 11% of its length (points at/away from the camera): art is squashed along the bone"]
    }
   },
   {

@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-30T22:47:07.298Z",
+  "date": "2026-09-30T22:52:26.870Z",
   "passed": 29,
   "failed": 0,
   "results": [
@@ -291,7 +291,7 @@
       "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
       "pass": true,
       "details": {
-        "zipKB": 4709,
+        "zipKB": 4708,
         "errors": 0,
         "painted": [
           "forearm_L.painted",
@@ -379,8 +379,8 @@
       "title": "Performance measured (honest numbers, CPU-emulated WebGL here)",
       "pass": true,
       "details": {
-        "evalMs": 0.032,
-        "editorFrameMs": 2.22,
+        "evalMs": 0.05,
+        "editorFrameMs": 3.15,
         "attachments": 130,
         "vertices": 6512,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
@@ -588,8 +588,8 @@
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.032,
-    "editorFrameMs": 2.22,
+    "evalMs": 0.05,
+    "editorFrameMs": 3.15,
     "attachments": 130,
     "vertices": 6512,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"

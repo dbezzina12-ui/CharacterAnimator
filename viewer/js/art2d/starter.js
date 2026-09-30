@@ -573,7 +573,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         const q = new THREE.Quaternion(), fwd = new THREE.Vector3(0, 0, 1);
         const yawOf = (b, bind) => { b.getWorldQuaternion(q); const f = fwd.clone().applyQuaternion(q.multiply(bind.clone().invert())); return Math.abs(Math.atan2(f.x, f.z) * 180 / Math.PI); };
         yawMax = Math.max(yawMax, yawOf(ch.bones.chest, chestBind)); headYawMax = Math.max(headYawMax, yawOf(ch.bones.head, headBind));
-        defs.forEach((d, i) => { if (d.foreshorten) minRatio[d.id] = Math.min(minRatio[d.id] ?? 9, sm[i].r1 / d.r1bind); });
+        defs.forEach((d, i) => { if (d.foreshorten && (d.kind !== "prop" || propId)) minRatio[d.id] = Math.min(minRatio[d.id] ?? 9, sm[i].r1 / d.r1bind); });
         for (const s of ['L', 'R']) {
           const f = -axisOf(ch.sockets[`socket_hand_${s}_prop`].matrixWorld, '+z').dot(cam.f);
           if (Math.abs(f) > 0.3 && Math.sign(f) !== Math.sign(bindFacing[s])) flips[s] = true;
