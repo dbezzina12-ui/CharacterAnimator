@@ -1,0 +1,185 @@
+{
+ "id": "humanoid_uv",
+ "version": 1,
+ "frozen": true,
+ "atlas": [
+  2048,
+  2048
+ ],
+ "paddingPx": 8,
+ "topologyHash": "400eceddd75ca27801fb2a50ed02c4c0d7511ca2a94b4700a8ff0a797e4d9ad5",
+ "corners": 62848,
+ "sha256": "a0d908c078b7ba6a77ede85c73e5cacd601b44a658d2ef0f8e5659b58593cd6f",
+ "format": "float32 little-endian (u,v) pairs in face-corner order of the template topology; v up (Blender convention). glTF stores v' = 1 - v.",
+ "quality": {
+  "islands": 27,
+  "overlapPixels": 0,
+  "coverage": 0.5797,
+  "minGapPx": ">8",
+  "texelDensityPxPerM": {
+   "Pelvis": 1065.7,
+   "Torso": 1065.7,
+   "Neck": 1172.2,
+   "Head": 1681.4,
+   "UpperArm_L": 1065.4,
+   "Forearm_L": 1065.7,
+   "Hand_L": 1598.3,
+   "Thigh_L": 1065.6,
+   "Shin_L": 1065.7,
+   "Foot_L": 1012.4,
+   "UpperArm_R": 1065.4,
+   "Forearm_R": 1065.7,
+   "Hand_R": 1598.3,
+   "Thigh_R": 1065.6,
+   "Shin_R": 1065.7,
+   "Foot_R": 1012.4
+  }
+ },
+ "islandInfo": [
+  {
+   "part": "Pelvis",
+   "group": "body",
+   "faces": 192
+  },
+  {
+   "part": "Pelvis",
+   "group": "body",
+   "faces": 192
+  },
+  {
+   "part": "Torso",
+   "group": "body",
+   "faces": 224
+  },
+  {
+   "part": "Torso",
+   "group": "body",
+   "faces": 224
+  },
+  {
+   "part": "Neck",
+   "group": "neck",
+   "faces": 256
+  },
+  {
+   "part": "Head",
+   "group": "face",
+   "faces": 1824
+  },
+  {
+   "part": "Head",
+   "group": "scalp",
+   "faces": 3104
+  },
+  {
+   "part": "Head",
+   "group": "ear",
+   "faces": 320
+  },
+  {
+   "part": "Head",
+   "group": "ear",
+   "faces": 320
+  },
+  {
+   "part": "UpperArm_L",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Forearm_L",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Hand_L",
+   "group": "hand",
+   "faces": 488
+  },
+  {
+   "part": "Hand_L",
+   "group": "hand",
+   "faces": 1272
+  },
+  {
+   "part": "Hand_L",
+   "group": "hand",
+   "faces": 400
+  },
+  {
+   "part": "Thigh_L",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Shin_L",
+   "group": "body",
+   "faces": 480
+  },
+  {
+   "part": "Foot_L",
+   "group": "foot",
+   "faces": 352
+  },
+  {
+   "part": "Foot_L",
+   "group": "foot",
+   "faces": 384
+  },
+  {
+   "part": "UpperArm_R",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Forearm_R",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Hand_R",
+   "group": "hand",
+   "faces": 488
+  },
+  {
+   "part": "Hand_R",
+   "group": "hand",
+   "faces": 1272
+  },
+  {
+   "part": "Hand_R",
+   "group": "hand",
+   "faces": 400
+  },
+  {
+   "part": "Thigh_R",
+   "group": "body",
+   "faces": 384
+  },
+  {
+   "part": "Shin_R",
+   "group": "body",
+   "faces": 480
+  },
+  {
+   "part": "Foot_R",
+   "group": "foot",
+   "faces": 352
+  },
+  {
+   "part": "Foot_R",
+   "group": "foot",
+   "faces": 384
+  }
+ ],
+ "density": {
+  "face": 2.0,
+  "scalp": 1.25,
+  "ear": 1.35,
+  "hand": 1.5,
+  "foot": 0.95,
+  "body": 1.0,
+  "neck": 1.1
+ },
+ "computedFrom": "master_blank topology (default proportions)"
+}

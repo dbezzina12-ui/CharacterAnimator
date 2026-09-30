@@ -1,0 +1,49 @@
+{
+ "characters": [
+  {
+   "id": "master_blank",
+   "displayName": "Master blank",
+   "status": "master",
+   "frozen": true,
+   "glb": "master_blank.glb",
+   "config": "master_blank.character.json",
+   "props": "test_props.glb"
+  },
+  {
+   "id": "woman_blank",
+   "displayName": "Woman base",
+   "status": "base",
+   "frozen": true,
+   "glb": "woman_blank.glb",
+   "config": "woman_blank.character.json",
+   "props": "test_props.glb"
+  },
+  {
+   "id": "dwarf_blank",
+   "displayName": "Dwarf base",
+   "status": "base",
+   "frozen": true,
+   "glb": "dwarf_blank.glb",
+   "config": "dwarf_blank.character.json",
+   "props": "test_props.glb"
+  },
+  {
+   "id": "stocky_test",
+   "displayName": "Stocky test variant",
+   "status": "frozen",
+   "frozen": true,
+   "glb": "stocky_test.glb",
+   "config": "stocky_test.character.json",
+   "props": "test_props.glb"
+  },
+  {
+   "id": "diag_textured_test",
+   "displayName": "Stocky variant + diagnostic texture",
+   "status": "textured",
+   "frozen": false,
+   "glb": "diag_textured_test.glb",
+   "config": "diag_textured_test.character.json",
+   "props": "test_props.glb"
+  }
+ ]
+}

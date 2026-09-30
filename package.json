@@ -1,0 +1,19 @@
+{
+  "name": "gamboligy-character-base",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reusable rigged blank humanoid base: Blender authoring pipeline + Three.js test viewer.",
+  "type": "module",
+  "scripts": {
+    "build": "python tools/build.py all",
+    "viewer": "node scripts/serve.mjs",
+    "vendor": "node scripts/vendor-three.mjs",
+    "refs": "node scripts/render-references.mjs",
+    "validate": "node scripts/validate.mjs && python tools/make_report.py",
+    "report": "python tools/make_report.py"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1",
+    "three": "0.180.0"
+  }
+}

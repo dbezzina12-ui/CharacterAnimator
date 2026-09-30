@@ -1,0 +1,840 @@
+{
+  "schema": "gamboligy.projection-references/1.0",
+  "characterId": "stocky_test",
+  "glb": "characters/stocky_test/stocky_test.glb",
+  "glbSha256": "40aa79d2082b4feff9c53aed0c83068dbfc2010ef50ebf227d6a1805758630b7",
+  "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+  "uvLayout": "humanoid_uv v1",
+  "pose": {
+    "name": "rest/bind A-pose",
+    "animation": null,
+    "note": "All passes use the GLB bind pose (no clip applied). Reproduce by loading the GLB and not playing any animation."
+  },
+  "coordinateSystem": {
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z (character faces +Z)",
+    "characterLeft": "+X",
+    "authoring": "Blender +Z up, faces -Y; converted on export"
+  },
+  "lighting": "beauty: HemisphereLight(white, #8a8a8a, 1.9) + camera-aligned DirectionalLight(1.2); no shadows; transparent background",
+  "characterHeight": 1.6899191664997488,
+  "cameras": [
+    {
+      "name": "front",
+      "note": "",
+      "type": "perspective",
+      "imageSize": [
+        1536,
+        1536
+      ],
+      "fovYDeg": 24,
+      "aspect": 1,
+      "near": 0.05,
+      "far": 50,
+      "azimuthDeg": 0,
+      "elevationDeg": 0,
+      "position": [
+        0,
+        0.8449595832498744,
+        4.647277707874309
+      ],
+      "target": [
+        0,
+        0.8449595832498744,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "quaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "matrixWorld": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.8449595832498744,
+        4.647277707874309,
+        1
+      ],
+      "viewMatrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -0.8449595832498744,
+        -4.647277707874309,
+        1
+      ],
+      "projectionMatrix": [
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        -1.002002002002002,
+        -1,
+        0,
+        0,
+        -0.10010010010010009,
+        0
+      ],
+      "matrixConvention": "column-major 4x4 (three.js/glTF); camera looks down its local -Z; NDC y up, image row 0 at the top",
+      "blender": {
+        "location": [
+          0,
+          -4.647277707874309,
+          0.8449595832498744
+        ],
+        "target": [
+          0,
+          0,
+          0.8449595832498744
+        ],
+        "sensorFit": "VERTICAL",
+        "angleYDeg": 24,
+        "resolution": [
+          1536,
+          1536
+        ],
+        "note": "Blender world coords (Z up); aim the camera at target with a Track To constraint (up = Z)"
+      },
+      "framing": {
+        "characterHeight": 1.6899191664997488,
+        "distanceFactor": 2.75,
+        "targetFactor": 0.5
+      }
+    },
+    {
+      "name": "back",
+      "note": "",
+      "type": "perspective",
+      "imageSize": [
+        1536,
+        1536
+      ],
+      "fovYDeg": 24,
+      "aspect": 1,
+      "near": 0.05,
+      "far": 50,
+      "azimuthDeg": 180,
+      "elevationDeg": 0,
+      "position": [
+        5.691273769697121e-16,
+        0.8449595832498744,
+        -4.647277707874309
+      ],
+      "target": [
+        0,
+        0.8449595832498744,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "quaternion": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "matrixWorld": [
+        -1,
+        0,
+        -1.2246467991473532e-16,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1.2246467991473532e-16,
+        0,
+        -1,
+        0,
+        5.691273769697121e-16,
+        0.8449595832498744,
+        -4.647277707874309,
+        1
+      ],
+      "viewMatrix": [
+        -1,
+        0,
+        1.2246467991473532e-16,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1.2246467991473532e-16,
+        0,
+        -1,
+        0,
+        0,
+        -0.8449595832498744,
+        -4.647277707874309,
+        1
+      ],
+      "projectionMatrix": [
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        -1.002002002002002,
+        -1,
+        0,
+        0,
+        -0.10010010010010009,
+        0
+      ],
+      "matrixConvention": "column-major 4x4 (three.js/glTF); camera looks down its local -Z; NDC y up, image row 0 at the top",
+      "blender": {
+        "location": [
+          5.691273769697121e-16,
+          4.647277707874309,
+          0.8449595832498744
+        ],
+        "target": [
+          0,
+          0,
+          0.8449595832498744
+        ],
+        "sensorFit": "VERTICAL",
+        "angleYDeg": 24,
+        "resolution": [
+          1536,
+          1536
+        ],
+        "note": "Blender world coords (Z up); aim the camera at target with a Track To constraint (up = Z)"
+      },
+      "framing": {
+        "characterHeight": 1.6899191664997488,
+        "distanceFactor": 2.75,
+        "targetFactor": 0.5
+      }
+    },
+    {
+      "name": "left",
+      "note": "camera on the character's LEFT side (+X)",
+      "type": "perspective",
+      "imageSize": [
+        1536,
+        1536
+      ],
+      "fovYDeg": 24,
+      "aspect": 1,
+      "near": 0.05,
+      "far": 50,
+      "azimuthDeg": 90,
+      "elevationDeg": 0,
+      "position": [
+        4.647277707874309,
+        0.8449595832498744,
+        2.8456368848485607e-16
+      ],
+      "target": [
+        0,
+        0.8449595832498744,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "quaternion": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "matrixWorld": [
+        2.220446049250313e-16,
+        0,
+        -1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        2.220446049250313e-16,
+        0,
+        4.647277707874309,
+        0.8449595832498744,
+        2.8456368848485607e-16,
+        1
+      ],
+      "viewMatrix": [
+        2.220446049250313e-16,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        2.220446049250313e-16,
+        0,
+        -7.473392541369999e-16,
+        -0.8449595832498744,
+        -4.647277707874309,
+        1
+      ],
+      "projectionMatrix": [
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        -1.002002002002002,
+        -1,
+        0,
+        0,
+        -0.10010010010010009,
+        0
+      ],
+      "matrixConvention": "column-major 4x4 (three.js/glTF); camera looks down its local -Z; NDC y up, image row 0 at the top",
+      "blender": {
+        "location": [
+          4.647277707874309,
+          -2.8456368848485607e-16,
+          0.8449595832498744
+        ],
+        "target": [
+          0,
+          0,
+          0.8449595832498744
+        ],
+        "sensorFit": "VERTICAL",
+        "angleYDeg": 24,
+        "resolution": [
+          1536,
+          1536
+        ],
+        "note": "Blender world coords (Z up); aim the camera at target with a Track To constraint (up = Z)"
+      },
+      "framing": {
+        "characterHeight": 1.6899191664997488,
+        "distanceFactor": 2.75,
+        "targetFactor": 0.5
+      }
+    },
+    {
+      "name": "right",
+      "note": "camera on the character's RIGHT side (-X)",
+      "type": "perspective",
+      "imageSize": [
+        1536,
+        1536
+      ],
+      "fovYDeg": 24,
+      "aspect": 1,
+      "near": 0.05,
+      "far": 50,
+      "azimuthDeg": 270,
+      "elevationDeg": 0,
+      "position": [
+        -4.647277707874309,
+        0.8449595832498744,
+        -8.536910654545682e-16
+      ],
+      "target": [
+        0,
+        0.8449595832498744,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "quaternion": [
+        0,
+        -0.7071067811865476,
+        0,
+        0.7071067811865475
+      ],
+      "matrixWorld": [
+        -2.220446049250313e-16,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        -2.220446049250313e-16,
+        0,
+        -4.647277707874309,
+        0.8449595832498744,
+        -8.536910654545682e-16,
+        1
+      ],
+      "viewMatrix": [
+        -2.220446049250313e-16,
+        0,
+        -1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        -2.220446049250313e-16,
+        0,
+        -1.782118771672879e-16,
+        -0.8449595832498744,
+        -4.647277707874309,
+        1
+      ],
+      "projectionMatrix": [
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        -1.002002002002002,
+        -1,
+        0,
+        0,
+        -0.10010010010010009,
+        0
+      ],
+      "matrixConvention": "column-major 4x4 (three.js/glTF); camera looks down its local -Z; NDC y up, image row 0 at the top",
+      "blender": {
+        "location": [
+          -4.647277707874309,
+          8.536910654545682e-16,
+          0.8449595832498744
+        ],
+        "target": [
+          0,
+          0,
+          0.8449595832498744
+        ],
+        "sensorFit": "VERTICAL",
+        "angleYDeg": 24,
+        "resolution": [
+          1536,
+          1536
+        ],
+        "note": "Blender world coords (Z up); aim the camera at target with a Track To constraint (up = Z)"
+      },
+      "framing": {
+        "characterHeight": 1.6899191664997488,
+        "distanceFactor": 2.75,
+        "targetFactor": 0.5
+      }
+    },
+    {
+      "name": "front_three_quarter",
+      "note": "front, rotated toward the character's left",
+      "type": "perspective",
+      "imageSize": [
+        1536,
+        1536
+      ],
+      "fovYDeg": 24,
+      "aspect": 1,
+      "near": 0.05,
+      "far": 50,
+      "azimuthDeg": 40,
+      "elevationDeg": 8,
+      "position": [
+        2.9581411824036836,
+        1.4917356328773272,
+        3.5253753815304747
+      ],
+      "target": [
+        0,
+        0.8449595832498744,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "quaternion": [
+        -0.06554964362940052,
+        0.34118699944639963,
+        0.02385811914785898,
+        0.9374035767904598
+      ],
+      "matrixWorld": [
+        0.7660444431189781,
+        -6.938893903907228e-18,
+        -0.6427876096865391,
+        0,
+        -0.08945874489878386,
+        0.9902680687415704,
+        -0.10661278062209466,
+        0,
+        0.6365320448552995,
+        0.13917310096006547,
+        0.7585893512576422,
+        0,
+        2.9581411824036836,
+        1.4917356328773272,
+        3.5253753815304747,
+        1
+      ],
+      "viewMatrix": [
+        0.7660444431189781,
+        -0.08945874489878386,
+        0.6365320448552995,
+        0,
+        0,
+        0.9902680687415701,
+        0.13917310096006544,
+        0,
+        -0.6427876096865393,
+        -0.10661278062209467,
+        0.7585893512576423,
+        0,
+        -2.7755575615628914e-17,
+        -0.8367364946695353,
+        -4.76487335326112,
+        1
+      ],
+      "projectionMatrix": [
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        4.704630109478454,
+        0,
+        0,
+        0,
+        0,
+        -1.002002002002002,
+        -1,
+        0,
+        0,
+        -0.10010010010010009,
+        0
+      ],
+      "matrixConvention": "column-major 4x4 (three.js/glTF); camera looks down its local -Z; NDC y up, image row 0 at the top",
+      "blender": {
+        "location": [
+          2.9581411824036836,
+          -3.5253753815304747,
+          1.4917356328773272
+        ],
+        "target": [
+          0,
+          0,
+          0.8449595832498744
+        ],
+        "sensorFit": "VERTICAL",
+        "angleYDeg": 24,
+        "resolution": [
+          1536,
+          1536
+        ],
+        "note": "Blender world coords (Z up); aim the camera at target with a Track To constraint (up = Z)"
+      },
+      "framing": {
+        "characterHeight": 1.6899191664997488,
+        "distanceFactor": 2.75,
+        "targetFactor": 0.5
+      }
+    }
+  ],
+  "passes": {
+    "front": {
+      "beauty": {
+        "file": "front.png"
+      },
+      "partid": {
+        "file": "masks/front_partid.png"
+      },
+      "depth": {
+        "file": "depth/front_depth.png",
+        "depthNear": 4.30929387457436,
+        "depthFar": 4.985261541174259,
+        "encoding": "value = 1 - (viewDepth - near)/(far - near), 8-bit; background 0"
+      },
+      "normal": {
+        "file": "normal/front_normal.png",
+        "encoding": "camera-space normal (x right, y up, z toward camera) * 0.5 + 0.5"
+      }
+    },
+    "back": {
+      "beauty": {
+        "file": "back.png"
+      },
+      "partid": {
+        "file": "masks/back_partid.png"
+      },
+      "depth": {
+        "file": "depth/back_depth.png",
+        "depthNear": 4.30929387457436,
+        "depthFar": 4.985261541174259,
+        "encoding": "value = 1 - (viewDepth - near)/(far - near), 8-bit; background 0"
+      },
+      "normal": {
+        "file": "normal/back_normal.png",
+        "encoding": "camera-space normal (x right, y up, z toward camera) * 0.5 + 0.5"
+      }
+    },
+    "left": {
+      "beauty": {
+        "file": "left.png"
+      },
+      "partid": {
+        "file": "masks/left_partid.png"
+      },
+      "depth": {
+        "file": "depth/left_depth.png",
+        "depthNear": 4.30929387457436,
+        "depthFar": 4.985261541174259,
+        "encoding": "value = 1 - (viewDepth - near)/(far - near), 8-bit; background 0"
+      },
+      "normal": {
+        "file": "normal/left_normal.png",
+        "encoding": "camera-space normal (x right, y up, z toward camera) * 0.5 + 0.5"
+      }
+    },
+    "right": {
+      "beauty": {
+        "file": "right.png"
+      },
+      "partid": {
+        "file": "masks/right_partid.png"
+      },
+      "depth": {
+        "file": "depth/right_depth.png",
+        "depthNear": 4.30929387457436,
+        "depthFar": 4.985261541174259,
+        "encoding": "value = 1 - (viewDepth - near)/(far - near), 8-bit; background 0"
+      },
+      "normal": {
+        "file": "normal/right_normal.png",
+        "encoding": "camera-space normal (x right, y up, z toward camera) * 0.5 + 0.5"
+      }
+    },
+    "front_three_quarter": {
+      "beauty": {
+        "file": "front_three_quarter.png"
+      },
+      "partid": {
+        "file": "masks/front_three_quarter_partid.png"
+      },
+      "depth": {
+        "file": "depth/front_three_quarter_depth.png",
+        "depthNear": 4.30929387457436,
+        "depthFar": 4.985261541174259,
+        "encoding": "value = 1 - (viewDepth - near)/(far - near), 8-bit; background 0"
+      },
+      "normal": {
+        "file": "normal/front_three_quarter_normal.png",
+        "encoding": "camera-space normal (x right, y up, z toward camera) * 0.5 + 0.5"
+      }
+    }
+  },
+  "partIdLegend": {
+    "Head": "#f22424",
+    "Neck": "#2460f2",
+    "Torso": "#9cf224",
+    "Pelvis": "#f224d8",
+    "UpperArm_L": "#24f2cf",
+    "UpperArm_R": "#f29324",
+    "Forearm_L": "#5724f2",
+    "Forearm_R": "#2df224",
+    "Hand_L": "#f22469",
+    "Hand_R": "#24a5f2",
+    "Thigh_L": "#e1f224",
+    "Thigh_R": "#c724f2",
+    "Shin_L": "#24f28a",
+    "Shin_R": "#f24e24",
+    "Foot_L": "#2435f2",
+    "Foot_R": "#71f224"
+  },
+  "masksNote": "Part-ID masks are unlit, non-antialiased flat colours (see partIdLegend); background alpha 0.",
+  "coverage": {
+    "files": {
+      "uv": "coverage/coverage_uv.png",
+      "partIdUV": "coverage/part_id_uv.png",
+      "views3d": [
+        "coverage/coverage_3d_az140_el-25.png",
+        "coverage/coverage_3d_az220_el-25.png",
+        "coverage/coverage_3d_az0_el70.png",
+        "coverage/coverage_3d_az0_el-60.png"
+      ]
+    },
+    "legend": {
+      "magenta": "not seen by ANY reference view",
+      "orange": "only grazing views (facing < 0.35)",
+      "yellow": "one good view",
+      "green": "two or more good views"
+    },
+    "uvTexelFractions": {
+      "none": 0.0314,
+      "grazing": 0.068,
+      "one": 0.3873,
+      "multi": 0.5133
+    },
+    "perPart": {
+      "Head": {
+        "unseen": 0.006,
+        "grazingOnly": 0.03,
+        "oneView": 0.238,
+        "multiView": 0.726
+      },
+      "Neck": {
+        "unseen": 0,
+        "grazingOnly": 0.01,
+        "oneView": 0.366,
+        "multiView": 0.624
+      },
+      "Torso": {
+        "unseen": 0.011,
+        "grazingOnly": 0.103,
+        "oneView": 0.437,
+        "multiView": 0.449
+      },
+      "Pelvis": {
+        "unseen": 0,
+        "grazingOnly": 0.006,
+        "oneView": 0.478,
+        "multiView": 0.516
+      },
+      "UpperArm_L": {
+        "unseen": 0.021,
+        "grazingOnly": 0.078,
+        "oneView": 0.394,
+        "multiView": 0.507
+      },
+      "UpperArm_R": {
+        "unseen": 0.058,
+        "grazingOnly": 0.073,
+        "oneView": 0.413,
+        "multiView": 0.456
+      },
+      "Forearm_L": {
+        "unseen": 0,
+        "grazingOnly": 0.117,
+        "oneView": 0.384,
+        "multiView": 0.499
+      },
+      "Forearm_R": {
+        "unseen": 0,
+        "grazingOnly": 0.051,
+        "oneView": 0.452,
+        "multiView": 0.497
+      },
+      "Hand_L": {
+        "unseen": 0.152,
+        "grazingOnly": 0.136,
+        "oneView": 0.299,
+        "multiView": 0.412
+      },
+      "Hand_R": {
+        "unseen": 0.098,
+        "grazingOnly": 0.116,
+        "oneView": 0.602,
+        "multiView": 0.184
+      },
+      "Thigh_L": {
+        "unseen": 0.001,
+        "grazingOnly": 0.114,
+        "oneView": 0.384,
+        "multiView": 0.501
+      },
+      "Thigh_R": {
+        "unseen": 0.001,
+        "grazingOnly": 0.029,
+        "oneView": 0.461,
+        "multiView": 0.509
+      },
+      "Shin_L": {
+        "unseen": 0.001,
+        "grazingOnly": 0.13,
+        "oneView": 0.36,
+        "multiView": 0.509
+      },
+      "Shin_R": {
+        "unseen": 0,
+        "grazingOnly": 0.008,
+        "oneView": 0.495,
+        "multiView": 0.497
+      },
+      "Foot_L": {
+        "unseen": 0.27,
+        "grazingOnly": 0.12,
+        "oneView": 0.178,
+        "multiView": 0.431
+      },
+      "Foot_R": {
+        "unseen": 0.215,
+        "grazingOnly": 0.073,
+        "oneView": 0.392,
+        "multiView": 0.319
+      }
+    },
+    "singleViewTexelCoverage": {
+      "front": 0.4981,
+      "back": 0.409,
+      "left": 0.3127,
+      "right": 0.3128,
+      "front_three_quarter": 0.4863
+    },
+    "warning": "A single view never covers the model. Unseen/grazing regions must be filled from additional views or painted before baking."
+  }
+}

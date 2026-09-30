@@ -1,0 +1,18 @@
+{
+ "Head": "#f22424",
+ "Neck": "#2460f2",
+ "Torso": "#9cf224",
+ "Pelvis": "#f224d8",
+ "UpperArm_L": "#24f2cf",
+ "UpperArm_R": "#f29324",
+ "Forearm_L": "#5724f2",
+ "Forearm_R": "#2df224",
+ "Hand_L": "#f22469",
+ "Hand_R": "#24a5f2",
+ "Thigh_L": "#e1f224",
+ "Thigh_R": "#c724f2",
+ "Shin_L": "#24f28a",
+ "Shin_R": "#f24e24",
+ "Foot_L": "#2435f2",
+ "Foot_R": "#71f224"
+}

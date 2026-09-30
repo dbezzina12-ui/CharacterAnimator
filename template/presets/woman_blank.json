@@ -1,0 +1,16 @@
+{
+ "height": 1.68,
+ "headSize": 0.97,
+ "shoulderWidth": 0.87,
+ "torsoWidth": 0.9,
+ "torsoDepth": 0.92,
+ "bellySize": 0.75,
+ "armLength": 0.97,
+ "legLength": 1.04,
+ "handSize": 0.88,
+ "footSize": 0.88,
+ "hipWidth": 1.14,
+ "waistWidth": 0.92,
+ "bustSize": 1.1,
+ "limbGirth": 0.92
+}

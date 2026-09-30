@@ -1,0 +1,2883 @@
+{
+  "generated": "2026-09-30T19:02:13.009Z",
+  "characters": {
+    "master_blank": {
+      "ok": true,
+      "checks": [
+        {
+          "id": "parts.present",
+          "ok": true,
+          "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+        },
+        {
+          "id": "skeleton.single",
+          "ok": true,
+          "detail": "1 Skeleton objects, 1 distinct joint lists, 63 joints"
+        },
+        {
+          "id": "skeleton.matchesConfig",
+          "ok": true,
+          "detail": "63 bones in config"
+        },
+        {
+          "id": "sockets.parented",
+          "ok": true,
+          "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+        },
+        {
+          "id": "clips.named",
+          "ok": true,
+          "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+        },
+        {
+          "id": "uv.inRange",
+          "ok": true,
+          "detail": "17067 UVs in [0,1]"
+        },
+        {
+          "id": "weights.normalized",
+          "ok": true,
+          "detail": "max |1-sum| = 4.16e-8, max influences 4"
+        },
+        {
+          "id": "seams.boundaryLoops",
+          "ok": true,
+          "detail": "375 shared boundary vertices across 17 part pairs"
+        },
+        {
+          "id": "seams.normalsMatch",
+          "ok": true,
+          "detail": "min dot of boundary normals 1.000000"
+        },
+        {
+          "id": "seams.noCracksInClips",
+          "ok": true,
+          "detail": "max gap 0.00e+0 m over 832 frames (null)"
+        },
+        {
+          "id": "bones.lengthsConstant",
+          "ok": true,
+          "detail": "max length drift 2.59e-6 m (shin_R->foot_R float_monk@1.47) – forearms/shins never shorten"
+        },
+        {
+          "id": "sockets.followBones",
+          "ok": true,
+          "detail": "max change of socket-in-bone matrix 8.88e-16"
+        },
+        {
+          "id": "helpers.halfRotation",
+          "ok": true,
+          "detail": "max |helper - source/2| = 0.035 deg (hip_helper_L _qa_pose_cycle@0.00)"
+        },
+        {
+          "id": "hand_L.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_L.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0241 m in front of index knuckle; index 0.0601 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "hand_R.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_R.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0241 m in front of index knuckle; index 0.0601 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "grip.noPenetration",
+          "ok": true,
+          "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+        },
+        {
+          "id": "grip.contact",
+          "ok": true,
+          "detail": "60 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+        },
+        {
+          "id": "clips.extendedSet",
+          "ok": true,
+          "detail": "19 clips present"
+        },
+        {
+          "id": "feet.aboveGround",
+          "ok": true,
+          "detail": "feet at most 2.0 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+        },
+        {
+          "id": "float.hovers",
+          "ok": true,
+          "detail": "float_idle 0.176 m, float_monk_loop 0.667 m, float_monk(end) 0.697 m"
+        },
+        {
+          "id": "locomotion.inPlace",
+          "ok": true,
+          "detail": "jump_in_place pelvis drift 0.025 m, run_in_place pelvis drift 0.012 m, walk_in_place pelvis drift 0.024 m"
+        },
+        {
+          "id": "weapons.twoHandGrip",
+          "ok": true,
+          "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_aim_2h@1.33s)"
+        },
+        {
+          "id": "weapons.gripNoPenetration",
+          "ok": true,
+          "detail": "deepest hand vertex 1.13 mm inside a grip (pistol_aim_2h hand L)"
+        },
+        {
+          "id": "weapons.gripContact",
+          "ok": true,
+          "detail": "min 45 hand vertices within 4 mm of each grip"
+        },
+        {
+          "id": "props.noBodyPenetration",
+          "ok": true,
+          "detail": "deepest prop point -24.8 mm outside the skin (sword_2h_slash@1.47s)"
+        },
+        {
+          "id": "staff.planted",
+          "ok": true,
+          "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+        },
+        {
+          "id": "press.contact",
+          "ok": true,
+          "detail": "thumb pad -0.09 mm from the button top at contact; pressed 4.91 mm (travel 5.0 mm); clear of the button before the press"
+        }
+      ],
+      "info": {
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": false,
+          "mapSize": null
+        },
+        "coincidentGroups": 1301,
+        "crossPartGroups": 375,
+        "boundaries": {
+          "Foot_L+Shin_L": 24,
+          "Foot_R+Shin_R": 24,
+          "Forearm_L+UpperArm_L": 24,
+          "Forearm_L+Hand_L": 24,
+          "Forearm_R+UpperArm_R": 24,
+          "Forearm_R+Hand_R": 24,
+          "Head+Neck": 32,
+          "Neck+Torso": 32,
+          "Pelvis+Thigh_L+Thigh_R": 2,
+          "Pelvis+Thigh_L": 15,
+          "Pelvis+Thigh_R": 15,
+          "Pelvis+Torso": 32,
+          "Shin_L+Thigh_L": 24,
+          "Shin_R+Thigh_R": 24,
+          "Thigh_L+Thigh_R": 7,
+          "Torso+UpperArm_L": 24,
+          "Torso+UpperArm_R": 24
+        },
+        "framesChecked": 832,
+        "clipSeamGaps": {
+          "_qa_pose_cycle": {
+            "maxSeamGap": 0
+          },
+          "cheer": {
+            "maxSeamGap": 0
+          },
+          "float_idle": {
+            "maxSeamGap": 0
+          },
+          "float_monk": {
+            "maxSeamGap": 0
+          },
+          "float_monk_loop": {
+            "maxSeamGap": 0
+          },
+          "idle": {
+            "maxSeamGap": 0
+          },
+          "jump_in_place": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim_2h": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire_2h": {
+            "maxSeamGap": 0
+          },
+          "press_detonator": {
+            "maxSeamGap": 0
+          },
+          "reach_grip_handle": {
+            "maxSeamGap": 0
+          },
+          "rifle_aim": {
+            "maxSeamGap": 0
+          },
+          "rifle_fire": {
+            "maxSeamGap": 0
+          },
+          "run_in_place": {
+            "maxSeamGap": 0
+          },
+          "staff_idle": {
+            "maxSeamGap": 0
+          },
+          "staff_stomp": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_idle": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_slash": {
+            "maxSeamGap": 0
+          },
+          "walk_in_place": {
+            "maxSeamGap": 0
+          },
+          "wave": {
+            "maxSeamGap": 0
+          }
+        },
+        "grip": {
+          "holdTime": 2.2666666666666666,
+          "verticesInsideHandle": 0,
+          "deepest_mm": 0,
+          "contactVertices": 60,
+          "socketToAxis_mm": 0
+        },
+        "extended": {
+          "groundY": -0.0029,
+          "feetBelowGround_mm": {
+            "_qa_pose_cycle": 57.3,
+            "cheer": 0,
+            "float_idle": 0,
+            "float_monk": 2,
+            "float_monk_loop": 0,
+            "idle": 0,
+            "jump_in_place": 0,
+            "pistol_aim": 0,
+            "pistol_aim_2h": 0,
+            "pistol_fire": 0,
+            "pistol_fire_2h": 0,
+            "press_detonator": 0,
+            "reach_grip_handle": 0,
+            "rifle_aim": 0,
+            "rifle_fire": 0,
+            "run_in_place": 0,
+            "staff_idle": 0,
+            "staff_stomp": 0,
+            "sword_2h_idle": 0,
+            "sword_2h_slash": 0,
+            "walk_in_place": 0,
+            "wave": 0
+          },
+          "feetHover_m": {
+            "float_idle": 0.176,
+            "float_monk_loop": 0.667,
+            "float_monk(end)": 0.697
+          },
+          "inPlaceDrift_m": {
+            "jump_in_place": 0.025,
+            "run_in_place": 0.012,
+            "walk_in_place": 0.024
+          }
+        },
+        "weapons": {
+          "supportHandMaxError_mm": 0.001,
+          "deepestGripPenetration_mm": 1.13,
+          "contactVertices": {
+            "pistol_aim.R": 46,
+            "pistol_aim_2h.R": 46,
+            "pistol_aim_2h.L": 120,
+            "pistol_fire.R": 46,
+            "pistol_fire_2h.R": 46,
+            "pistol_fire_2h.L": 120,
+            "press_detonator.R": 80,
+            "rifle_aim.R": 45,
+            "rifle_aim.L": 61,
+            "rifle_fire.R": 45,
+            "rifle_fire.L": 61,
+            "staff_idle.R": 61,
+            "staff_stomp.R": 61,
+            "sword_2h_idle.R": 61,
+            "sword_2h_idle.L": 61,
+            "sword_2h_slash.R": 61,
+            "sword_2h_slash.L": 61
+          },
+          "propIntoBody_mm": {
+            "pistol_aim": null,
+            "pistol_aim_2h": null,
+            "pistol_fire": null,
+            "pistol_fire_2h": null,
+            "press_detonator": null,
+            "rifle_aim": null,
+            "rifle_fire": -84.2,
+            "staff_idle": null,
+            "staff_stomp": null,
+            "sword_2h_idle": null,
+            "sword_2h_slash": -24.8
+          }
+        },
+        "staff": {
+          "idleButtFromFloor_mm": 2.9,
+          "impactButtFromFloor_mm": 2.9,
+          "stompLift_m": 0.193,
+          "lowest_mm": 2.9
+        },
+        "press": {
+          "thumbAboveButtonAtContact_mm": -0.09,
+          "pressDepth_mm": 4.91,
+          "travel_mm": 5,
+          "thumbAboveButtonWhenRaised_mm": null
+        }
+      },
+      "pageErrors": [],
+      "screenshots": [
+        "screens/master_blank/blank_arms_raised_az35.png",
+        "screens/master_blank/blank_arms_raised_az215.png",
+        "screens/master_blank/blank_elbows_bent_az35.png",
+        "screens/master_blank/blank_elbows_bent_az215.png",
+        "screens/master_blank/blank_hands_near_face_az35.png",
+        "screens/master_blank/blank_hands_near_face_az215.png",
+        "screens/master_blank/blank_wrist_rotation_finger_curl_az35.png",
+        "screens/master_blank/blank_wrist_rotation_finger_curl_az215.png",
+        "screens/master_blank/blank_torso_twist_az35.png",
+        "screens/master_blank/blank_torso_twist_az215.png",
+        "screens/master_blank/blank_head_turn_az35.png",
+        "screens/master_blank/blank_head_turn_az215.png",
+        "screens/master_blank/blank_crouch_az35.png",
+        "screens/master_blank/blank_crouch_az215.png",
+        "screens/master_blank/blank_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/master_blank/blank_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/master_blank/blank_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/master_blank/blank_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/master_blank/blank_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/master_blank/blank_closeup_hands_near_face_head_az0.png",
+        "screens/master_blank/blank_closeup_hands_near_face_head_az40.png",
+        "screens/master_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/master_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/master_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/master_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/master_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/master_blank/blank_closeup_torso_twist_spine_02_az0.png",
+        "screens/master_blank/blank_closeup_torso_twist_spine_02_az180.png",
+        "screens/master_blank/blank_closeup_head_turn_neck_az60.png",
+        "screens/master_blank/blank_closeup_head_turn_neck_az200.png",
+        "screens/master_blank/blank_closeup_crouch_thigh_L_az0.png",
+        "screens/master_blank/blank_closeup_crouch_thigh_L_az90.png",
+        "screens/master_blank/blank_closeup_crouch_thigh_L_az200.png",
+        "screens/master_blank/blank_closeup_crouch_thigh_L_az300.png",
+        "screens/master_blank/checker_arms_raised_az35.png",
+        "screens/master_blank/checker_arms_raised_az215.png",
+        "screens/master_blank/checker_elbows_bent_az35.png",
+        "screens/master_blank/checker_elbows_bent_az215.png",
+        "screens/master_blank/checker_hands_near_face_az35.png",
+        "screens/master_blank/checker_hands_near_face_az215.png",
+        "screens/master_blank/checker_wrist_rotation_finger_curl_az35.png",
+        "screens/master_blank/checker_wrist_rotation_finger_curl_az215.png",
+        "screens/master_blank/checker_torso_twist_az35.png",
+        "screens/master_blank/checker_torso_twist_az215.png",
+        "screens/master_blank/checker_head_turn_az35.png",
+        "screens/master_blank/checker_head_turn_az215.png",
+        "screens/master_blank/checker_crouch_az35.png",
+        "screens/master_blank/checker_crouch_az215.png",
+        "screens/master_blank/checker_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/master_blank/checker_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/master_blank/checker_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/master_blank/checker_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/master_blank/checker_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/master_blank/checker_closeup_hands_near_face_head_az0.png",
+        "screens/master_blank/checker_closeup_hands_near_face_head_az40.png",
+        "screens/master_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/master_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/master_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/master_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/master_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/master_blank/checker_closeup_torso_twist_spine_02_az0.png",
+        "screens/master_blank/checker_closeup_torso_twist_spine_02_az180.png",
+        "screens/master_blank/checker_closeup_head_turn_neck_az60.png",
+        "screens/master_blank/checker_closeup_head_turn_neck_az200.png",
+        "screens/master_blank/checker_closeup_crouch_thigh_L_az0.png",
+        "screens/master_blank/checker_closeup_crouch_thigh_L_az90.png",
+        "screens/master_blank/checker_closeup_crouch_thigh_L_az200.png",
+        "screens/master_blank/checker_closeup_crouch_thigh_L_az300.png"
+      ],
+      "viewerRoundTrip": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "parts.present",
+            "ok": true,
+            "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+          },
+          {
+            "id": "skeleton.single",
+            "ok": true,
+            "detail": "16 Skeleton objects, 1 distinct joint lists, 63 joints"
+          },
+          {
+            "id": "skeleton.matchesConfig",
+            "ok": true,
+            "detail": "63 bones in config"
+          },
+          {
+            "id": "sockets.parented",
+            "ok": true,
+            "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+          },
+          {
+            "id": "clips.named",
+            "ok": true,
+            "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+          },
+          {
+            "id": "uv.inRange",
+            "ok": true,
+            "detail": "17067 UVs in [0,1]"
+          },
+          {
+            "id": "weights.normalized",
+            "ok": true,
+            "detail": "max |1-sum| = 4.14e-8, max influences 4"
+          },
+          {
+            "id": "material.texture",
+            "ok": true,
+            "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+          },
+          {
+            "id": "seams.boundaryLoops",
+            "ok": true,
+            "detail": "375 shared boundary vertices across 17 part pairs"
+          },
+          {
+            "id": "seams.normalsMatch",
+            "ok": true,
+            "detail": "min dot of boundary normals 1.000000"
+          },
+          {
+            "id": "seams.noCracksInClips",
+            "ok": true,
+            "detail": "max gap 0.00e+0 m over 288 frames (null)"
+          },
+          {
+            "id": "bones.lengthsConstant",
+            "ok": true,
+            "detail": "max length drift 2.52e-6 m (shin_L->foot_L float_monk@1.60) – forearms/shins never shorten"
+          },
+          {
+            "id": "sockets.followBones",
+            "ok": true,
+            "detail": "max change of socket-in-bone matrix 8.88e-16"
+          },
+          {
+            "id": "helpers.halfRotation",
+            "ok": true,
+            "detail": "max |helper - source/2| = 0.035 deg (hip_helper_L _qa_pose_cycle@0.00)"
+          },
+          {
+            "id": "hand_L.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_L.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0241 m in front of index knuckle; index 0.0601 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "hand_R.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_R.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0241 m in front of index knuckle; index 0.0601 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "grip.noPenetration",
+            "ok": true,
+            "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+          },
+          {
+            "id": "grip.contact",
+            "ok": true,
+            "detail": "60 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+          },
+          {
+            "id": "clips.extendedSet",
+            "ok": true,
+            "detail": "19 clips present"
+          },
+          {
+            "id": "feet.aboveGround",
+            "ok": true,
+            "detail": "feet at most 2.0 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+          },
+          {
+            "id": "float.hovers",
+            "ok": true,
+            "detail": "float_idle 0.176 m, float_monk_loop 0.667 m, float_monk(end) 0.697 m"
+          },
+          {
+            "id": "locomotion.inPlace",
+            "ok": true,
+            "detail": "jump_in_place pelvis drift 0.022 m, run_in_place pelvis drift 0.01 m, walk_in_place pelvis drift 0.022 m"
+          },
+          {
+            "id": "weapons.twoHandGrip",
+            "ok": true,
+            "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_aim_2h@1.40s)"
+          },
+          {
+            "id": "weapons.gripNoPenetration",
+            "ok": true,
+            "detail": "deepest hand vertex 1.13 mm inside a grip (pistol_aim_2h hand L)"
+          },
+          {
+            "id": "weapons.gripContact",
+            "ok": true,
+            "detail": "min 45 hand vertices within 4 mm of each grip"
+          },
+          {
+            "id": "props.noBodyPenetration",
+            "ok": true,
+            "detail": "deepest prop point -25.0 mm outside the skin (sword_2h_slash@1.40s)"
+          },
+          {
+            "id": "staff.planted",
+            "ok": true,
+            "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+          },
+          {
+            "id": "press.contact",
+            "ok": true,
+            "detail": "thumb pad -0.09 mm from the button top at contact; pressed 4.91 mm (travel 5.0 mm); clear of the button before the press"
+          }
+        ],
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "errors": []
+      }
+    },
+    "woman_blank": {
+      "ok": true,
+      "checks": [
+        {
+          "id": "parts.present",
+          "ok": true,
+          "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+        },
+        {
+          "id": "skeleton.single",
+          "ok": true,
+          "detail": "1 Skeleton objects, 1 distinct joint lists, 63 joints"
+        },
+        {
+          "id": "skeleton.matchesConfig",
+          "ok": true,
+          "detail": "63 bones in config"
+        },
+        {
+          "id": "sockets.parented",
+          "ok": true,
+          "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+        },
+        {
+          "id": "clips.named",
+          "ok": true,
+          "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+        },
+        {
+          "id": "uv.inRange",
+          "ok": true,
+          "detail": "17067 UVs in [0,1]"
+        },
+        {
+          "id": "weights.normalized",
+          "ok": true,
+          "detail": "max |1-sum| = 4.10e-8, max influences 4"
+        },
+        {
+          "id": "seams.boundaryLoops",
+          "ok": true,
+          "detail": "375 shared boundary vertices across 17 part pairs"
+        },
+        {
+          "id": "seams.normalsMatch",
+          "ok": true,
+          "detail": "min dot of boundary normals 1.000000"
+        },
+        {
+          "id": "seams.noCracksInClips",
+          "ok": true,
+          "detail": "max gap 0.00e+0 m over 832 frames (null)"
+        },
+        {
+          "id": "bones.lengthsConstant",
+          "ok": true,
+          "detail": "max length drift 3.12e-6 m (shin_L->foot_L float_monk@1.53) – forearms/shins never shorten"
+        },
+        {
+          "id": "sockets.followBones",
+          "ok": true,
+          "detail": "max change of socket-in-bone matrix 8.88e-16"
+        },
+        {
+          "id": "helpers.halfRotation",
+          "ok": true,
+          "detail": "max |helper - source/2| = 0.036 deg (shoulder_helper_R idle@1.40)"
+        },
+        {
+          "id": "hand_L.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_L.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0202 m in front of index knuckle; index 0.0504 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "hand_R.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_R.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0202 m in front of index knuckle; index 0.0504 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "grip.noPenetration",
+          "ok": true,
+          "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+        },
+        {
+          "id": "grip.contact",
+          "ok": true,
+          "detail": "113 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+        },
+        {
+          "id": "clips.extendedSet",
+          "ok": true,
+          "detail": "19 clips present"
+        },
+        {
+          "id": "feet.aboveGround",
+          "ok": true,
+          "detail": "feet at most 0.9 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+        },
+        {
+          "id": "float.hovers",
+          "ok": true,
+          "detail": "float_idle 0.185 m, float_monk_loop 0.669 m, float_monk(end) 0.697 m"
+        },
+        {
+          "id": "locomotion.inPlace",
+          "ok": true,
+          "detail": "jump_in_place pelvis drift 0.024 m, run_in_place pelvis drift 0.011 m, walk_in_place pelvis drift 0.023 m"
+        },
+        {
+          "id": "weapons.twoHandGrip",
+          "ok": true,
+          "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst rifle_aim@0.07s)"
+        },
+        {
+          "id": "weapons.gripNoPenetration",
+          "ok": true,
+          "detail": "deepest hand vertex 2.28 mm inside a grip (press_detonator hand R)"
+        },
+        {
+          "id": "weapons.gripContact",
+          "ok": true,
+          "detail": "min 140 hand vertices within 4 mm of each grip"
+        },
+        {
+          "id": "props.noBodyPenetration",
+          "ok": true,
+          "detail": "deepest prop point -7.8 mm outside the skin (sword_2h_slash@1.47s)"
+        },
+        {
+          "id": "staff.planted",
+          "ok": true,
+          "detail": "idle butt within 2.4 mm of the floor; stomp lifts 19.2 cm and lands 2.4 mm from the floor (never below 2.4 mm)"
+        },
+        {
+          "id": "press.contact",
+          "ok": true,
+          "detail": "thumb pad 0.00 mm from the button top at contact; pressed 5.01 mm (travel 5.0 mm); clear of the button before the press"
+        }
+      ],
+      "info": {
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": false,
+          "mapSize": null
+        },
+        "coincidentGroups": 1301,
+        "crossPartGroups": 375,
+        "boundaries": {
+          "Foot_L+Shin_L": 24,
+          "Foot_R+Shin_R": 24,
+          "Forearm_L+UpperArm_L": 24,
+          "Forearm_L+Hand_L": 24,
+          "Forearm_R+UpperArm_R": 24,
+          "Forearm_R+Hand_R": 24,
+          "Head+Neck": 32,
+          "Neck+Torso": 32,
+          "Pelvis+Thigh_L+Thigh_R": 2,
+          "Pelvis+Thigh_L": 15,
+          "Pelvis+Thigh_R": 15,
+          "Pelvis+Torso": 32,
+          "Shin_L+Thigh_L": 24,
+          "Shin_R+Thigh_R": 24,
+          "Thigh_L+Thigh_R": 7,
+          "Torso+UpperArm_L": 24,
+          "Torso+UpperArm_R": 24
+        },
+        "framesChecked": 832,
+        "clipSeamGaps": {
+          "_qa_pose_cycle": {
+            "maxSeamGap": 0
+          },
+          "cheer": {
+            "maxSeamGap": 0
+          },
+          "float_idle": {
+            "maxSeamGap": 0
+          },
+          "float_monk": {
+            "maxSeamGap": 0
+          },
+          "float_monk_loop": {
+            "maxSeamGap": 0
+          },
+          "idle": {
+            "maxSeamGap": 0
+          },
+          "jump_in_place": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim_2h": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire_2h": {
+            "maxSeamGap": 0
+          },
+          "press_detonator": {
+            "maxSeamGap": 0
+          },
+          "reach_grip_handle": {
+            "maxSeamGap": 0
+          },
+          "rifle_aim": {
+            "maxSeamGap": 0
+          },
+          "rifle_fire": {
+            "maxSeamGap": 0
+          },
+          "run_in_place": {
+            "maxSeamGap": 0
+          },
+          "staff_idle": {
+            "maxSeamGap": 0
+          },
+          "staff_stomp": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_idle": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_slash": {
+            "maxSeamGap": 0
+          },
+          "walk_in_place": {
+            "maxSeamGap": 0
+          },
+          "wave": {
+            "maxSeamGap": 0
+          }
+        },
+        "grip": {
+          "holdTime": 2.2666666666666666,
+          "verticesInsideHandle": 0,
+          "deepest_mm": 0,
+          "contactVertices": 113,
+          "socketToAxis_mm": 0
+        },
+        "extended": {
+          "groundY": -0.0024,
+          "feetBelowGround_mm": {
+            "_qa_pose_cycle": 54.9,
+            "cheer": 0,
+            "float_idle": 0,
+            "float_monk": 0.9,
+            "float_monk_loop": 0,
+            "idle": 0,
+            "jump_in_place": 0,
+            "pistol_aim": 0,
+            "pistol_aim_2h": 0,
+            "pistol_fire": 0,
+            "pistol_fire_2h": 0,
+            "press_detonator": 0,
+            "reach_grip_handle": 0,
+            "rifle_aim": 0,
+            "rifle_fire": 0,
+            "run_in_place": 0,
+            "staff_idle": 0,
+            "staff_stomp": 0,
+            "sword_2h_idle": 0,
+            "sword_2h_slash": 0,
+            "walk_in_place": 0,
+            "wave": 0
+          },
+          "feetHover_m": {
+            "float_idle": 0.185,
+            "float_monk_loop": 0.669,
+            "float_monk(end)": 0.697
+          },
+          "inPlaceDrift_m": {
+            "jump_in_place": 0.024,
+            "run_in_place": 0.011,
+            "walk_in_place": 0.023
+          }
+        },
+        "weapons": {
+          "supportHandMaxError_mm": 0.001,
+          "deepestGripPenetration_mm": 2.28,
+          "contactVertices": {
+            "pistol_aim.R": 141,
+            "pistol_aim_2h.R": 141,
+            "pistol_aim_2h.L": 157,
+            "pistol_fire.R": 141,
+            "pistol_fire_2h.R": 141,
+            "pistol_fire_2h.L": 157,
+            "press_detonator.R": 205,
+            "rifle_aim.R": 140,
+            "rifle_aim.L": 149,
+            "rifle_fire.R": 140,
+            "rifle_fire.L": 149,
+            "staff_idle.R": 149,
+            "staff_stomp.R": 149,
+            "sword_2h_idle.R": 149,
+            "sword_2h_idle.L": 149,
+            "sword_2h_slash.R": 149,
+            "sword_2h_slash.L": 149
+          },
+          "propIntoBody_mm": {
+            "pistol_aim": null,
+            "pistol_aim_2h": null,
+            "pistol_fire": null,
+            "pistol_fire_2h": null,
+            "press_detonator": null,
+            "rifle_aim": null,
+            "rifle_fire": null,
+            "staff_idle": null,
+            "staff_stomp": null,
+            "sword_2h_idle": null,
+            "sword_2h_slash": -7.8
+          }
+        },
+        "staff": {
+          "idleButtFromFloor_mm": 2.4,
+          "impactButtFromFloor_mm": 2.4,
+          "stompLift_m": 0.192,
+          "lowest_mm": 2.4
+        },
+        "press": {
+          "thumbAboveButtonAtContact_mm": 0,
+          "pressDepth_mm": 5.01,
+          "travel_mm": 5,
+          "thumbAboveButtonWhenRaised_mm": null
+        }
+      },
+      "pageErrors": [],
+      "screenshots": [
+        "screens/woman_blank/blank_arms_raised_az35.png",
+        "screens/woman_blank/blank_arms_raised_az215.png",
+        "screens/woman_blank/blank_elbows_bent_az35.png",
+        "screens/woman_blank/blank_elbows_bent_az215.png",
+        "screens/woman_blank/blank_hands_near_face_az35.png",
+        "screens/woman_blank/blank_hands_near_face_az215.png",
+        "screens/woman_blank/blank_wrist_rotation_finger_curl_az35.png",
+        "screens/woman_blank/blank_wrist_rotation_finger_curl_az215.png",
+        "screens/woman_blank/blank_torso_twist_az35.png",
+        "screens/woman_blank/blank_torso_twist_az215.png",
+        "screens/woman_blank/blank_head_turn_az35.png",
+        "screens/woman_blank/blank_head_turn_az215.png",
+        "screens/woman_blank/blank_crouch_az35.png",
+        "screens/woman_blank/blank_crouch_az215.png",
+        "screens/woman_blank/blank_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/woman_blank/blank_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/woman_blank/blank_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/woman_blank/blank_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/woman_blank/blank_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/woman_blank/blank_closeup_hands_near_face_head_az0.png",
+        "screens/woman_blank/blank_closeup_hands_near_face_head_az40.png",
+        "screens/woman_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/woman_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/woman_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/woman_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/woman_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/woman_blank/blank_closeup_torso_twist_spine_02_az0.png",
+        "screens/woman_blank/blank_closeup_torso_twist_spine_02_az180.png",
+        "screens/woman_blank/blank_closeup_head_turn_neck_az60.png",
+        "screens/woman_blank/blank_closeup_head_turn_neck_az200.png",
+        "screens/woman_blank/blank_closeup_crouch_thigh_L_az0.png",
+        "screens/woman_blank/blank_closeup_crouch_thigh_L_az90.png",
+        "screens/woman_blank/blank_closeup_crouch_thigh_L_az200.png",
+        "screens/woman_blank/blank_closeup_crouch_thigh_L_az300.png",
+        "screens/woman_blank/checker_arms_raised_az35.png",
+        "screens/woman_blank/checker_arms_raised_az215.png",
+        "screens/woman_blank/checker_elbows_bent_az35.png",
+        "screens/woman_blank/checker_elbows_bent_az215.png",
+        "screens/woman_blank/checker_hands_near_face_az35.png",
+        "screens/woman_blank/checker_hands_near_face_az215.png",
+        "screens/woman_blank/checker_wrist_rotation_finger_curl_az35.png",
+        "screens/woman_blank/checker_wrist_rotation_finger_curl_az215.png",
+        "screens/woman_blank/checker_torso_twist_az35.png",
+        "screens/woman_blank/checker_torso_twist_az215.png",
+        "screens/woman_blank/checker_head_turn_az35.png",
+        "screens/woman_blank/checker_head_turn_az215.png",
+        "screens/woman_blank/checker_crouch_az35.png",
+        "screens/woman_blank/checker_crouch_az215.png",
+        "screens/woman_blank/checker_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/woman_blank/checker_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/woman_blank/checker_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/woman_blank/checker_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/woman_blank/checker_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/woman_blank/checker_closeup_hands_near_face_head_az0.png",
+        "screens/woman_blank/checker_closeup_hands_near_face_head_az40.png",
+        "screens/woman_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/woman_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/woman_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/woman_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/woman_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/woman_blank/checker_closeup_torso_twist_spine_02_az0.png",
+        "screens/woman_blank/checker_closeup_torso_twist_spine_02_az180.png",
+        "screens/woman_blank/checker_closeup_head_turn_neck_az60.png",
+        "screens/woman_blank/checker_closeup_head_turn_neck_az200.png",
+        "screens/woman_blank/checker_closeup_crouch_thigh_L_az0.png",
+        "screens/woman_blank/checker_closeup_crouch_thigh_L_az90.png",
+        "screens/woman_blank/checker_closeup_crouch_thigh_L_az200.png",
+        "screens/woman_blank/checker_closeup_crouch_thigh_L_az300.png"
+      ],
+      "viewerRoundTrip": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "parts.present",
+            "ok": true,
+            "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+          },
+          {
+            "id": "skeleton.single",
+            "ok": true,
+            "detail": "16 Skeleton objects, 1 distinct joint lists, 63 joints"
+          },
+          {
+            "id": "skeleton.matchesConfig",
+            "ok": true,
+            "detail": "63 bones in config"
+          },
+          {
+            "id": "sockets.parented",
+            "ok": true,
+            "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+          },
+          {
+            "id": "clips.named",
+            "ok": true,
+            "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+          },
+          {
+            "id": "uv.inRange",
+            "ok": true,
+            "detail": "17067 UVs in [0,1]"
+          },
+          {
+            "id": "weights.normalized",
+            "ok": true,
+            "detail": "max |1-sum| = 4.10e-8, max influences 4"
+          },
+          {
+            "id": "material.texture",
+            "ok": true,
+            "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+          },
+          {
+            "id": "seams.boundaryLoops",
+            "ok": true,
+            "detail": "375 shared boundary vertices across 17 part pairs"
+          },
+          {
+            "id": "seams.normalsMatch",
+            "ok": true,
+            "detail": "min dot of boundary normals 1.000000"
+          },
+          {
+            "id": "seams.noCracksInClips",
+            "ok": true,
+            "detail": "max gap 0.00e+0 m over 288 frames (null)"
+          },
+          {
+            "id": "bones.lengthsConstant",
+            "ok": true,
+            "detail": "max length drift 2.98e-6 m (shin_R->foot_R float_monk@1.60) – forearms/shins never shorten"
+          },
+          {
+            "id": "sockets.followBones",
+            "ok": true,
+            "detail": "max change of socket-in-bone matrix 7.77e-16"
+          },
+          {
+            "id": "helpers.halfRotation",
+            "ok": true,
+            "detail": "max |helper - source/2| = 0.036 deg (shoulder_helper_R idle@1.40)"
+          },
+          {
+            "id": "hand_L.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_L.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0202 m in front of index knuckle; index 0.0504 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "hand_R.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_R.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0202 m in front of index knuckle; index 0.0504 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "grip.noPenetration",
+            "ok": true,
+            "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+          },
+          {
+            "id": "grip.contact",
+            "ok": true,
+            "detail": "113 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+          },
+          {
+            "id": "clips.extendedSet",
+            "ok": true,
+            "detail": "19 clips present"
+          },
+          {
+            "id": "feet.aboveGround",
+            "ok": true,
+            "detail": "feet at most 0.9 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+          },
+          {
+            "id": "float.hovers",
+            "ok": true,
+            "detail": "float_idle 0.185 m, float_monk_loop 0.669 m, float_monk(end) 0.697 m"
+          },
+          {
+            "id": "locomotion.inPlace",
+            "ok": true,
+            "detail": "jump_in_place pelvis drift 0.021 m, run_in_place pelvis drift 0.009 m, walk_in_place pelvis drift 0.021 m"
+          },
+          {
+            "id": "weapons.twoHandGrip",
+            "ok": true,
+            "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst rifle_aim@1.20s)"
+          },
+          {
+            "id": "weapons.gripNoPenetration",
+            "ok": true,
+            "detail": "deepest hand vertex 2.28 mm inside a grip (press_detonator hand R)"
+          },
+          {
+            "id": "weapons.gripContact",
+            "ok": true,
+            "detail": "min 140 hand vertices within 4 mm of each grip"
+          },
+          {
+            "id": "props.noBodyPenetration",
+            "ok": true,
+            "detail": "deepest prop point -8.9 mm outside the skin (sword_2h_slash@1.40s)"
+          },
+          {
+            "id": "staff.planted",
+            "ok": true,
+            "detail": "idle butt within 2.4 mm of the floor; stomp lifts 19.2 cm and lands 2.4 mm from the floor (never below 2.4 mm)"
+          },
+          {
+            "id": "press.contact",
+            "ok": true,
+            "detail": "thumb pad 0.00 mm from the button top at contact; pressed 5.01 mm (travel 5.0 mm); clear of the button before the press"
+          }
+        ],
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "errors": []
+      }
+    },
+    "dwarf_blank": {
+      "ok": true,
+      "checks": [
+        {
+          "id": "parts.present",
+          "ok": true,
+          "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+        },
+        {
+          "id": "skeleton.single",
+          "ok": true,
+          "detail": "1 Skeleton objects, 1 distinct joint lists, 63 joints"
+        },
+        {
+          "id": "skeleton.matchesConfig",
+          "ok": true,
+          "detail": "63 bones in config"
+        },
+        {
+          "id": "sockets.parented",
+          "ok": true,
+          "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+        },
+        {
+          "id": "clips.named",
+          "ok": true,
+          "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+        },
+        {
+          "id": "uv.inRange",
+          "ok": true,
+          "detail": "17067 UVs in [0,1]"
+        },
+        {
+          "id": "weights.normalized",
+          "ok": true,
+          "detail": "max |1-sum| = 4.38e-8, max influences 4"
+        },
+        {
+          "id": "seams.boundaryLoops",
+          "ok": true,
+          "detail": "375 shared boundary vertices across 17 part pairs"
+        },
+        {
+          "id": "seams.normalsMatch",
+          "ok": true,
+          "detail": "min dot of boundary normals 1.000000"
+        },
+        {
+          "id": "seams.noCracksInClips",
+          "ok": true,
+          "detail": "max gap 0.00e+0 m over 832 frames (null)"
+        },
+        {
+          "id": "bones.lengthsConstant",
+          "ok": true,
+          "detail": "max length drift 2.07e-6 m (shin_R->foot_R float_monk@1.73) – forearms/shins never shorten"
+        },
+        {
+          "id": "sockets.followBones",
+          "ok": true,
+          "detail": "max change of socket-in-bone matrix 6.66e-16"
+        },
+        {
+          "id": "helpers.halfRotation",
+          "ok": true,
+          "detail": "max |helper - source/2| = 0.034 deg (shoulder_helper_R idle@3.40)"
+        },
+        {
+          "id": "hand_L.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_L.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0243 m in front of index knuckle; index 0.0605 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "hand_R.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_R.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0243 m in front of index knuckle; index 0.0605 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "grip.noPenetration",
+          "ok": true,
+          "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+        },
+        {
+          "id": "grip.contact",
+          "ok": true,
+          "detail": "60 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+        },
+        {
+          "id": "clips.extendedSet",
+          "ok": true,
+          "detail": "19 clips present"
+        },
+        {
+          "id": "feet.aboveGround",
+          "ok": true,
+          "detail": "feet at most 3.3 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+        },
+        {
+          "id": "float.hovers",
+          "ok": true,
+          "detail": "float_idle 0.117 m, float_monk_loop 0.402 m, float_monk(end) 0.426 m"
+        },
+        {
+          "id": "locomotion.inPlace",
+          "ok": true,
+          "detail": "jump_in_place pelvis drift 0.02 m, run_in_place pelvis drift 0.01 m, walk_in_place pelvis drift 0.019 m"
+        },
+        {
+          "id": "weapons.twoHandGrip",
+          "ok": true,
+          "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst rifle_fire@0.80s)"
+        },
+        {
+          "id": "weapons.gripNoPenetration",
+          "ok": true,
+          "detail": "deepest hand vertex 1.23 mm inside a grip (pistol_aim_2h hand L)"
+        },
+        {
+          "id": "weapons.gripContact",
+          "ok": true,
+          "detail": "min 60 hand vertices within 4 mm of each grip"
+        },
+        {
+          "id": "props.noBodyPenetration",
+          "ok": true,
+          "detail": "deepest prop point -5.3 mm outside the skin (sword_2h_slash@1.53s)"
+        },
+        {
+          "id": "staff.planted",
+          "ok": true,
+          "detail": "idle butt within 2.7 mm of the floor; stomp lifts 10.4 cm and lands 2.7 mm from the floor (never below 2.7 mm)"
+        },
+        {
+          "id": "press.contact",
+          "ok": true,
+          "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.01 mm (travel 5.0 mm); clear of the button before the press"
+        }
+      ],
+      "info": {
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": false,
+          "mapSize": null
+        },
+        "coincidentGroups": 1301,
+        "crossPartGroups": 375,
+        "boundaries": {
+          "Foot_L+Shin_L": 24,
+          "Foot_R+Shin_R": 24,
+          "Forearm_L+UpperArm_L": 24,
+          "Forearm_L+Hand_L": 24,
+          "Forearm_R+UpperArm_R": 24,
+          "Forearm_R+Hand_R": 24,
+          "Head+Neck": 32,
+          "Neck+Torso": 32,
+          "Pelvis+Thigh_L+Thigh_R": 2,
+          "Pelvis+Thigh_L": 15,
+          "Pelvis+Thigh_R": 15,
+          "Pelvis+Torso": 32,
+          "Shin_L+Thigh_L": 24,
+          "Shin_R+Thigh_R": 24,
+          "Thigh_L+Thigh_R": 7,
+          "Torso+UpperArm_L": 24,
+          "Torso+UpperArm_R": 24
+        },
+        "framesChecked": 832,
+        "clipSeamGaps": {
+          "_qa_pose_cycle": {
+            "maxSeamGap": 0
+          },
+          "cheer": {
+            "maxSeamGap": 0
+          },
+          "float_idle": {
+            "maxSeamGap": 0
+          },
+          "float_monk": {
+            "maxSeamGap": 0
+          },
+          "float_monk_loop": {
+            "maxSeamGap": 0
+          },
+          "idle": {
+            "maxSeamGap": 0
+          },
+          "jump_in_place": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim_2h": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire_2h": {
+            "maxSeamGap": 0
+          },
+          "press_detonator": {
+            "maxSeamGap": 0
+          },
+          "reach_grip_handle": {
+            "maxSeamGap": 0
+          },
+          "rifle_aim": {
+            "maxSeamGap": 0
+          },
+          "rifle_fire": {
+            "maxSeamGap": 0
+          },
+          "run_in_place": {
+            "maxSeamGap": 0
+          },
+          "staff_idle": {
+            "maxSeamGap": 0
+          },
+          "staff_stomp": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_idle": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_slash": {
+            "maxSeamGap": 0
+          },
+          "walk_in_place": {
+            "maxSeamGap": 0
+          },
+          "wave": {
+            "maxSeamGap": 0
+          }
+        },
+        "grip": {
+          "holdTime": 2.2666666666666666,
+          "verticesInsideHandle": 0,
+          "deepest_mm": 0,
+          "contactVertices": 60,
+          "socketToAxis_mm": 0
+        },
+        "extended": {
+          "groundY": -0.0027,
+          "feetBelowGround_mm": {
+            "_qa_pose_cycle": 44.7,
+            "cheer": 3,
+            "float_idle": 0,
+            "float_monk": 3.3,
+            "float_monk_loop": 0,
+            "idle": 0,
+            "jump_in_place": 0,
+            "pistol_aim": 0,
+            "pistol_aim_2h": 0,
+            "pistol_fire": 0,
+            "pistol_fire_2h": 0,
+            "press_detonator": 0,
+            "reach_grip_handle": 0,
+            "rifle_aim": 0,
+            "rifle_fire": 0,
+            "run_in_place": 0,
+            "staff_idle": 0,
+            "staff_stomp": 0,
+            "sword_2h_idle": 0,
+            "sword_2h_slash": 0,
+            "walk_in_place": 0,
+            "wave": 0
+          },
+          "feetHover_m": {
+            "float_idle": 0.117,
+            "float_monk_loop": 0.402,
+            "float_monk(end)": 0.426
+          },
+          "inPlaceDrift_m": {
+            "jump_in_place": 0.02,
+            "run_in_place": 0.01,
+            "walk_in_place": 0.019
+          }
+        },
+        "weapons": {
+          "supportHandMaxError_mm": 0.001,
+          "deepestGripPenetration_mm": 1.23,
+          "contactVertices": {
+            "pistol_aim.R": 62,
+            "pistol_aim_2h.R": 62,
+            "pistol_aim_2h.L": 137,
+            "pistol_fire.R": 62,
+            "pistol_fire_2h.R": 62,
+            "pistol_fire_2h.L": 137,
+            "press_detonator.R": 74,
+            "rifle_aim.R": 60,
+            "rifle_aim.L": 76,
+            "rifle_fire.R": 60,
+            "rifle_fire.L": 76,
+            "staff_idle.R": 76,
+            "staff_stomp.R": 76,
+            "sword_2h_idle.R": 76,
+            "sword_2h_idle.L": 76,
+            "sword_2h_slash.R": 76,
+            "sword_2h_slash.L": 76
+          },
+          "propIntoBody_mm": {
+            "pistol_aim": null,
+            "pistol_aim_2h": null,
+            "pistol_fire": null,
+            "pistol_fire_2h": null,
+            "press_detonator": -75.2,
+            "rifle_aim": -71.1,
+            "rifle_fire": -52,
+            "staff_idle": -48.2,
+            "staff_stomp": -48.2,
+            "sword_2h_idle": -15,
+            "sword_2h_slash": -5.3
+          }
+        },
+        "staff": {
+          "idleButtFromFloor_mm": 2.7,
+          "impactButtFromFloor_mm": 2.7,
+          "stompLift_m": 0.104,
+          "lowest_mm": 2.7
+        },
+        "press": {
+          "thumbAboveButtonAtContact_mm": -0.03,
+          "pressDepth_mm": 5.01,
+          "travel_mm": 5,
+          "thumbAboveButtonWhenRaised_mm": null
+        }
+      },
+      "pageErrors": [],
+      "screenshots": [
+        "screens/dwarf_blank/blank_arms_raised_az35.png",
+        "screens/dwarf_blank/blank_arms_raised_az215.png",
+        "screens/dwarf_blank/blank_elbows_bent_az35.png",
+        "screens/dwarf_blank/blank_elbows_bent_az215.png",
+        "screens/dwarf_blank/blank_hands_near_face_az35.png",
+        "screens/dwarf_blank/blank_hands_near_face_az215.png",
+        "screens/dwarf_blank/blank_wrist_rotation_finger_curl_az35.png",
+        "screens/dwarf_blank/blank_wrist_rotation_finger_curl_az215.png",
+        "screens/dwarf_blank/blank_torso_twist_az35.png",
+        "screens/dwarf_blank/blank_torso_twist_az215.png",
+        "screens/dwarf_blank/blank_head_turn_az35.png",
+        "screens/dwarf_blank/blank_head_turn_az215.png",
+        "screens/dwarf_blank/blank_crouch_az35.png",
+        "screens/dwarf_blank/blank_crouch_az215.png",
+        "screens/dwarf_blank/blank_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/dwarf_blank/blank_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/dwarf_blank/blank_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/dwarf_blank/blank_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/dwarf_blank/blank_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/dwarf_blank/blank_closeup_hands_near_face_head_az0.png",
+        "screens/dwarf_blank/blank_closeup_hands_near_face_head_az40.png",
+        "screens/dwarf_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/dwarf_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/dwarf_blank/blank_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/dwarf_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/dwarf_blank/blank_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/dwarf_blank/blank_closeup_torso_twist_spine_02_az0.png",
+        "screens/dwarf_blank/blank_closeup_torso_twist_spine_02_az180.png",
+        "screens/dwarf_blank/blank_closeup_head_turn_neck_az60.png",
+        "screens/dwarf_blank/blank_closeup_head_turn_neck_az200.png",
+        "screens/dwarf_blank/blank_closeup_crouch_thigh_L_az0.png",
+        "screens/dwarf_blank/blank_closeup_crouch_thigh_L_az90.png",
+        "screens/dwarf_blank/blank_closeup_crouch_thigh_L_az200.png",
+        "screens/dwarf_blank/blank_closeup_crouch_thigh_L_az300.png",
+        "screens/dwarf_blank/checker_arms_raised_az35.png",
+        "screens/dwarf_blank/checker_arms_raised_az215.png",
+        "screens/dwarf_blank/checker_elbows_bent_az35.png",
+        "screens/dwarf_blank/checker_elbows_bent_az215.png",
+        "screens/dwarf_blank/checker_hands_near_face_az35.png",
+        "screens/dwarf_blank/checker_hands_near_face_az215.png",
+        "screens/dwarf_blank/checker_wrist_rotation_finger_curl_az35.png",
+        "screens/dwarf_blank/checker_wrist_rotation_finger_curl_az215.png",
+        "screens/dwarf_blank/checker_torso_twist_az35.png",
+        "screens/dwarf_blank/checker_torso_twist_az215.png",
+        "screens/dwarf_blank/checker_head_turn_az35.png",
+        "screens/dwarf_blank/checker_head_turn_az215.png",
+        "screens/dwarf_blank/checker_crouch_az35.png",
+        "screens/dwarf_blank/checker_crouch_az215.png",
+        "screens/dwarf_blank/checker_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/dwarf_blank/checker_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/dwarf_blank/checker_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/dwarf_blank/checker_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/dwarf_blank/checker_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/dwarf_blank/checker_closeup_hands_near_face_head_az0.png",
+        "screens/dwarf_blank/checker_closeup_hands_near_face_head_az40.png",
+        "screens/dwarf_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/dwarf_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/dwarf_blank/checker_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/dwarf_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/dwarf_blank/checker_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/dwarf_blank/checker_closeup_torso_twist_spine_02_az0.png",
+        "screens/dwarf_blank/checker_closeup_torso_twist_spine_02_az180.png",
+        "screens/dwarf_blank/checker_closeup_head_turn_neck_az60.png",
+        "screens/dwarf_blank/checker_closeup_head_turn_neck_az200.png",
+        "screens/dwarf_blank/checker_closeup_crouch_thigh_L_az0.png",
+        "screens/dwarf_blank/checker_closeup_crouch_thigh_L_az90.png",
+        "screens/dwarf_blank/checker_closeup_crouch_thigh_L_az200.png",
+        "screens/dwarf_blank/checker_closeup_crouch_thigh_L_az300.png"
+      ],
+      "viewerRoundTrip": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "parts.present",
+            "ok": true,
+            "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+          },
+          {
+            "id": "skeleton.single",
+            "ok": true,
+            "detail": "16 Skeleton objects, 1 distinct joint lists, 63 joints"
+          },
+          {
+            "id": "skeleton.matchesConfig",
+            "ok": true,
+            "detail": "63 bones in config"
+          },
+          {
+            "id": "sockets.parented",
+            "ok": true,
+            "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+          },
+          {
+            "id": "clips.named",
+            "ok": true,
+            "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+          },
+          {
+            "id": "uv.inRange",
+            "ok": true,
+            "detail": "17067 UVs in [0,1]"
+          },
+          {
+            "id": "weights.normalized",
+            "ok": true,
+            "detail": "max |1-sum| = 4.28e-8, max influences 4"
+          },
+          {
+            "id": "material.texture",
+            "ok": true,
+            "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+          },
+          {
+            "id": "seams.boundaryLoops",
+            "ok": true,
+            "detail": "375 shared boundary vertices across 17 part pairs"
+          },
+          {
+            "id": "seams.normalsMatch",
+            "ok": true,
+            "detail": "min dot of boundary normals 1.000000"
+          },
+          {
+            "id": "seams.noCracksInClips",
+            "ok": true,
+            "detail": "max gap 0.00e+0 m over 288 frames (null)"
+          },
+          {
+            "id": "bones.lengthsConstant",
+            "ok": true,
+            "detail": "max length drift 2.05e-6 m (shin_L->foot_L float_monk@1.80) – forearms/shins never shorten"
+          },
+          {
+            "id": "sockets.followBones",
+            "ok": true,
+            "detail": "max change of socket-in-bone matrix 6.66e-16"
+          },
+          {
+            "id": "helpers.halfRotation",
+            "ok": true,
+            "detail": "max |helper - source/2| = 0.034 deg (shoulder_helper_R idle@3.40)"
+          },
+          {
+            "id": "hand_L.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_L.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0243 m in front of index knuckle; index 0.0605 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "hand_R.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_R.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0243 m in front of index knuckle; index 0.0605 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "grip.noPenetration",
+            "ok": true,
+            "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+          },
+          {
+            "id": "grip.contact",
+            "ok": true,
+            "detail": "60 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+          },
+          {
+            "id": "clips.extendedSet",
+            "ok": true,
+            "detail": "19 clips present"
+          },
+          {
+            "id": "feet.aboveGround",
+            "ok": true,
+            "detail": "feet at most 3.3 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+          },
+          {
+            "id": "float.hovers",
+            "ok": true,
+            "detail": "float_idle 0.117 m, float_monk_loop 0.402 m, float_monk(end) 0.426 m"
+          },
+          {
+            "id": "locomotion.inPlace",
+            "ok": true,
+            "detail": "jump_in_place pelvis drift 0.018 m, run_in_place pelvis drift 0.008 m, walk_in_place pelvis drift 0.018 m"
+          },
+          {
+            "id": "weapons.twoHandGrip",
+            "ok": true,
+            "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst rifle_fire@0.80s)"
+          },
+          {
+            "id": "weapons.gripNoPenetration",
+            "ok": true,
+            "detail": "deepest hand vertex 1.23 mm inside a grip (pistol_aim_2h hand L)"
+          },
+          {
+            "id": "weapons.gripContact",
+            "ok": true,
+            "detail": "min 60 hand vertices within 4 mm of each grip"
+          },
+          {
+            "id": "props.noBodyPenetration",
+            "ok": true,
+            "detail": "deepest prop point -9.8 mm outside the skin (sword_2h_slash@1.60s)"
+          },
+          {
+            "id": "staff.planted",
+            "ok": true,
+            "detail": "idle butt within 2.7 mm of the floor; stomp lifts 10.4 cm and lands 2.7 mm from the floor (never below 2.7 mm)"
+          },
+          {
+            "id": "press.contact",
+            "ok": true,
+            "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.01 mm (travel 5.0 mm); clear of the button before the press"
+          }
+        ],
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "errors": []
+      }
+    },
+    "stocky_test": {
+      "ok": true,
+      "checks": [
+        {
+          "id": "parts.present",
+          "ok": true,
+          "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+        },
+        {
+          "id": "skeleton.single",
+          "ok": true,
+          "detail": "1 Skeleton objects, 1 distinct joint lists, 63 joints"
+        },
+        {
+          "id": "skeleton.matchesConfig",
+          "ok": true,
+          "detail": "63 bones in config"
+        },
+        {
+          "id": "sockets.parented",
+          "ok": true,
+          "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+        },
+        {
+          "id": "clips.named",
+          "ok": true,
+          "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+        },
+        {
+          "id": "uv.inRange",
+          "ok": true,
+          "detail": "17067 UVs in [0,1]"
+        },
+        {
+          "id": "weights.normalized",
+          "ok": true,
+          "detail": "max |1-sum| = 4.47e-8, max influences 4"
+        },
+        {
+          "id": "seams.boundaryLoops",
+          "ok": true,
+          "detail": "375 shared boundary vertices across 17 part pairs"
+        },
+        {
+          "id": "seams.normalsMatch",
+          "ok": true,
+          "detail": "min dot of boundary normals 1.000000"
+        },
+        {
+          "id": "seams.noCracksInClips",
+          "ok": true,
+          "detail": "max gap 0.00e+0 m over 832 frames (null)"
+        },
+        {
+          "id": "bones.lengthsConstant",
+          "ok": true,
+          "detail": "max length drift 2.44e-6 m (shin_L->foot_L float_monk@1.67) – forearms/shins never shorten"
+        },
+        {
+          "id": "sockets.followBones",
+          "ok": true,
+          "detail": "max change of socket-in-bone matrix 8.88e-16"
+        },
+        {
+          "id": "helpers.halfRotation",
+          "ok": true,
+          "detail": "max |helper - source/2| = 0.023 deg (shoulder_helper_R idle@3.40)"
+        },
+        {
+          "id": "hand_L.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_L.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "hand_R.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_R.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "grip.noPenetration",
+          "ok": true,
+          "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+        },
+        {
+          "id": "grip.contact",
+          "ok": true,
+          "detail": "65 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+        },
+        {
+          "id": "clips.extendedSet",
+          "ok": true,
+          "detail": "19 clips present"
+        },
+        {
+          "id": "feet.aboveGround",
+          "ok": true,
+          "detail": "feet at most 2.6 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+        },
+        {
+          "id": "float.hovers",
+          "ok": true,
+          "detail": "float_idle 0.166 m, float_monk_loop 0.591 m, float_monk(end) 0.621 m"
+        },
+        {
+          "id": "locomotion.inPlace",
+          "ok": true,
+          "detail": "jump_in_place pelvis drift 0.025 m, run_in_place pelvis drift 0.012 m, walk_in_place pelvis drift 0.023 m"
+        },
+        {
+          "id": "weapons.twoHandGrip",
+          "ok": true,
+          "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_fire_2h@0.40s)"
+        },
+        {
+          "id": "weapons.gripNoPenetration",
+          "ok": true,
+          "detail": "deepest hand vertex 2.07 mm inside a grip (pistol_aim_2h hand L)"
+        },
+        {
+          "id": "weapons.gripContact",
+          "ok": true,
+          "detail": "min 46 hand vertices within 4 mm of each grip"
+        },
+        {
+          "id": "props.noBodyPenetration",
+          "ok": true,
+          "detail": "deepest prop point -9.9 mm outside the skin (sword_2h_slash@1.73s)"
+        },
+        {
+          "id": "staff.planted",
+          "ok": true,
+          "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+        },
+        {
+          "id": "press.contact",
+          "ok": true,
+          "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.06 mm (travel 5.0 mm); clear of the button before the press"
+        }
+      ],
+      "info": {
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": false,
+          "mapSize": null
+        },
+        "coincidentGroups": 1301,
+        "crossPartGroups": 375,
+        "boundaries": {
+          "Foot_L+Shin_L": 24,
+          "Foot_R+Shin_R": 24,
+          "Forearm_L+UpperArm_L": 24,
+          "Forearm_L+Hand_L": 24,
+          "Forearm_R+UpperArm_R": 24,
+          "Forearm_R+Hand_R": 24,
+          "Head+Neck": 32,
+          "Neck+Torso": 32,
+          "Pelvis+Thigh_L+Thigh_R": 2,
+          "Pelvis+Thigh_L": 15,
+          "Pelvis+Thigh_R": 15,
+          "Pelvis+Torso": 32,
+          "Shin_L+Thigh_L": 24,
+          "Shin_R+Thigh_R": 24,
+          "Thigh_L+Thigh_R": 7,
+          "Torso+UpperArm_L": 24,
+          "Torso+UpperArm_R": 24
+        },
+        "framesChecked": 832,
+        "clipSeamGaps": {
+          "_qa_pose_cycle": {
+            "maxSeamGap": 0
+          },
+          "cheer": {
+            "maxSeamGap": 0
+          },
+          "float_idle": {
+            "maxSeamGap": 0
+          },
+          "float_monk": {
+            "maxSeamGap": 0
+          },
+          "float_monk_loop": {
+            "maxSeamGap": 0
+          },
+          "idle": {
+            "maxSeamGap": 0
+          },
+          "jump_in_place": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim_2h": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire_2h": {
+            "maxSeamGap": 0
+          },
+          "press_detonator": {
+            "maxSeamGap": 0
+          },
+          "reach_grip_handle": {
+            "maxSeamGap": 0
+          },
+          "rifle_aim": {
+            "maxSeamGap": 0
+          },
+          "rifle_fire": {
+            "maxSeamGap": 0
+          },
+          "run_in_place": {
+            "maxSeamGap": 0
+          },
+          "staff_idle": {
+            "maxSeamGap": 0
+          },
+          "staff_stomp": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_idle": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_slash": {
+            "maxSeamGap": 0
+          },
+          "walk_in_place": {
+            "maxSeamGap": 0
+          },
+          "wave": {
+            "maxSeamGap": 0
+          }
+        },
+        "grip": {
+          "holdTime": 2.2666666666666666,
+          "verticesInsideHandle": 0,
+          "deepest_mm": 0,
+          "contactVertices": 65,
+          "socketToAxis_mm": 0
+        },
+        "extended": {
+          "groundY": -0.0029,
+          "feetBelowGround_mm": {
+            "_qa_pose_cycle": 55.8,
+            "cheer": 0,
+            "float_idle": 0,
+            "float_monk": 2.6,
+            "float_monk_loop": 0,
+            "idle": 0,
+            "jump_in_place": 0,
+            "pistol_aim": 0,
+            "pistol_aim_2h": 0,
+            "pistol_fire": 0,
+            "pistol_fire_2h": 0,
+            "press_detonator": 0,
+            "reach_grip_handle": 0,
+            "rifle_aim": 0,
+            "rifle_fire": 0,
+            "run_in_place": 0,
+            "staff_idle": 0,
+            "staff_stomp": 0,
+            "sword_2h_idle": 0,
+            "sword_2h_slash": 0,
+            "walk_in_place": 0,
+            "wave": 0
+          },
+          "feetHover_m": {
+            "float_idle": 0.166,
+            "float_monk_loop": 0.591,
+            "float_monk(end)": 0.621
+          },
+          "inPlaceDrift_m": {
+            "jump_in_place": 0.025,
+            "run_in_place": 0.012,
+            "walk_in_place": 0.023
+          }
+        },
+        "weapons": {
+          "supportHandMaxError_mm": 0.001,
+          "deepestGripPenetration_mm": 2.07,
+          "contactVertices": {
+            "pistol_aim.R": 46,
+            "pistol_aim_2h.R": 46,
+            "pistol_aim_2h.L": 182,
+            "pistol_fire.R": 46,
+            "pistol_fire_2h.R": 46,
+            "pistol_fire_2h.L": 182,
+            "press_detonator.R": 54,
+            "rifle_aim.R": 46,
+            "rifle_aim.L": 54,
+            "rifle_fire.R": 46,
+            "rifle_fire.L": 54,
+            "staff_idle.R": 54,
+            "staff_stomp.R": 54,
+            "sword_2h_idle.R": 54,
+            "sword_2h_idle.L": 54,
+            "sword_2h_slash.R": 54,
+            "sword_2h_slash.L": 54
+          },
+          "propIntoBody_mm": {
+            "pistol_aim": null,
+            "pistol_aim_2h": null,
+            "pistol_fire": null,
+            "pistol_fire_2h": null,
+            "press_detonator": null,
+            "rifle_aim": null,
+            "rifle_fire": -73.9,
+            "staff_idle": null,
+            "staff_stomp": null,
+            "sword_2h_idle": -57,
+            "sword_2h_slash": -9.9
+          }
+        },
+        "staff": {
+          "idleButtFromFloor_mm": 2.9,
+          "impactButtFromFloor_mm": 2.9,
+          "stompLift_m": 0.193,
+          "lowest_mm": 2.9
+        },
+        "press": {
+          "thumbAboveButtonAtContact_mm": -0.03,
+          "pressDepth_mm": 5.06,
+          "travel_mm": 5,
+          "thumbAboveButtonWhenRaised_mm": null
+        }
+      },
+      "pageErrors": [],
+      "screenshots": [
+        "screens/stocky_test/blank_arms_raised_az35.png",
+        "screens/stocky_test/blank_arms_raised_az215.png",
+        "screens/stocky_test/blank_elbows_bent_az35.png",
+        "screens/stocky_test/blank_elbows_bent_az215.png",
+        "screens/stocky_test/blank_hands_near_face_az35.png",
+        "screens/stocky_test/blank_hands_near_face_az215.png",
+        "screens/stocky_test/blank_wrist_rotation_finger_curl_az35.png",
+        "screens/stocky_test/blank_wrist_rotation_finger_curl_az215.png",
+        "screens/stocky_test/blank_torso_twist_az35.png",
+        "screens/stocky_test/blank_torso_twist_az215.png",
+        "screens/stocky_test/blank_head_turn_az35.png",
+        "screens/stocky_test/blank_head_turn_az215.png",
+        "screens/stocky_test/blank_crouch_az35.png",
+        "screens/stocky_test/blank_crouch_az215.png",
+        "screens/stocky_test/blank_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/stocky_test/blank_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/stocky_test/blank_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/stocky_test/blank_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/stocky_test/blank_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/stocky_test/blank_closeup_hands_near_face_head_az0.png",
+        "screens/stocky_test/blank_closeup_hands_near_face_head_az40.png",
+        "screens/stocky_test/blank_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/stocky_test/blank_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/stocky_test/blank_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/stocky_test/blank_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/stocky_test/blank_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/stocky_test/blank_closeup_torso_twist_spine_02_az0.png",
+        "screens/stocky_test/blank_closeup_torso_twist_spine_02_az180.png",
+        "screens/stocky_test/blank_closeup_head_turn_neck_az60.png",
+        "screens/stocky_test/blank_closeup_head_turn_neck_az200.png",
+        "screens/stocky_test/blank_closeup_crouch_thigh_L_az0.png",
+        "screens/stocky_test/blank_closeup_crouch_thigh_L_az90.png",
+        "screens/stocky_test/blank_closeup_crouch_thigh_L_az200.png",
+        "screens/stocky_test/blank_closeup_crouch_thigh_L_az300.png",
+        "screens/stocky_test/checker_arms_raised_az35.png",
+        "screens/stocky_test/checker_arms_raised_az215.png",
+        "screens/stocky_test/checker_elbows_bent_az35.png",
+        "screens/stocky_test/checker_elbows_bent_az215.png",
+        "screens/stocky_test/checker_hands_near_face_az35.png",
+        "screens/stocky_test/checker_hands_near_face_az215.png",
+        "screens/stocky_test/checker_wrist_rotation_finger_curl_az35.png",
+        "screens/stocky_test/checker_wrist_rotation_finger_curl_az215.png",
+        "screens/stocky_test/checker_torso_twist_az35.png",
+        "screens/stocky_test/checker_torso_twist_az215.png",
+        "screens/stocky_test/checker_head_turn_az35.png",
+        "screens/stocky_test/checker_head_turn_az215.png",
+        "screens/stocky_test/checker_crouch_az35.png",
+        "screens/stocky_test/checker_crouch_az215.png",
+        "screens/stocky_test/checker_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/stocky_test/checker_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/stocky_test/checker_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/stocky_test/checker_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/stocky_test/checker_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/stocky_test/checker_closeup_hands_near_face_head_az0.png",
+        "screens/stocky_test/checker_closeup_hands_near_face_head_az40.png",
+        "screens/stocky_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/stocky_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/stocky_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/stocky_test/checker_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/stocky_test/checker_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/stocky_test/checker_closeup_torso_twist_spine_02_az0.png",
+        "screens/stocky_test/checker_closeup_torso_twist_spine_02_az180.png",
+        "screens/stocky_test/checker_closeup_head_turn_neck_az60.png",
+        "screens/stocky_test/checker_closeup_head_turn_neck_az200.png",
+        "screens/stocky_test/checker_closeup_crouch_thigh_L_az0.png",
+        "screens/stocky_test/checker_closeup_crouch_thigh_L_az90.png",
+        "screens/stocky_test/checker_closeup_crouch_thigh_L_az200.png",
+        "screens/stocky_test/checker_closeup_crouch_thigh_L_az300.png"
+      ],
+      "viewerRoundTrip": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "parts.present",
+            "ok": true,
+            "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+          },
+          {
+            "id": "skeleton.single",
+            "ok": true,
+            "detail": "16 Skeleton objects, 1 distinct joint lists, 63 joints"
+          },
+          {
+            "id": "skeleton.matchesConfig",
+            "ok": true,
+            "detail": "63 bones in config"
+          },
+          {
+            "id": "sockets.parented",
+            "ok": true,
+            "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+          },
+          {
+            "id": "clips.named",
+            "ok": true,
+            "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+          },
+          {
+            "id": "uv.inRange",
+            "ok": true,
+            "detail": "17067 UVs in [0,1]"
+          },
+          {
+            "id": "weights.normalized",
+            "ok": true,
+            "detail": "max |1-sum| = 4.47e-8, max influences 4"
+          },
+          {
+            "id": "material.texture",
+            "ok": true,
+            "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+          },
+          {
+            "id": "seams.boundaryLoops",
+            "ok": true,
+            "detail": "375 shared boundary vertices across 17 part pairs"
+          },
+          {
+            "id": "seams.normalsMatch",
+            "ok": true,
+            "detail": "min dot of boundary normals 1.000000"
+          },
+          {
+            "id": "seams.noCracksInClips",
+            "ok": true,
+            "detail": "max gap 0.00e+0 m over 288 frames (null)"
+          },
+          {
+            "id": "bones.lengthsConstant",
+            "ok": true,
+            "detail": "max length drift 2.42e-6 m (shin_L->foot_L float_monk@1.60) – forearms/shins never shorten"
+          },
+          {
+            "id": "sockets.followBones",
+            "ok": true,
+            "detail": "max change of socket-in-bone matrix 8.88e-16"
+          },
+          {
+            "id": "helpers.halfRotation",
+            "ok": true,
+            "detail": "max |helper - source/2| = 0.023 deg (shoulder_helper_R idle@3.40)"
+          },
+          {
+            "id": "hand_L.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_L.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "hand_R.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_R.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "grip.noPenetration",
+            "ok": true,
+            "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+          },
+          {
+            "id": "grip.contact",
+            "ok": true,
+            "detail": "65 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+          },
+          {
+            "id": "clips.extendedSet",
+            "ok": true,
+            "detail": "19 clips present"
+          },
+          {
+            "id": "feet.aboveGround",
+            "ok": true,
+            "detail": "feet at most 2.6 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+          },
+          {
+            "id": "float.hovers",
+            "ok": true,
+            "detail": "float_idle 0.166 m, float_monk_loop 0.591 m, float_monk(end) 0.621 m"
+          },
+          {
+            "id": "locomotion.inPlace",
+            "ok": true,
+            "detail": "jump_in_place pelvis drift 0.021 m, run_in_place pelvis drift 0.01 m, walk_in_place pelvis drift 0.022 m"
+          },
+          {
+            "id": "weapons.twoHandGrip",
+            "ok": true,
+            "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_fire_2h@0.40s)"
+          },
+          {
+            "id": "weapons.gripNoPenetration",
+            "ok": true,
+            "detail": "deepest hand vertex 2.07 mm inside a grip (pistol_aim_2h hand L)"
+          },
+          {
+            "id": "weapons.gripContact",
+            "ok": true,
+            "detail": "min 46 hand vertices within 4 mm of each grip"
+          },
+          {
+            "id": "props.noBodyPenetration",
+            "ok": true,
+            "detail": "deepest prop point -12.1 mm outside the skin (sword_2h_slash@1.80s)"
+          },
+          {
+            "id": "staff.planted",
+            "ok": true,
+            "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+          },
+          {
+            "id": "press.contact",
+            "ok": true,
+            "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.06 mm (travel 5.0 mm); clear of the button before the press"
+          }
+        ],
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "errors": []
+      }
+    },
+    "diag_textured_test": {
+      "ok": true,
+      "checks": [
+        {
+          "id": "parts.present",
+          "ok": true,
+          "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+        },
+        {
+          "id": "skeleton.single",
+          "ok": true,
+          "detail": "1 Skeleton objects, 1 distinct joint lists, 63 joints"
+        },
+        {
+          "id": "skeleton.matchesConfig",
+          "ok": true,
+          "detail": "63 bones in config"
+        },
+        {
+          "id": "sockets.parented",
+          "ok": true,
+          "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+        },
+        {
+          "id": "clips.named",
+          "ok": true,
+          "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+        },
+        {
+          "id": "uv.inRange",
+          "ok": true,
+          "detail": "17067 UVs in [0,1]"
+        },
+        {
+          "id": "weights.normalized",
+          "ok": true,
+          "detail": "max |1-sum| = 4.47e-8, max influences 4"
+        },
+        {
+          "id": "material.texture",
+          "ok": true,
+          "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+        },
+        {
+          "id": "seams.boundaryLoops",
+          "ok": true,
+          "detail": "375 shared boundary vertices across 17 part pairs"
+        },
+        {
+          "id": "seams.normalsMatch",
+          "ok": true,
+          "detail": "min dot of boundary normals 1.000000"
+        },
+        {
+          "id": "seams.noCracksInClips",
+          "ok": true,
+          "detail": "max gap 0.00e+0 m over 832 frames (null)"
+        },
+        {
+          "id": "bones.lengthsConstant",
+          "ok": true,
+          "detail": "max length drift 2.44e-6 m (shin_L->foot_L float_monk@1.67) – forearms/shins never shorten"
+        },
+        {
+          "id": "sockets.followBones",
+          "ok": true,
+          "detail": "max change of socket-in-bone matrix 8.88e-16"
+        },
+        {
+          "id": "helpers.halfRotation",
+          "ok": true,
+          "detail": "max |helper - source/2| = 0.023 deg (shoulder_helper_R idle@3.40)"
+        },
+        {
+          "id": "hand_L.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_L.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "hand_R.palmFacesBody",
+          "ok": true,
+          "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+        },
+        {
+          "id": "hand_R.thumbRadialSide",
+          "ok": true,
+          "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+        },
+        {
+          "id": "grip.noPenetration",
+          "ok": true,
+          "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+        },
+        {
+          "id": "grip.contact",
+          "ok": true,
+          "detail": "65 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+        },
+        {
+          "id": "clips.extendedSet",
+          "ok": true,
+          "detail": "19 clips present"
+        },
+        {
+          "id": "feet.aboveGround",
+          "ok": true,
+          "detail": "feet at most 2.6 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+        },
+        {
+          "id": "float.hovers",
+          "ok": true,
+          "detail": "float_idle 0.166 m, float_monk_loop 0.591 m, float_monk(end) 0.621 m"
+        },
+        {
+          "id": "locomotion.inPlace",
+          "ok": true,
+          "detail": "jump_in_place pelvis drift 0.025 m, run_in_place pelvis drift 0.012 m, walk_in_place pelvis drift 0.023 m"
+        },
+        {
+          "id": "weapons.twoHandGrip",
+          "ok": true,
+          "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_fire_2h@0.40s)"
+        },
+        {
+          "id": "weapons.gripNoPenetration",
+          "ok": true,
+          "detail": "deepest hand vertex 2.07 mm inside a grip (pistol_aim_2h hand L)"
+        },
+        {
+          "id": "weapons.gripContact",
+          "ok": true,
+          "detail": "min 46 hand vertices within 4 mm of each grip"
+        },
+        {
+          "id": "props.noBodyPenetration",
+          "ok": true,
+          "detail": "deepest prop point -9.9 mm outside the skin (sword_2h_slash@1.73s)"
+        },
+        {
+          "id": "staff.planted",
+          "ok": true,
+          "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+        },
+        {
+          "id": "press.contact",
+          "ok": true,
+          "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.06 mm (travel 5.0 mm); clear of the button before the press"
+        }
+      ],
+      "info": {
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "coincidentGroups": 1301,
+        "crossPartGroups": 375,
+        "boundaries": {
+          "Foot_L+Shin_L": 24,
+          "Foot_R+Shin_R": 24,
+          "Forearm_L+UpperArm_L": 24,
+          "Forearm_L+Hand_L": 24,
+          "Forearm_R+UpperArm_R": 24,
+          "Forearm_R+Hand_R": 24,
+          "Head+Neck": 32,
+          "Neck+Torso": 32,
+          "Pelvis+Thigh_L+Thigh_R": 2,
+          "Pelvis+Thigh_L": 15,
+          "Pelvis+Thigh_R": 15,
+          "Pelvis+Torso": 32,
+          "Shin_L+Thigh_L": 24,
+          "Shin_R+Thigh_R": 24,
+          "Thigh_L+Thigh_R": 7,
+          "Torso+UpperArm_L": 24,
+          "Torso+UpperArm_R": 24
+        },
+        "framesChecked": 832,
+        "clipSeamGaps": {
+          "_qa_pose_cycle": {
+            "maxSeamGap": 0
+          },
+          "cheer": {
+            "maxSeamGap": 0
+          },
+          "float_idle": {
+            "maxSeamGap": 0
+          },
+          "float_monk": {
+            "maxSeamGap": 0
+          },
+          "float_monk_loop": {
+            "maxSeamGap": 0
+          },
+          "idle": {
+            "maxSeamGap": 0
+          },
+          "jump_in_place": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim": {
+            "maxSeamGap": 0
+          },
+          "pistol_aim_2h": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire": {
+            "maxSeamGap": 0
+          },
+          "pistol_fire_2h": {
+            "maxSeamGap": 0
+          },
+          "press_detonator": {
+            "maxSeamGap": 0
+          },
+          "reach_grip_handle": {
+            "maxSeamGap": 0
+          },
+          "rifle_aim": {
+            "maxSeamGap": 0
+          },
+          "rifle_fire": {
+            "maxSeamGap": 0
+          },
+          "run_in_place": {
+            "maxSeamGap": 0
+          },
+          "staff_idle": {
+            "maxSeamGap": 0
+          },
+          "staff_stomp": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_idle": {
+            "maxSeamGap": 0
+          },
+          "sword_2h_slash": {
+            "maxSeamGap": 0
+          },
+          "walk_in_place": {
+            "maxSeamGap": 0
+          },
+          "wave": {
+            "maxSeamGap": 0
+          }
+        },
+        "grip": {
+          "holdTime": 2.2666666666666666,
+          "verticesInsideHandle": 0,
+          "deepest_mm": 0,
+          "contactVertices": 65,
+          "socketToAxis_mm": 0
+        },
+        "extended": {
+          "groundY": -0.0029,
+          "feetBelowGround_mm": {
+            "_qa_pose_cycle": 55.8,
+            "cheer": 0,
+            "float_idle": 0,
+            "float_monk": 2.6,
+            "float_monk_loop": 0,
+            "idle": 0,
+            "jump_in_place": 0,
+            "pistol_aim": 0,
+            "pistol_aim_2h": 0,
+            "pistol_fire": 0,
+            "pistol_fire_2h": 0,
+            "press_detonator": 0,
+            "reach_grip_handle": 0,
+            "rifle_aim": 0,
+            "rifle_fire": 0,
+            "run_in_place": 0,
+            "staff_idle": 0,
+            "staff_stomp": 0,
+            "sword_2h_idle": 0,
+            "sword_2h_slash": 0,
+            "walk_in_place": 0,
+            "wave": 0
+          },
+          "feetHover_m": {
+            "float_idle": 0.166,
+            "float_monk_loop": 0.591,
+            "float_monk(end)": 0.621
+          },
+          "inPlaceDrift_m": {
+            "jump_in_place": 0.025,
+            "run_in_place": 0.012,
+            "walk_in_place": 0.023
+          }
+        },
+        "weapons": {
+          "supportHandMaxError_mm": 0.001,
+          "deepestGripPenetration_mm": 2.07,
+          "contactVertices": {
+            "pistol_aim.R": 46,
+            "pistol_aim_2h.R": 46,
+            "pistol_aim_2h.L": 182,
+            "pistol_fire.R": 46,
+            "pistol_fire_2h.R": 46,
+            "pistol_fire_2h.L": 182,
+            "press_detonator.R": 54,
+            "rifle_aim.R": 46,
+            "rifle_aim.L": 54,
+            "rifle_fire.R": 46,
+            "rifle_fire.L": 54,
+            "staff_idle.R": 54,
+            "staff_stomp.R": 54,
+            "sword_2h_idle.R": 54,
+            "sword_2h_idle.L": 54,
+            "sword_2h_slash.R": 54,
+            "sword_2h_slash.L": 54
+          },
+          "propIntoBody_mm": {
+            "pistol_aim": null,
+            "pistol_aim_2h": null,
+            "pistol_fire": null,
+            "pistol_fire_2h": null,
+            "press_detonator": null,
+            "rifle_aim": null,
+            "rifle_fire": -73.9,
+            "staff_idle": null,
+            "staff_stomp": null,
+            "sword_2h_idle": -57,
+            "sword_2h_slash": -9.9
+          }
+        },
+        "staff": {
+          "idleButtFromFloor_mm": 2.9,
+          "impactButtFromFloor_mm": 2.9,
+          "stompLift_m": 0.193,
+          "lowest_mm": 2.9
+        },
+        "press": {
+          "thumbAboveButtonAtContact_mm": -0.03,
+          "pressDepth_mm": 5.06,
+          "travel_mm": 5,
+          "thumbAboveButtonWhenRaised_mm": null
+        }
+      },
+      "pageErrors": [],
+      "screenshots": [
+        "screens/diag_textured_test/original_arms_raised_az35.png",
+        "screens/diag_textured_test/original_arms_raised_az215.png",
+        "screens/diag_textured_test/original_elbows_bent_az35.png",
+        "screens/diag_textured_test/original_elbows_bent_az215.png",
+        "screens/diag_textured_test/original_hands_near_face_az35.png",
+        "screens/diag_textured_test/original_hands_near_face_az215.png",
+        "screens/diag_textured_test/original_wrist_rotation_finger_curl_az35.png",
+        "screens/diag_textured_test/original_wrist_rotation_finger_curl_az215.png",
+        "screens/diag_textured_test/original_torso_twist_az35.png",
+        "screens/diag_textured_test/original_torso_twist_az215.png",
+        "screens/diag_textured_test/original_head_turn_az35.png",
+        "screens/diag_textured_test/original_head_turn_az215.png",
+        "screens/diag_textured_test/original_crouch_az35.png",
+        "screens/diag_textured_test/original_crouch_az215.png",
+        "screens/diag_textured_test/original_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/diag_textured_test/original_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/diag_textured_test/original_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/diag_textured_test/original_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/diag_textured_test/original_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/diag_textured_test/original_closeup_hands_near_face_head_az0.png",
+        "screens/diag_textured_test/original_closeup_hands_near_face_head_az40.png",
+        "screens/diag_textured_test/original_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/diag_textured_test/original_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/diag_textured_test/original_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/diag_textured_test/original_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/diag_textured_test/original_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/diag_textured_test/original_closeup_torso_twist_spine_02_az0.png",
+        "screens/diag_textured_test/original_closeup_torso_twist_spine_02_az180.png",
+        "screens/diag_textured_test/original_closeup_head_turn_neck_az60.png",
+        "screens/diag_textured_test/original_closeup_head_turn_neck_az200.png",
+        "screens/diag_textured_test/original_closeup_crouch_thigh_L_az0.png",
+        "screens/diag_textured_test/original_closeup_crouch_thigh_L_az90.png",
+        "screens/diag_textured_test/original_closeup_crouch_thigh_L_az200.png",
+        "screens/diag_textured_test/original_closeup_crouch_thigh_L_az300.png",
+        "screens/diag_textured_test/checker_arms_raised_az35.png",
+        "screens/diag_textured_test/checker_arms_raised_az215.png",
+        "screens/diag_textured_test/checker_elbows_bent_az35.png",
+        "screens/diag_textured_test/checker_elbows_bent_az215.png",
+        "screens/diag_textured_test/checker_hands_near_face_az35.png",
+        "screens/diag_textured_test/checker_hands_near_face_az215.png",
+        "screens/diag_textured_test/checker_wrist_rotation_finger_curl_az35.png",
+        "screens/diag_textured_test/checker_wrist_rotation_finger_curl_az215.png",
+        "screens/diag_textured_test/checker_torso_twist_az35.png",
+        "screens/diag_textured_test/checker_torso_twist_az215.png",
+        "screens/diag_textured_test/checker_head_turn_az35.png",
+        "screens/diag_textured_test/checker_head_turn_az215.png",
+        "screens/diag_textured_test/checker_crouch_az35.png",
+        "screens/diag_textured_test/checker_crouch_az215.png",
+        "screens/diag_textured_test/checker_closeup_arms_raised_clavicle_L_az20.png",
+        "screens/diag_textured_test/checker_closeup_arms_raised_clavicle_L_az160.png",
+        "screens/diag_textured_test/checker_closeup_arms_raised_clavicle_L_az300.png",
+        "screens/diag_textured_test/checker_closeup_elbows_bent_forearm_R_az300.png",
+        "screens/diag_textured_test/checker_closeup_elbows_bent_forearm_R_az200.png",
+        "screens/diag_textured_test/checker_closeup_hands_near_face_head_az0.png",
+        "screens/diag_textured_test/checker_closeup_hands_near_face_head_az40.png",
+        "screens/diag_textured_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az30.png",
+        "screens/diag_textured_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az120.png",
+        "screens/diag_textured_test/checker_closeup_wrist_rotation_finger_curl_hand_L_az240.png",
+        "screens/diag_textured_test/checker_closeup_wrist_rotation_finger_curl_hand_R_az330.png",
+        "screens/diag_textured_test/checker_closeup_wrist_rotation_finger_curl_hand_R_az240.png",
+        "screens/diag_textured_test/checker_closeup_torso_twist_spine_02_az0.png",
+        "screens/diag_textured_test/checker_closeup_torso_twist_spine_02_az180.png",
+        "screens/diag_textured_test/checker_closeup_head_turn_neck_az60.png",
+        "screens/diag_textured_test/checker_closeup_head_turn_neck_az200.png",
+        "screens/diag_textured_test/checker_closeup_crouch_thigh_L_az0.png",
+        "screens/diag_textured_test/checker_closeup_crouch_thigh_L_az90.png",
+        "screens/diag_textured_test/checker_closeup_crouch_thigh_L_az200.png",
+        "screens/diag_textured_test/checker_closeup_crouch_thigh_L_az300.png"
+      ],
+      "viewerRoundTrip": {
+        "ok": true,
+        "checks": [
+          {
+            "id": "parts.present",
+            "ok": true,
+            "detail": "found 16: Foot_L, Foot_R, Forearm_L, Forearm_R, Hand_L, Hand_R, Head, Neck, Pelvis, Shin_L, Shin_R, Thigh_L, Thigh_R, Torso, UpperArm_L, UpperArm_R"
+          },
+          {
+            "id": "skeleton.single",
+            "ok": true,
+            "detail": "16 Skeleton objects, 1 distinct joint lists, 63 joints"
+          },
+          {
+            "id": "skeleton.matchesConfig",
+            "ok": true,
+            "detail": "63 bones in config"
+          },
+          {
+            "id": "sockets.parented",
+            "ok": true,
+            "detail": "socket_hand_L_prop->hand_L, socket_hand_R_prop->hand_R, socket_head_accessory->head, socket_back_accessory->chest"
+          },
+          {
+            "id": "clips.named",
+            "ok": true,
+            "detail": "_qa_pose_cycle, cheer, float_idle, float_monk, float_monk_loop, idle, jump_in_place, pistol_aim, pistol_aim_2h, pistol_fire, pistol_fire_2h, press_detonator, reach_grip_handle, rifle_aim, rifle_fire, run_in_place, staff_idle, staff_stomp, sword_2h_idle, sword_2h_slash, walk_in_place, wave"
+          },
+          {
+            "id": "uv.inRange",
+            "ok": true,
+            "detail": "17067 UVs in [0,1]"
+          },
+          {
+            "id": "weights.normalized",
+            "ok": true,
+            "detail": "max |1-sum| = 4.47e-8, max influences 4"
+          },
+          {
+            "id": "material.texture",
+            "ok": true,
+            "detail": "{\"type\":\"MeshStandardMaterial\",\"hasMap\":true,\"mapSize\":[2048,2048]}"
+          },
+          {
+            "id": "seams.boundaryLoops",
+            "ok": true,
+            "detail": "375 shared boundary vertices across 17 part pairs"
+          },
+          {
+            "id": "seams.normalsMatch",
+            "ok": true,
+            "detail": "min dot of boundary normals 1.000000"
+          },
+          {
+            "id": "seams.noCracksInClips",
+            "ok": true,
+            "detail": "max gap 0.00e+0 m over 288 frames (null)"
+          },
+          {
+            "id": "bones.lengthsConstant",
+            "ok": true,
+            "detail": "max length drift 2.42e-6 m (shin_L->foot_L float_monk@1.60) – forearms/shins never shorten"
+          },
+          {
+            "id": "sockets.followBones",
+            "ok": true,
+            "detail": "max change of socket-in-bone matrix 8.88e-16"
+          },
+          {
+            "id": "helpers.halfRotation",
+            "ok": true,
+            "detail": "max |helper - source/2| = 0.023 deg (shoulder_helper_R idle@3.40)"
+          },
+          {
+            "id": "hand_L.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal -0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_L.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "hand_R.palmFacesBody",
+            "ok": true,
+            "detail": "palm normal 0.706,-0.708,0 (expected toward the body and down)"
+          },
+          {
+            "id": "hand_R.thumbRadialSide",
+            "ok": true,
+            "detail": "thumb 0.0254 m in front of index knuckle; index 0.0633 m in front of pinky (A-pose, palms in)"
+          },
+          {
+            "id": "grip.noPenetration",
+            "ok": true,
+            "detail": "0 hand vertices >1 mm inside the handle (deepest 0.00 mm)"
+          },
+          {
+            "id": "grip.contact",
+            "ok": true,
+            "detail": "65 vertices within 4 mm of the handle surface; socket 0.000 mm from the handle axis"
+          },
+          {
+            "id": "clips.extendedSet",
+            "ok": true,
+            "detail": "19 clips present"
+          },
+          {
+            "id": "feet.aboveGround",
+            "ok": true,
+            "detail": "feet at most 2.6 mm below the rest ground plane in game clips (float_monk@0.60s); _qa_ stress poses excluded"
+          },
+          {
+            "id": "float.hovers",
+            "ok": true,
+            "detail": "float_idle 0.166 m, float_monk_loop 0.591 m, float_monk(end) 0.621 m"
+          },
+          {
+            "id": "locomotion.inPlace",
+            "ok": true,
+            "detail": "jump_in_place pelvis drift 0.021 m, run_in_place pelvis drift 0.01 m, walk_in_place pelvis drift 0.022 m"
+          },
+          {
+            "id": "weapons.twoHandGrip",
+            "ok": true,
+            "detail": "support hand within 0.001 mm of the prop's grip_L marker on every frame (worst pistol_fire_2h@0.40s)"
+          },
+          {
+            "id": "weapons.gripNoPenetration",
+            "ok": true,
+            "detail": "deepest hand vertex 2.07 mm inside a grip (pistol_aim_2h hand L)"
+          },
+          {
+            "id": "weapons.gripContact",
+            "ok": true,
+            "detail": "min 46 hand vertices within 4 mm of each grip"
+          },
+          {
+            "id": "props.noBodyPenetration",
+            "ok": true,
+            "detail": "deepest prop point -12.1 mm outside the skin (sword_2h_slash@1.80s)"
+          },
+          {
+            "id": "staff.planted",
+            "ok": true,
+            "detail": "idle butt within 2.9 mm of the floor; stomp lifts 19.3 cm and lands 2.9 mm from the floor (never below 2.9 mm)"
+          },
+          {
+            "id": "press.contact",
+            "ok": true,
+            "detail": "thumb pad -0.03 mm from the button top at contact; pressed 5.06 mm (travel 5.0 mm); clear of the button before the press"
+          }
+        ],
+        "material": {
+          "type": "MeshStandardMaterial",
+          "hasMap": true,
+          "mapSize": [
+            2048,
+            2048
+          ]
+        },
+        "errors": []
+      }
+    }
+  }
+}

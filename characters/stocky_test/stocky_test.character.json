@@ -1,0 +1,1625 @@
+{
+  "schema": "gamboligy.character/1.0",
+  "characterId": "stocky_test",
+  "displayName": "Stocky test variant",
+  "status": "frozen",
+  "frozen": true,
+  "created": "2026-09-30T12:38:30+00:00",
+  "template": {
+    "id": "gamboligy.humanoid_base",
+    "version": "1.0.0",
+    "topologyVersion": 1,
+    "topologyHash": "400eceddd75ca27801fb2a50ed02c4c0d7511ca2a94b4700a8ff0a797e4d9ad5"
+  },
+  "derivedFrom": null,
+  "proportions": {
+    "height": 1.68,
+    "headSize": 1.03,
+    "shoulderWidth": 1.08,
+    "torsoWidth": 1.16,
+    "torsoDepth": 1.14,
+    "bellySize": 1.55,
+    "armLength": 0.96,
+    "legLength": 0.92,
+    "handSize": 1.07,
+    "footSize": 1.05
+  },
+  "proportionRanges": {
+    "height": [
+      1.2,
+      2.3
+    ],
+    "headSize": [
+      0.8,
+      1.35
+    ],
+    "shoulderWidth": [
+      0.8,
+      1.3
+    ],
+    "torsoWidth": [
+      0.8,
+      1.4
+    ],
+    "torsoDepth": [
+      0.8,
+      1.4
+    ],
+    "bellySize": [
+      0.6,
+      2.2
+    ],
+    "armLength": [
+      0.85,
+      1.15
+    ],
+    "legLength": [
+      0.8,
+      1.2
+    ],
+    "handSize": [
+      0.85,
+      1.3
+    ],
+    "footSize": [
+      0.85,
+      1.3
+    ]
+  },
+  "proportionDescriptions": {
+    "height": "Absolute crown height in metres (whole character is rescaled to hit it).",
+    "headSize": "Head scale relative to the body (cartoon head exaggeration).",
+    "shoulderWidth": "Clavicle length / acromion spread; moves shoulder joints.",
+    "torsoWidth": "Chest, waist and hip width; also drives derived limb girth.",
+    "torsoDepth": "Chest and back depth; also drives derived limb girth.",
+    "bellySize": "Lower-front torso volume (1 = neutral, <1 flatter, >1 rounder).",
+    "armLength": "Upper arm + forearm bone lengths.",
+    "legLength": "Thigh + shin bone lengths.",
+    "handSize": "Palm and finger dimensions (bones and mesh).",
+    "footSize": "Foot length/width (bones and mesh)."
+  },
+  "coordinateSystem": {
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z (character faces +Z)",
+    "characterLeft": "+X",
+    "authoring": "Blender +Z up, faces -Y; converted on export"
+  },
+  "geometry": {
+    "hash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+    "templateVertices": 15714,
+    "triangles": 31424,
+    "subdivisionLevels": 2,
+    "fitError": [
+      0.00292050433153534,
+      0.0002967932196045937
+    ],
+    "parts": [
+      {
+        "name": "Head",
+        "vertices": 5585,
+        "hash": "0c1cd6de0112106775decfcd07f1b76f107139ee0cef03e6456d373808f91606"
+      },
+      {
+        "name": "Neck",
+        "vertices": 288,
+        "hash": "110b701a50f85ea0e26424c2f1b9ee92abd0ab0dee4ebb73b49f2c69f7cb0d9f"
+      },
+      {
+        "name": "Torso",
+        "vertices": 502,
+        "hash": "52f664e40bc0a8ff6e68f6dc64855547f393c885f057a6019d32c1cf53d80b5f"
+      },
+      {
+        "name": "Pelvis",
+        "vertices": 416,
+        "hash": "36beb2e1423f606229005c6b4a2f269339b32c9c221cd6fc57b1e4e2f3b009dd"
+      },
+      {
+        "name": "UpperArm_L",
+        "vertices": 408,
+        "hash": "a729460cebe94b1e83697cf652d1ccf5aeaa8229e05f5226f05db06fcb63c917"
+      },
+      {
+        "name": "UpperArm_R",
+        "vertices": 408,
+        "hash": "0ce7a5ed6e1a9606aabe6e1eed2b572fe36ecf4c324582eccbac41cc30f52512"
+      },
+      {
+        "name": "Forearm_L",
+        "vertices": 408,
+        "hash": "81944e497dc8723bacbd0eea6a356f27cd54e23559f26489f74fe30e24450380"
+      },
+      {
+        "name": "Forearm_R",
+        "vertices": 408,
+        "hash": "f13c113f2bf4e8f23d53474da947a6236d08a03c51aba7f0dffeabd34b5f888c"
+      },
+      {
+        "name": "Hand_L",
+        "vertices": 2173,
+        "hash": "07fa97c7ebae7edee9fbbc7b4fadb078ebda4f5b3ee3d172bcaf9b67176a2288"
+      },
+      {
+        "name": "Hand_R",
+        "vertices": 2173,
+        "hash": "11f41380aef2216b4c93a235ba7b1fbb426edc61ac03e14a5d6258cc86d44dbf"
+      },
+      {
+        "name": "Thigh_L",
+        "vertices": 408,
+        "hash": "825b27949a5b867e0e5e754a69be13d43cec35215653eb0e13779889b0b719c2"
+      },
+      {
+        "name": "Thigh_R",
+        "vertices": 408,
+        "hash": "05a063dd98dd210b17743626d1a3fb7f34779d4d0c0fa309a76be43643875b57"
+      },
+      {
+        "name": "Shin_L",
+        "vertices": 504,
+        "hash": "4c74a0481f96c285c5662f5849579d7afd45823c8c116bf301ba2ad4410b4533"
+      },
+      {
+        "name": "Shin_R",
+        "vertices": 504,
+        "hash": "d1bd9e6f4484ace79ab9bd7a0f297ae95ae0602fd5fb3fbf58fda659419da6f8"
+      },
+      {
+        "name": "Foot_L",
+        "vertices": 749,
+        "hash": "5e4ef5bf83c5c795d6ebaf1d0406a57e54bd03968cbe158e10db06dcd5faf30f"
+      },
+      {
+        "name": "Foot_R",
+        "vertices": 749,
+        "hash": "5fe99d4e1521508765f83c69ce4f6ef551d30d92c514da4b2be89d12f3d6b106"
+      }
+    ]
+  },
+  "uvLayout": {
+    "id": "humanoid_uv",
+    "version": 1,
+    "sha256": "a0d908c078b7ba6a77ede85c73e5cacd601b44a658d2ef0f8e5659b58593cd6f",
+    "atlas": [
+      2048,
+      2048
+    ],
+    "paddingPx": 8,
+    "file": "template/uv/humanoid_uv_v1.bin",
+    "layoutImage": "textures/uv_layout_v1_2048.png",
+    "shared": true,
+    "note": "Shared by every character built on this template; never regenerated."
+  },
+  "skeleton": {
+    "hash": "e15a30ceed9399b3a390a3c97d92246fcd157b4f4799dbe21a08f2653756d142",
+    "weightsHash": "b87cc682306f280ad76972204dc93ac3fd127dfa067efd8b3ecd915541f8658c",
+    "maxInfluences": 4,
+    "bones": [
+      {
+        "name": "root",
+        "parent": null,
+        "deform": false,
+        "length": 0.24473
+      },
+      {
+        "name": "pelvis",
+        "parent": "root",
+        "deform": true,
+        "length": 0.08916
+      },
+      {
+        "name": "spine_01",
+        "parent": "pelvis",
+        "deform": true,
+        "length": 0.10832
+      },
+      {
+        "name": "spine_02",
+        "parent": "spine_01",
+        "deform": true,
+        "length": 0.10281
+      },
+      {
+        "name": "chest",
+        "parent": "spine_02",
+        "deform": true,
+        "length": 0.16032
+      },
+      {
+        "name": "neck",
+        "parent": "chest",
+        "deform": true,
+        "length": 0.14454
+      },
+      {
+        "name": "head",
+        "parent": "neck",
+        "deform": true,
+        "length": 0.21576
+      },
+      {
+        "name": "clavicle_L",
+        "parent": "chest",
+        "deform": true,
+        "length": 0.16471
+      },
+      {
+        "name": "upperarm_L",
+        "parent": "clavicle_L",
+        "deform": true,
+        "length": 0.27441
+      },
+      {
+        "name": "forearm_L",
+        "parent": "upperarm_L",
+        "deform": true,
+        "length": 0.23024
+      },
+      {
+        "name": "forearm_twist_L",
+        "parent": "forearm_L",
+        "deform": true,
+        "length": 0.11512,
+        "driven": {
+          "source": "hand_L",
+          "mode": "twist_half"
+        }
+      },
+      {
+        "name": "hand_L",
+        "parent": "forearm_L",
+        "deform": true,
+        "length": 0.10265
+      },
+      {
+        "name": "index_01_L",
+        "parent": "hand_L",
+        "deform": true,
+        "length": 0.04609
+      },
+      {
+        "name": "index_02_L",
+        "parent": "index_01_L",
+        "deform": true,
+        "length": 0.02828
+      },
+      {
+        "name": "index_03_L",
+        "parent": "index_02_L",
+        "deform": true,
+        "length": 0.02409
+      },
+      {
+        "name": "middle_01_L",
+        "parent": "hand_L",
+        "deform": true,
+        "length": 0.05028
+      },
+      {
+        "name": "middle_02_L",
+        "parent": "middle_01_L",
+        "deform": true,
+        "length": 0.03247
+      },
+      {
+        "name": "middle_03_L",
+        "parent": "middle_02_L",
+        "deform": true,
+        "length": 0.02619
+      },
+      {
+        "name": "ring_01_L",
+        "parent": "hand_L",
+        "deform": true,
+        "length": 0.04714
+      },
+      {
+        "name": "ring_02_L",
+        "parent": "ring_01_L",
+        "deform": true,
+        "length": 0.03038
+      },
+      {
+        "name": "ring_03_L",
+        "parent": "ring_02_L",
+        "deform": true,
+        "length": 0.02514
+      },
+      {
+        "name": "pinky_01_L",
+        "parent": "hand_L",
+        "deform": true,
+        "length": 0.03666
+      },
+      {
+        "name": "pinky_02_L",
+        "parent": "pinky_01_L",
+        "deform": true,
+        "length": 0.02304
+      },
+      {
+        "name": "pinky_03_L",
+        "parent": "pinky_02_L",
+        "deform": true,
+        "length": 0.022
+      },
+      {
+        "name": "thumb_01_L",
+        "parent": "hand_L",
+        "deform": true,
+        "length": 0.04923
+      },
+      {
+        "name": "thumb_02_L",
+        "parent": "thumb_01_L",
+        "deform": true,
+        "length": 0.03771
+      },
+      {
+        "name": "thumb_03_L",
+        "parent": "thumb_02_L",
+        "deform": true,
+        "length": 0.03247
+      },
+      {
+        "name": "thigh_L",
+        "parent": "pelvis",
+        "deform": true,
+        "length": 0.37405
+      },
+      {
+        "name": "shin_L",
+        "parent": "thigh_L",
+        "deform": true,
+        "length": 0.36618
+      },
+      {
+        "name": "foot_L",
+        "parent": "shin_L",
+        "deform": true,
+        "length": 0.14381
+      },
+      {
+        "name": "toe_L",
+        "parent": "foot_L",
+        "deform": true,
+        "length": 0.06914
+      },
+      {
+        "name": "shoulder_helper_L",
+        "parent": "clavicle_L",
+        "deform": true,
+        "length": 0.09604,
+        "driven": {
+          "source": "upperarm_L",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "elbow_helper_L",
+        "parent": "upperarm_L",
+        "deform": true,
+        "length": 0.08059,
+        "driven": {
+          "source": "forearm_L",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "hip_helper_L",
+        "parent": "pelvis",
+        "deform": true,
+        "length": 0.13092,
+        "driven": {
+          "source": "thigh_L",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "knee_helper_L",
+        "parent": "thigh_L",
+        "deform": true,
+        "length": 0.12816,
+        "driven": {
+          "source": "shin_L",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "clavicle_R",
+        "parent": "chest",
+        "deform": true,
+        "length": 0.16471
+      },
+      {
+        "name": "upperarm_R",
+        "parent": "clavicle_R",
+        "deform": true,
+        "length": 0.27441
+      },
+      {
+        "name": "forearm_R",
+        "parent": "upperarm_R",
+        "deform": true,
+        "length": 0.23024
+      },
+      {
+        "name": "forearm_twist_R",
+        "parent": "forearm_R",
+        "deform": true,
+        "length": 0.11512,
+        "driven": {
+          "source": "hand_R",
+          "mode": "twist_half"
+        }
+      },
+      {
+        "name": "hand_R",
+        "parent": "forearm_R",
+        "deform": true,
+        "length": 0.10265
+      },
+      {
+        "name": "index_01_R",
+        "parent": "hand_R",
+        "deform": true,
+        "length": 0.04609
+      },
+      {
+        "name": "index_02_R",
+        "parent": "index_01_R",
+        "deform": true,
+        "length": 0.02828
+      },
+      {
+        "name": "index_03_R",
+        "parent": "index_02_R",
+        "deform": true,
+        "length": 0.02409
+      },
+      {
+        "name": "middle_01_R",
+        "parent": "hand_R",
+        "deform": true,
+        "length": 0.05028
+      },
+      {
+        "name": "middle_02_R",
+        "parent": "middle_01_R",
+        "deform": true,
+        "length": 0.03247
+      },
+      {
+        "name": "middle_03_R",
+        "parent": "middle_02_R",
+        "deform": true,
+        "length": 0.02619
+      },
+      {
+        "name": "ring_01_R",
+        "parent": "hand_R",
+        "deform": true,
+        "length": 0.04714
+      },
+      {
+        "name": "ring_02_R",
+        "parent": "ring_01_R",
+        "deform": true,
+        "length": 0.03038
+      },
+      {
+        "name": "ring_03_R",
+        "parent": "ring_02_R",
+        "deform": true,
+        "length": 0.02514
+      },
+      {
+        "name": "pinky_01_R",
+        "parent": "hand_R",
+        "deform": true,
+        "length": 0.03666
+      },
+      {
+        "name": "pinky_02_R",
+        "parent": "pinky_01_R",
+        "deform": true,
+        "length": 0.02304
+      },
+      {
+        "name": "pinky_03_R",
+        "parent": "pinky_02_R",
+        "deform": true,
+        "length": 0.022
+      },
+      {
+        "name": "thumb_01_R",
+        "parent": "hand_R",
+        "deform": true,
+        "length": 0.04923
+      },
+      {
+        "name": "thumb_02_R",
+        "parent": "thumb_01_R",
+        "deform": true,
+        "length": 0.03771
+      },
+      {
+        "name": "thumb_03_R",
+        "parent": "thumb_02_R",
+        "deform": true,
+        "length": 0.03247
+      },
+      {
+        "name": "thigh_R",
+        "parent": "pelvis",
+        "deform": true,
+        "length": 0.37405
+      },
+      {
+        "name": "shin_R",
+        "parent": "thigh_R",
+        "deform": true,
+        "length": 0.36618
+      },
+      {
+        "name": "foot_R",
+        "parent": "shin_R",
+        "deform": true,
+        "length": 0.14381
+      },
+      {
+        "name": "toe_R",
+        "parent": "foot_R",
+        "deform": true,
+        "length": 0.06914
+      },
+      {
+        "name": "shoulder_helper_R",
+        "parent": "clavicle_R",
+        "deform": true,
+        "length": 0.09604,
+        "driven": {
+          "source": "upperarm_R",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "elbow_helper_R",
+        "parent": "upperarm_R",
+        "deform": true,
+        "length": 0.08059,
+        "driven": {
+          "source": "forearm_R",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "hip_helper_R",
+        "parent": "pelvis",
+        "deform": true,
+        "length": 0.13092,
+        "driven": {
+          "source": "thigh_R",
+          "mode": "half"
+        }
+      },
+      {
+        "name": "knee_helper_R",
+        "parent": "thigh_R",
+        "deform": true,
+        "length": 0.12816,
+        "driven": {
+          "source": "shin_R",
+          "mode": "half"
+        }
+      }
+    ],
+    "bendConvention": {
+      "spine/neck/head": "+X rotation bends forward (flexion)",
+      "clavicle": "+X rotation moves the shoulder forward (protraction)",
+      "upperarm": "+X rotation swings the arm forward (shoulder flexion)",
+      "forearm": "+X rotation bends the elbow (flexion)",
+      "forearm_twist": "rotation about +Y only; carries ~50% of hand twist",
+      "hand": "+X rotation flexes the wrist toward the palm; local +Z is the palm normal",
+      "fingers": "+X rotation curls the finger toward the palm",
+      "thumb": "+X rotation curls the thumb across the palm",
+      "thigh": "+X rotation swings the leg forward (hip flexion)",
+      "shin": "+X rotation bends the knee (flexion)",
+      "foot": "+X rotation lifts the toes (dorsiflexion)",
+      "toe": "+X rotation lifts the toes (extension)"
+    },
+    "driverRules": {
+      "half": "basis = slerp(identity, source.basis, 0.5); helper shares the source's parent-relative rest frame",
+      "twist_half": "basis = rotation about +Y by 50% of the source's swing-twist angle about +Y"
+    },
+    "exportedJoints": 63
+  },
+  "attachments": {
+    "socket_hand_L_prop": {
+      "parentBone": "hand_L",
+      "doc": "Hand prop: +Y = grip axis exiting the thumb/index side, +Z = out of the palm, origin = centre of a closed power grip (handle radius 16 mm at scale 1).",
+      "gltfNode": {
+        "parentNode": "hand_L",
+        "translation": [
+          -0.004189819097518921,
+          0.08379645645618439,
+          0.03561355546116829
+        ],
+        "rotation": [
+          -1.3939459364564755e-08,
+          -1.4482091081902126e-08,
+          0.5969306230545044,
+          0.8022928833961487
+        ]
+      }
+    },
+    "socket_hand_R_prop": {
+      "parentBone": "hand_R",
+      "doc": "Hand prop: +Y = grip axis exiting the thumb/index side, +Z = out of the palm, origin = centre of a closed power grip (handle radius 16 mm at scale 1).",
+      "gltfNode": {
+        "parentNode": "hand_R",
+        "translation": [
+          0.0041897594928741455,
+          0.08379646390676498,
+          0.035613469779491425
+        ],
+        "rotation": [
+          -5.236937106189998e-09,
+          1.4743034348896344e-08,
+          -0.5969306230545044,
+          0.8022928237915039
+        ]
+      }
+    },
+    "socket_head_accessory": {
+      "parentBone": "head",
+      "doc": "Head accessory: origin at the crown, +Y up, +Z facing forward (same as the character).",
+      "gltfNode": {
+        "parentNode": "head",
+        "translation": [
+          1.6159423252476624e-16,
+          0.21575593948364258,
+          0
+        ],
+        "rotation": [
+          3.774895063202166e-08,
+          -5.960465188081798e-08,
+          9.786456042250313e-15,
+          1
+        ]
+      }
+    },
+    "socket_back_accessory": {
+      "parentBone": "chest",
+      "doc": "Back accessory: origin between the shoulder blades on the skin, +Y up, +Z pointing away from the back.",
+      "gltfNode": {
+        "parentNode": "chest",
+        "translation": [
+          4.002690179305546e-09,
+          0.02096136473119259,
+          -0.11310148984193802
+        ],
+        "rotation": [
+          4.36025295869058e-08,
+          0.9999813437461853,
+          0.006106138229370117,
+          1.7961715670367084e-08
+        ]
+      }
+    }
+  },
+  "material": {
+    "name": "M_Body",
+    "mode": "blank",
+    "baseColorFactor": [
+      0.55,
+      0.55,
+      0.55,
+      1
+    ],
+    "roughness": 0.85,
+    "metallic": 0,
+    "baseColorTexture": null
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "frames": 121,
+      "fps": 30,
+      "duration": 4.0,
+      "loop": true
+    },
+    {
+      "name": "reach_grip_handle",
+      "frames": 127,
+      "fps": 30,
+      "duration": 4.2,
+      "loop": false,
+      "side": "R",
+      "grip": {
+        "index": 0.475,
+        "middle": 0.688,
+        "ring": 0.675,
+        "pinky": 0.588,
+        "thumb": [
+          0.0,
+          40.0,
+          1.0
+        ]
+      },
+      "markers": {
+        "contact": 44,
+        "gripClosed": 56,
+        "release": 80,
+        "end": 126
+      },
+      "prop": "TestHandle"
+    },
+    {
+      "name": "_qa_pose_cycle",
+      "frames": 239,
+      "fps": 30,
+      "duration": 7.9333,
+      "loop": false,
+      "markers": {
+        "arms_raised": 10,
+        "elbows_bent": 44,
+        "hands_near_face": 78,
+        "wrist_rotation_finger_curl": 112,
+        "torso_twist": 146,
+        "head_turn": 180,
+        "crouch": 214
+      },
+      "note": "test poses held for 14 frames each"
+    },
+    {
+      "name": "walk_in_place",
+      "frames": 35,
+      "fps": 30,
+      "duration": 1.1333,
+      "loop": true,
+      "inPlace": true,
+      "stride_m": 0.5678,
+      "cycle_s": 1.1333,
+      "speed_mps": 0.808,
+      "note": "treadmill cycle: planted feet slide backward at the locomotion speed; drive root motion in the game at speed_mps"
+    },
+    {
+      "name": "run_in_place",
+      "frames": 23,
+      "fps": 30,
+      "duration": 0.7333,
+      "loop": true,
+      "inPlace": true,
+      "stride_m": 1.0279,
+      "cycle_s": 0.7333,
+      "speed_mps": 3.504,
+      "note": "treadmill cycle: planted feet slide backward at the locomotion speed; drive root motion in the game at speed_mps"
+    },
+    {
+      "name": "jump_in_place",
+      "frames": 43,
+      "fps": 30,
+      "duration": 1.4,
+      "loop": false,
+      "inPlace": true,
+      "markers": {
+        "takeoff": 13,
+        "apex": 19,
+        "land": 25,
+        "end": 42
+      },
+      "airborne_frames": [
+        14,
+        24
+      ]
+    },
+    {
+      "name": "float_idle",
+      "frames": 91,
+      "fps": 30,
+      "duration": 3.0,
+      "loop": true,
+      "inPlace": true,
+      "pelvisLift_m": 0.294
+    },
+    {
+      "name": "float_monk",
+      "frames": 85,
+      "fps": 30,
+      "duration": 2.8,
+      "loop": false,
+      "markers": {
+        "liftOff": 18,
+        "seated": 68,
+        "end": 84
+      },
+      "followWith": "float_monk_loop"
+    },
+    {
+      "name": "float_monk_loop",
+      "frames": 121,
+      "fps": 30,
+      "duration": 4.0,
+      "loop": true,
+      "inPlace": true
+    },
+    {
+      "name": "wave",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": false,
+      "markers": {
+        "end": 60
+      }
+    },
+    {
+      "name": "cheer",
+      "frames": 67,
+      "fps": 30,
+      "duration": 2.2,
+      "loop": false,
+      "markers": {
+        "armsUp": 10,
+        "end": 66
+      }
+    },
+    {
+      "name": "sword_2h_idle",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": true,
+      "prop": "Sword2H",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L",
+        "gripRadius": 0.016
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0
+    },
+    {
+      "name": "sword_2h_slash",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": false,
+      "prop": "Sword2H",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L",
+        "gripRadius": 0.016
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "markers": {
+        "windup": 12,
+        "impact": 24,
+        "recover": 44,
+        "end": 60
+      }
+    },
+    {
+      "name": "staff_idle",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": true,
+      "prop": "Staff",
+      "attach": "socket_hand_R_prop",
+      "support": null,
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "buttMarker": "butt",
+      "note": "staff planted on the ground"
+    },
+    {
+      "name": "staff_stomp",
+      "frames": 41,
+      "fps": 30,
+      "duration": 1.3333,
+      "loop": false,
+      "prop": "Staff",
+      "attach": "socket_hand_R_prop",
+      "support": null,
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "markers": {
+        "lift": 10,
+        "impact": 18,
+        "end": 40
+      },
+      "buttMarker": "butt",
+      "note": "lift the staff and slam its butt on the ground; the free hand thrusts forward on impact (spell cast)"
+    },
+    {
+      "name": "pistol_aim",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": true,
+      "prop": "Pistol",
+      "attach": "socket_hand_R_prop",
+      "support": null,
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0
+    },
+    {
+      "name": "pistol_fire",
+      "frames": 45,
+      "fps": 30,
+      "duration": 1.4667,
+      "loop": false,
+      "prop": "Pistol",
+      "attach": "socket_hand_R_prop",
+      "support": null,
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "markers": {
+        "shot": [
+          8
+        ],
+        "end": 44
+      },
+      "muzzleMarker": "muzzle",
+      "recoil": {
+        "muzzleClimb_deg": 30.0,
+        "kickBack_m": 0.073
+      }
+    },
+    {
+      "name": "pistol_aim_2h",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": true,
+      "prop": "Pistol",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L_2h",
+        "gripRadius": 0.0377,
+        "gripCenter": [
+          0.0,
+          -0.006,
+          0.004
+        ]
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0
+    },
+    {
+      "name": "pistol_fire_2h",
+      "frames": 41,
+      "fps": 30,
+      "duration": 1.3333,
+      "loop": false,
+      "prop": "Pistol",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L_2h",
+        "gripRadius": 0.0377,
+        "gripCenter": [
+          0.0,
+          -0.006,
+          0.004
+        ]
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "markers": {
+        "shot": [
+          8
+        ],
+        "end": 40
+      },
+      "muzzleMarker": "muzzle",
+      "recoil": {
+        "muzzleClimb_deg": 20.0,
+        "kickBack_m": 0.049
+      }
+    },
+    {
+      "name": "rifle_aim",
+      "frames": 61,
+      "fps": 30,
+      "duration": 2.0,
+      "loop": true,
+      "prop": "Rifle",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L",
+        "gripRadius": 0.016
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0
+    },
+    {
+      "name": "rifle_fire",
+      "frames": 45,
+      "fps": 30,
+      "duration": 1.4667,
+      "loop": false,
+      "prop": "Rifle",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L",
+        "gripRadius": 0.016
+      },
+      "grip": {
+        "R": {
+          "index": 0.4625,
+          "middle": 0.6875,
+          "ring": 0.675,
+          "pinky": 0.5875,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      },
+      "propBodyPenetration_m": 0.0,
+      "markers": {
+        "shots": [
+          6,
+          11,
+          16
+        ],
+        "end": 44
+      },
+      "muzzleMarker": "muzzle",
+      "recoil": {
+        "muzzleClimbPerShot_deg": 9.0,
+        "kickBack_m": 0.044
+      }
+    },
+    {
+      "name": "press_detonator",
+      "frames": 91,
+      "fps": 30,
+      "duration": 3.0,
+      "loop": false,
+      "prop": "Detonator",
+      "attach": "socket_hand_R_prop",
+      "buttonMarker": "button",
+      "markers": {
+        "raised": 24,
+        "contact": 38,
+        "pressed": 42,
+        "released": 58,
+        "end": 90
+      },
+      "thumb": {
+        "hover": [
+          -7.1875,
+          -32.75,
+          0.48874999999999996
+        ],
+        "contact": [
+          -5.4375,
+          -43.375,
+          0.9087500000000001
+        ],
+        "pressed": [
+          2.5,
+          -35.75,
+          0.7412499999999999
+        ],
+        "fitCost": [
+          0.0046,
+          0.0053,
+          0.0055
+        ]
+      },
+      "grip": {
+        "R": {
+          "index": 0.4,
+          "middle": 0.675,
+          "ring": 0.6625000000000001,
+          "pinky": 0.5625,
+          "thumb": [
+            0,
+            50,
+            1.0
+          ]
+        }
+      }
+    }
+  ],
+  "testProps": {
+    "file": "test_props.glb",
+    "handle": {
+      "center": [
+        -0.24898395674063023,
+        -0.3563304120827895,
+        0.9375797128472869
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": 0.01566287525638635,
+      "length": 0.13705015849338056
+    },
+    "note": "Placement in Blender world coords (Z up); the GLB is Y-up. Hand-held props (weapons, detonator) live in props/weapons.glb."
+  },
+  "files": {
+    "glb": "stocky_test.glb",
+    "blend": "stocky_test.blend",
+    "testProps": "test_props.glb",
+    "glbSha256": "f09c13d123d60a80007bbaf5655349a075cb688302822e4472f8c858fb40aa68"
+  },
+  "exportCheck": {
+    "nodes": 84,
+    "meshNodes": [
+      "Foot_L",
+      "Foot_R",
+      "Forearm_L",
+      "Forearm_R",
+      "Hand_L",
+      "Hand_R",
+      "Head",
+      "Neck",
+      "Pelvis",
+      "Shin_L",
+      "Shin_R",
+      "Thigh_L",
+      "Thigh_R",
+      "Torso",
+      "UpperArm_L",
+      "UpperArm_R"
+    ],
+    "skins": 1,
+    "joints": 63,
+    "jointNames": [
+      "root",
+      "pelvis",
+      "spine_01",
+      "spine_02",
+      "chest",
+      "neck",
+      "head",
+      "clavicle_L",
+      "upperarm_L",
+      "forearm_L",
+      "forearm_twist_L",
+      "hand_L",
+      "index_01_L",
+      "index_02_L",
+      "index_03_L",
+      "middle_01_L",
+      "middle_02_L",
+      "middle_03_L",
+      "ring_01_L",
+      "ring_02_L",
+      "ring_03_L",
+      "pinky_01_L",
+      "pinky_02_L",
+      "pinky_03_L",
+      "thumb_01_L",
+      "thumb_02_L",
+      "thumb_03_L",
+      "elbow_helper_L",
+      "shoulder_helper_L",
+      "clavicle_R",
+      "upperarm_R",
+      "forearm_R",
+      "forearm_twist_R",
+      "hand_R",
+      "index_01_R",
+      "index_02_R",
+      "index_03_R",
+      "middle_01_R",
+      "middle_02_R",
+      "middle_03_R",
+      "ring_01_R",
+      "ring_02_R",
+      "ring_03_R",
+      "pinky_01_R",
+      "pinky_02_R",
+      "pinky_03_R",
+      "thumb_01_R",
+      "thumb_02_R",
+      "thumb_03_R",
+      "elbow_helper_R",
+      "shoulder_helper_R",
+      "thigh_L",
+      "shin_L",
+      "foot_L",
+      "toe_L",
+      "knee_helper_L",
+      "hip_helper_L",
+      "thigh_R",
+      "shin_R",
+      "foot_R",
+      "toe_R",
+      "knee_helper_R",
+      "hip_helper_R"
+    ],
+    "sockets": {
+      "socket_head_accessory": {
+        "parentNode": "head",
+        "translation": [
+          1.6159423252476624e-16,
+          0.21575593948364258,
+          0
+        ],
+        "rotation": [
+          3.774895063202166e-08,
+          -5.960465188081798e-08,
+          9.786456042250313e-15,
+          1
+        ]
+      },
+      "socket_hand_L_prop": {
+        "parentNode": "hand_L",
+        "translation": [
+          -0.004189819097518921,
+          0.08379645645618439,
+          0.03561355546116829
+        ],
+        "rotation": [
+          -1.3939459364564755e-08,
+          -1.4482091081902126e-08,
+          0.5969306230545044,
+          0.8022928833961487
+        ]
+      },
+      "socket_hand_R_prop": {
+        "parentNode": "hand_R",
+        "translation": [
+          0.0041897594928741455,
+          0.08379646390676498,
+          0.035613469779491425
+        ],
+        "rotation": [
+          -5.236937106189998e-09,
+          1.4743034348896344e-08,
+          -0.5969306230545044,
+          0.8022928237915039
+        ]
+      },
+      "socket_back_accessory": {
+        "parentNode": "chest",
+        "translation": [
+          4.002690179305546e-09,
+          0.02096136473119259,
+          -0.11310148984193802
+        ],
+        "rotation": [
+          4.36025295869058e-08,
+          0.9999813437461853,
+          0.006106138229370117,
+          1.7961715670367084e-08
+        ]
+      }
+    },
+    "animations": [
+      {
+        "name": "_qa_pose_cycle",
+        "duration": 7.9333,
+        "channels": 189
+      },
+      {
+        "name": "cheer",
+        "duration": 2.2,
+        "channels": 189
+      },
+      {
+        "name": "float_idle",
+        "duration": 3,
+        "channels": 189
+      },
+      {
+        "name": "float_monk",
+        "duration": 2.8,
+        "channels": 189
+      },
+      {
+        "name": "float_monk_loop",
+        "duration": 4,
+        "channels": 189
+      },
+      {
+        "name": "idle",
+        "duration": 4,
+        "channels": 189
+      },
+      {
+        "name": "jump_in_place",
+        "duration": 1.4,
+        "channels": 189
+      },
+      {
+        "name": "pistol_aim",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "pistol_aim_2h",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "pistol_fire",
+        "duration": 1.4667,
+        "channels": 189
+      },
+      {
+        "name": "pistol_fire_2h",
+        "duration": 1.3333,
+        "channels": 189
+      },
+      {
+        "name": "press_detonator",
+        "duration": 3,
+        "channels": 189
+      },
+      {
+        "name": "reach_grip_handle",
+        "duration": 4.2,
+        "channels": 189
+      },
+      {
+        "name": "rifle_aim",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "rifle_fire",
+        "duration": 1.4667,
+        "channels": 189
+      },
+      {
+        "name": "run_in_place",
+        "duration": 0.7333,
+        "channels": 189
+      },
+      {
+        "name": "staff_idle",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "staff_stomp",
+        "duration": 1.3333,
+        "channels": 189
+      },
+      {
+        "name": "sword_2h_idle",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "sword_2h_slash",
+        "duration": 2,
+        "channels": 189
+      },
+      {
+        "name": "walk_in_place",
+        "duration": 1.1333,
+        "channels": 189
+      },
+      {
+        "name": "wave",
+        "duration": 2,
+        "channels": 189
+      }
+    ],
+    "materials": [
+      "M_Body"
+    ],
+    "images": []
+  },
+  "frozenAt": "2026-09-30T12:38:30+00:00",
+  "freezeRecord": {
+    "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+    "uvSha256": "a0d908c078b7ba6a77ede85c73e5cacd601b44a658d2ef0f8e5659b58593cd6f",
+    "glbSha256": "f09c13d123d60a80007bbaf5655349a075cb688302822e4472f8c858fb40aa68",
+    "blendSha256": "2255981968a9217273dbdde0b51dc081221106a72bac641bb57b70a8d9ebee11"
+  },
+  "projection": {
+    "references": "references/stocky_test/cameras.json",
+    "views": [
+      "front",
+      "back",
+      "left",
+      "right",
+      "front_three_quarter"
+    ],
+    "coverage": {
+      "none": 0.0314,
+      "grazing": 0.068,
+      "one": 0.3873,
+      "multi": 0.5133
+    }
+  },
+  "animationSet": {
+    "version": 5,
+    "clips": [
+      "idle",
+      "reach_grip_handle",
+      "_qa_pose_cycle",
+      "walk_in_place",
+      "run_in_place",
+      "jump_in_place",
+      "float_idle",
+      "float_monk",
+      "float_monk_loop",
+      "wave",
+      "cheer",
+      "sword_2h_idle",
+      "sword_2h_slash",
+      "staff_idle",
+      "staff_stomp",
+      "pistol_aim",
+      "pistol_fire",
+      "pistol_aim_2h",
+      "pistol_fire_2h",
+      "rifle_aim",
+      "rifle_fire",
+      "press_detonator"
+    ],
+    "weaponProps": "props/weapons.glb"
+  },
+  "animationRevisions": [
+    {
+      "date": "2026-09-30T14:34:13+00:00",
+      "clipSetVersion": 2,
+      "clips": 20,
+      "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+      "note": "animations re-baked; geometry/UV/skin/skeleton verified unchanged"
+    },
+    {
+      "date": "2026-09-30T16:01:14+00:00",
+      "clipSetVersion": 3,
+      "clips": 20,
+      "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+      "note": "animations re-baked; geometry/UV/skin/skeleton verified unchanged"
+    },
+    {
+      "date": "2026-09-30T17:23:07+00:00",
+      "clipSetVersion": 4,
+      "clips": 22,
+      "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+      "note": "animations re-baked; geometry/UV/skin/skeleton verified unchanged"
+    },
+    {
+      "date": "2026-09-30T18:49:13+00:00",
+      "clipSetVersion": 5,
+      "clips": 22,
+      "geometryHash": "80ce3805d766e6a0301b6d1633a85a1f8638f25b5b1f0e0671fb6f508ed12309",
+      "note": "animations re-baked; geometry/UV/skin/skeleton verified unchanged"
+    }
+  ],
+  "skin": {
+    "version": 2
+  },
+  "skinRevisions": [
+    {
+      "date": "2026-09-30T17:00:01+00:00",
+      "from": 1,
+      "to": 2,
+      "weightsHash": "b87cc682306f280ad76972204dc93ac3fd127dfa067efd8b3ecd915541f8658c",
+      "note": "vertex weights replaced (shoulder/armpit field); geometry, UVs and skeleton verified unchanged"
+    }
+  ]
+}

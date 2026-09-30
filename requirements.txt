@@ -1,0 +1,5 @@
+# Blender is used as a Python module (headless). Any Blender 4.2 LTS install also works:
+#   blender --background --python tools/build.py -- <command> ...
+bpy==4.2.0
+numpy<2
+pillow>=10

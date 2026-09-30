@@ -1,0 +1,13 @@
+{
+ "height": 1.35,
+ "headSize": 1.22,
+ "shoulderWidth": 1.25,
+ "torsoWidth": 1.3,
+ "torsoDepth": 1.3,
+ "bellySize": 1.7,
+ "armLength": 0.9,
+ "legLength": 0.8,
+ "handSize": 1.25,
+ "footSize": 1.2,
+ "limbGirth": 1.2
+}
