@@ -13,6 +13,24 @@ const clips = arg('clips') ? arg('clips').split(',') : null;
 const out = path.resolve(arg('out', which === 'knight' ? 'characters2d/aureate_knight' : `characters2d/${which}_2d`));
 const pageUrl = which === 'knight' ? 'viewer/knight.html?hideui=1' : `viewer/index.html?hideui=1&character=${which}`;
 
+const { stringifyProject, validateProject, computeInverseBinds } = await import('../viewer/js/art2d/schema.js');
+const { addNativeDemos } = await import('../viewer/js/art2d/demos.js');
+function finish(project) {
+  project.clips = project.clips.filter((c) => c.source?.type !== 'native2d');
+  project.poses = [];
+  addNativeDemos(project);
+  computeInverseBinds(project);
+  const imgs = new Set(); const walk = (d, pre = '') => { for (const f of fs.readdirSync(path.join(out, d))) { const r = path.join(d, f); if (fs.statSync(path.join(out, r)).isDirectory()) walk(r); else imgs.add(r.split(path.sep).join('/')); } };
+  walk('.');
+  const rep = validateProject(project, { images: imgs });
+  if (rep.errors.length) { console.log(rep.errors.slice(0, 20).join('\n')); throw new Error(`${rep.errors.length} validation errors`); }
+  fs.writeFileSync(path.join(out, 'character.json'), stringifyProject(project));
+  console.log(`wrote ${path.join(out, 'character.json')}: ${project.bones.length} bones, ${project.slots.length} slots, ${Object.keys(project.attachments).length} attachments, ${project.clips.length} clips (${project.clips.filter((c) => c.source?.type === 'native2d').length} native 2D), ${project.poses.length} poses, ${rep.warnings.length} warnings`);
+}
+if (process.argv.includes('--demos-only')) {
+  finish(JSON.parse(fs.readFileSync(path.join(out, 'character.json'), 'utf8')));
+  process.exit(0);
+}
 fs.rmSync(path.join(out, 'images'), { recursive: true, force: true });
 fs.mkdirSync(path.join(out, 'images'), { recursive: true });
 const server = await startServer(0);
@@ -48,6 +66,5 @@ if (which === 'knight' && fs.existsSync(path.join(out, 'reference/knight-concept
   project.editor.reference = { path: 'reference/knight-concept.png', visible: false, opacity: 0.45, x: 0, y: 0, scale: 1, exportable: false,
     note: 'Concept art shown behind the rig for tracing; excluded from every export by default.' };
 }
-fs.writeFileSync(path.join(out, 'character.json'), JSON.stringify(project, null, 1) + '\n');
-console.log(`wrote ${path.join(out, 'character.json')}: ${project.bones.length} bones, ${project.slots.length} slots, ${Object.keys(project.attachments).length} attachments, ${project.clips.length} clips`);
+finish(project);
 await browser.close(); server.close();

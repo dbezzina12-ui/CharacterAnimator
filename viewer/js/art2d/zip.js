@@ -20,7 +20,7 @@ export function writeZip(files) {
   let offset = 0;
   const DOS_TIME = 0, DOS_DATE = (2026 - 1980) << 9 | 1 << 5 | 1;
   for (const f of files) {
-    const name = enc.encode(f.name), data = toBytes(f.data), crc = crc32(data);
+    const name = enc.encode(f.name ?? f.path), data = toBytes(f.data), crc = crc32(data);
     const h = new DataView(new ArrayBuffer(30));
     h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
     h.setUint16(10, DOS_TIME, true); h.setUint16(12, DOS_DATE, true); h.setUint32(14, crc, true);

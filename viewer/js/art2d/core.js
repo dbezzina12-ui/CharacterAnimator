@@ -164,6 +164,18 @@ export class Rig {
     this.constraints = (P.constraints || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     this.hands = P.hands || {};
     this.clips = new Map((P.clips || []).map((c) => [c.name, c]));
+    this.setSkin(this.skinId || 'default');
+  }
+
+  /**
+   * Skins are attachment replacement maps: { id, replace: { attachmentId: replacementId } }. They apply to
+   * setup AND keyed attachments, so a repainted skin inherits every clip's hand/prop swaps.
+   */
+  setSkin(id) {
+    const sk = (this.project.skins || []).find((s) => s.id === id);
+    this.skinId = sk ? id : 'default';
+    this.skinMap = sk?.replace || {};
+    return this.skinId;
   }
 
   bone(id) { return this.bones[this.boneIndex.get(id)]; }
@@ -265,6 +277,7 @@ export class Rig {
       }
       if (opts.props && s.id in opts.props) att = opts.props[s.id];
       if (opts.slotAttachments && s.id in opts.slotAttachments) att = opts.slotAttachments[s.id];
+      if (att && this.skinMap[att]) att = this.skinMap[att];
       slotAttachment[i] = att; slotColor[i] = col;
     }
     this.updateWorld();

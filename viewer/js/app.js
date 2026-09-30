@@ -622,5 +622,14 @@ async function boot() {
   if (params.get('mode')) window.viewer.setMaterialMode(params.get('mode'));
   if (params.get('view')) setView(params.get('view'));
   window.viewer.ready = true;
+  // 2D artwork mode (separate module; the 3D pipeline above is untouched by it)
+  if (!params.has('buildKnight')) {
+    try {
+      const m = await import('./art2d/editor.js');
+      const api = m.installModeSwitch(window.viewer, { resize, playClip });
+      if (params.get('art') === '2d') await api.setMode('2d');
+    } catch (e) { console.warn('2D artwork mode unavailable:', e); }
+  }
+  window.viewer.ready2d = true;
 }
 boot().catch((e) => { status('ERROR: ' + e.message); console.error(e); window.viewer.error = String(e); });

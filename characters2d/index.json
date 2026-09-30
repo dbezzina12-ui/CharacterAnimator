@@ -1,0 +1,6 @@
+{
+  "schema": "gamboligy.character2d-index/1.0",
+  "projects": [
+    { "id": "aureate_knight_2d", "displayName": "Aureate Knight — 2D starter skin (3D-derived)", "path": "characters2d/aureate_knight/character.json", "source3d": "aureate_knight" }
+  ]
+}

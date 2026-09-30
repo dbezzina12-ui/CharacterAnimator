@@ -41,7 +41,12 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
   }
   const imgIds = new Set(Object.keys(p.images));
   for (const [id, img] of Object.entries(p.images)) {
-    if (!img.path) E(`image ${id}: no path`);
+    if (img.page !== undefined) {                 // runtime package: a rectangle of an atlas page
+      const pg = p.atlas?.pages?.[img.page];
+      if (!pg) E(`image ${id}: atlas page ${img.page} is missing`);
+      else if (images && !(images.has ? images.has(pg.path) : images[pg.path])) E(`missing atlas page file ${pg.path}`);
+      else if (img.x < 0 || img.y < 0 || img.x + img.w > pg.w || img.y + img.h > pg.h) E(`image ${id}: rectangle lies outside atlas page ${img.page}`);
+    } else if (!img.path) E(`image ${id}: no path`);
     else if (/^(blob:|data:|file:|[a-zA-Z]:\\|\/)/.test(img.path)) E(`image ${id}: "${img.path}" is not a project-relative path`);
     else if (images && !(images.has ? images.has(img.path) : images[img.path])) E(`missing image file ${img.path} (image ${id})`);
     if (!(img.w > 0 && img.h > 0)) E(`image ${id}: width/height missing`);
@@ -82,6 +87,10 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
       for (const [s, tr] of Object.entries(layer.slots || {})) for (const a of tr.attachment?.v || []) if (a && !p.attachments[a]) E(`clip ${c.name}: slot ${s} keys missing attachment ${a}`);
     }
   }
+  for (const sk of p.skins || []) for (const [a, b] of Object.entries(sk.replace || {})) {
+    if (!p.attachments[a]) E(`skin ${sk.id}: replaces unknown attachment ${a}`);
+    if (!p.attachments[b]) E(`skin ${sk.id}: replacement attachment ${b} is missing`);
+  }
   for (const c of p.constraints || []) {
     for (const b of [...(c.bones || []), c.end, c.effector, c.target?.bone].filter(Boolean)) if (!bones.has(b)) E(`constraint ${c.id}: bone ${b} does not exist`);
   }
@@ -119,5 +128,29 @@ export function runtimeSubset(project, { atlas = null } = {}) {
   for (const k of keep) if (project[k] !== undefined) out[k] = JSON.parse(JSON.stringify(project[k]));
   out.clips = out.clips.map((c) => ({ name: c.name, duration: c.duration, loop: !!c.loop, fps: c.fps, meta: c.meta, tracks: c.tracks, corrections: c.corrections, status: c.status }));
   if (atlas) out.atlas = atlas;
+  if (out.artView) out.artView = { ...out.artView };          // metadata only; runtimes never need the 3D camera
+  for (const c of out.clips) if (c.corrections) ensureEmptyDrop(c);
   return out;
+}
+
+function ensureEmptyDrop(c) {
+  const k = c.corrections, empty = (o) => !o || (Array.isArray(o) ? !o.length : !Object.keys(o).length);
+  if (empty(k.bones) && empty(k.slots) && empty(k.drawOrder?.t) && empty(k.deform) && empty(k.hands) && empty(k.constraints) && empty(k.events)) delete c.corrections;
+}
+
+/** Project JSON for files: objects indented, arrays of numbers/strings kept on one line (diff-friendly, compact). */
+export function stringifyProject(value) {
+  const walk = (v, ind) => {
+    if (Array.isArray(v)) {
+      if (v.every((x) => x === null || typeof x !== 'object')) return JSON.stringify(v);
+      return '[\n' + v.map((x) => ind + ' ' + walk(x, ind + ' ')).join(',\n') + '\n' + ind + ']';
+    }
+    if (v && typeof v === 'object') {
+      const keys = Object.keys(v).filter((k) => v[k] !== undefined);
+      if (!keys.length) return '{}';
+      return '{\n' + keys.map((k) => ind + ' ' + JSON.stringify(k) + ': ' + walk(v[k], ind + ' ')).join(',\n') + '\n' + ind + '}';
+    }
+    return JSON.stringify(v);
+  };
+  return walk(value, '') + '\n';
 }

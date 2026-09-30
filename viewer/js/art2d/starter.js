@@ -601,7 +601,10 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     for (const ck of captureKeys.filter((c) => c.clip === name)) tracks.slots[ck.slot] = { attachment: { t: [0], v: [ck.attachment] } };
     if (SUPPORT_CLIPS[name]) tracks.constraints.support_L = { t: [0], v: [1] };
     if (deforms.length && mantleLookup && deforms.some(([, v]) => v.some((x) => Math.abs(x) > 0.05))) {
-      tracks.deform[mantleLookup.att] = { t: deforms.map(([t]) => +t.toFixed(4)), v: deforms.map(([, v]) => v) };
+      // keep only the keys needed to stay within 0.3 px of the sampled flutter
+      const dt = deforms.map(([t]) => t), chans = deforms[0][1].map((_, k) => deforms.map(([, v]) => v[k]));
+      const idx = reduceKeys(dt, chans, 0.3);
+      tracks.deform[mantleLookup.att] = { t: idx.map((j) => +dt[j].toFixed(4)), v: idx.map((j) => deforms[j][1]) };
     }
     for (const [k, val] of Object.entries(meta.markers || {})) {
       if (k === 'end') continue;
@@ -646,7 +649,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       });
       const wx = e[0] * dx + e[4] * dy + e[8] * dz, wy = e[1] * dx + e[5] * dy + e[9] * dz, wz = e[2] * dx + e[6] * dy + e[10] * dz;
       const d2 = cam.dir(new THREE.Vector3(wx, wy, wz));
-      out[v * 2] = +(c * d2[0] - s * d2[1]).toFixed(2); out[v * 2 + 1] = +(s * d2[0] + c * d2[1]).toFixed(2);
+      out[v * 2] = +(c * d2[0] - s * d2[1]).toFixed(1); out[v * 2 + 1] = +(s * d2[0] + c * d2[1]).toFixed(1);
     });
     return out;
   }
