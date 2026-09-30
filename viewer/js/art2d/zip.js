@@ -50,7 +50,8 @@ async function inflateRaw(bytes) {
     const buf = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
     return new Uint8Array(buf);
   }
-  const zlib = await import('node:zlib');
+  const name = 'node:zlib';                      // Node without DecompressionStream; kept opaque to bundlers
+  const zlib = await import(name);
   return new Uint8Array(zlib.inflateRawSync(bytes));
 }
 

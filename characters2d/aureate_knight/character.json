@@ -4744,8 +4744,8 @@
    "markers": {
     "grip_L": [156.76,174.21],
     "tip": [1316.79,174.21],
-    "support": [156.76,174.21],
-    "support_L_hover": [866.65,172.64]
+    "support": [156.53,174.52],
+    "support_L_hover": [865.45,154.23]
    },
    "source": {
     "kind": "render3d",
@@ -4825,7 +4825,8 @@
    "view": "flat",
    "markers": {
     "muzzle": [246.39,18.73],
-    "grip_L_2h": [43.25,95.71]
+    "grip_L_2h": [43.25,95.71],
+    "support": [-35.86,100.95]
    },
    "source": {
     "kind": "render3d",
@@ -4867,7 +4868,7 @@
     "grip_L": [555.58,60.17],
     "muzzle": [1004.63,44.14],
     "butt": [10.31,76.21],
-    "support": [555.58,60.17]
+    "support": [474.48,63.24]
    },
    "source": {
     "kind": "render3d",
@@ -9167,7 +9168,14 @@
     "y": [-1,0,0]
    },
    "markers": ["grip_L","tip","support"],
-   "source": "viewer/js/knight.js knightSword()"
+   "source": "viewer/js/knight.js knightSword()",
+   "support": {
+    "marker": "support",
+    "from": "3D clips",
+    "frames": 122,
+    "spreadPx": 0,
+    "note": "mean position of socket_hand_L_prop in prop space over the support clips; spread = how far the 3D hand slides"
+   }
   },
   "Staff": {
    "id": "Staff",
@@ -9187,7 +9195,14 @@
     "y": [0,1,0]
    },
    "markers": ["muzzle","grip_L_2h"],
-   "source": "props/weapons.glb"
+   "source": "props/weapons.glb",
+   "support": {
+    "marker": "support",
+    "from": "3D clips",
+    "frames": 102,
+    "spreadPx": 0,
+    "note": "mean position of socket_hand_L_prop in prop space over the support clips; spread = how far the 3D hand slides"
+   }
   },
   "Rifle": {
    "id": "Rifle",
@@ -9197,7 +9212,14 @@
     "y": [0,1,0]
    },
    "markers": ["grip_L","muzzle","butt","support"],
-   "source": "props/weapons.glb"
+   "source": "props/weapons.glb",
+   "support": {
+    "marker": "support",
+    "from": "3D clips",
+    "frames": 106,
+    "spreadPx": 0,
+    "note": "mean position of socket_hand_L_prop in prop space over the support clips; spread = how far the 3D hand slides"
+   }
   },
   "Detonator": {
    "id": "Detonator",
@@ -11600,14 +11622,12 @@
     },
     "slots": {},
     "drawOrder": {
-     "t": [0,0.9667,2.2,2.3667,2.4333,2.5333,2.5667],
+     "t": [0,0.9667,2.2,2.3667,2.4333],
      "v": [
       ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","hand_L","thumb_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","thigh_L","shin_L","thigh_R","tabard_L","tabard_R"],
       ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","thumb_L","hand_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","thigh_L","shin_L","thigh_R","tabard_L","tabard_R"],
       ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","thumb_L","hand_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","shin_L","thigh_L","thigh_R","tabard_L","tabard_R"],
       ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","thumb_L","hand_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","thigh_L","shin_L","thigh_R","tabard_L","tabard_R"],
-      ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","hand_L","thumb_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","thigh_L","shin_L","thigh_R","tabard_L","tabard_R"],
-      ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","hand_L","thumb_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","shin_L","thigh_L","thigh_R","tabard_L","tabard_R"],
       ["mantle","under_leg_L","under_foot_L","foot_L","under_leg_R","under_foot_R","under_torso","abdomen","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","forearm_L","hand_L","thumb_L","index_L","forearm_R","upperarm_R","hand_R","pinky_R","thumb_R","ring_R","middle_R","index_R","prop_R","foot_R","shin_R","belt","thigh_L","shin_L","thigh_R","tabard_L","tabard_R"]
      ]
     },
@@ -11645,7 +11665,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["prop_R foreshortens to 19% of its length (points at/away from the camera): art is squashed along the bone","7 draw-order changes (limbs cross in front of/behind each other)"]
+    "notes": ["prop_R foreshortens to 19% of its length (points at/away from the camera): art is squashed along the bone"]
    }
   },
   {
@@ -17829,7 +17849,7 @@
     "constraints": {
      "support_L": {
       "t": [0],
-      "v": [1]
+      "v": [0]
      }
     },
     "events": [
@@ -17853,7 +17873,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["upperarm_L foreshortens to 42% of its length (points at/away from the camera): art is squashed along the bone","hand_L foreshortens to 36% of its length (points at/away from the camera): art is squashed along the bone","upperarm_R foreshortens to 41% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 33% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 23% of its length (points at/away from the camera): art is squashed along the bone","7 draw-order changes (limbs cross in front of/behind each other)"]
+    "notes": ["upperarm_L foreshortens to 42% of its length (points at/away from the camera): art is squashed along the bone","hand_L foreshortens to 36% of its length (points at/away from the camera): art is squashed along the bone","upperarm_R foreshortens to 41% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 33% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 23% of its length (points at/away from the camera): art is squashed along the bone","7 draw-order changes (limbs cross in front of/behind each other)","support_L contact follows the 3D bake (constraint off: the prop turns toward the camera, so a flat marker would move the hand up to 11.4 px)"]
    }
   },
   {
@@ -20697,13 +20717,11 @@
      }
     },
     "drawOrder": {
-     "t": [0,0.2333,0.2667,0.3,0.3667,0.4,0.6667],
+     "t": [0,0.2333,0.2667,0.3,0.6667],
      "v": [
       ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_R","index_L","index_R","forearm_L","hand_L","forearm_R","hand_R","thumb_R","prop_R","thumb_L","pinky_R","ring_R"],
       ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","middle_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","index_L","forearm_R","hand_R","thumb_R","prop_R","middle_R","index_R","pinky_R","ring_R","forearm_L","hand_L","thumb_L"],
       ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_L","index_L","forearm_R","hand_R","thumb_R","prop_R","middle_R","index_R","pinky_R","ring_R","forearm_L","hand_L","thumb_L"],
-      ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_L","index_L","forearm_R","hand_R","thumb_R","prop_R","middle_R","index_R","pinky_R","ring_R","forearm_L","thumb_L","hand_L"],
-      ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_L","index_L","forearm_R","hand_R","thumb_R","middle_R","index_R","prop_R","pinky_R","ring_R","forearm_L","thumb_L","hand_L"],
       ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_L","index_L","forearm_R","hand_R","thumb_R","prop_R","middle_R","index_R","pinky_R","ring_R","forearm_L","thumb_L","hand_L"],
       ["mantle","under_foot_L","under_leg_R","under_foot_R","shin_R","foot_R","under_torso","abdomen","belt","thigh_R","under_leg_L","thigh_L","shin_L","foot_L","tabard_L","tabard_R","under_arm_L","pinky_L","ring_L","under_arm_R","cuirass","helmet","upperarm_L","upperarm_R","middle_L","forearm_R","hand_R","thumb_R","index_R","index_L","prop_R","middle_R","pinky_R","ring_R","forearm_L","thumb_L","hand_L"]
      ]
@@ -20735,7 +20753,7 @@
     "constraints": {
      "support_L": {
       "t": [0],
-      "v": [1]
+      "v": [0]
      }
     },
     "events": [
@@ -20767,7 +20785,7 @@
    },
    "status": {
     "level": "needs-art",
-    "notes": ["torso turns up to 35° from the art view: the front-three-quarter body art is shown rotated in-plane; a side/turned view skin would be needed for fidelity","hand_R foreshortens to 31% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 23% of its length (points at/away from the camera): art is squashed along the bone","7 draw-order changes (limbs cross in front of/behind each other)"]
+    "notes": ["torso turns up to 35° from the art view: the front-three-quarter body art is shown rotated in-plane; a side/turned view skin would be needed for fidelity","hand_R foreshortens to 31% of its length (points at/away from the camera): art is squashed along the bone","prop_R foreshortens to 23% of its length (points at/away from the camera): art is squashed along the bone","support_L contact follows the 3D bake (constraint off: the prop turns toward the camera, so a flat marker would move the hand up to 22.2 px)"]
    }
   },
   {

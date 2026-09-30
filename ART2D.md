@@ -45,6 +45,7 @@ node scripts/sheet-2d.mjs "clips=idle,walk_in_place&n=6" out.png # 2D contact sh
 | `viewer/js/art2d/occlusion.js` | Draw order from real 3D occlusion (slot-ID buffer + slot-aware depth peel, hysteresis). |
 | `viewer/js/art2d/starter.js` | **Character2D adapter / starter-skin builder**: renders each slot from the 3D model, meshes + weights it, captures pose-specific hands, bakes every clip through the bridge. |
 | `viewer/js/art2d/specs.js` | Which 3D parts form which slot, `above` rules, hand captures (knight spec + plain template for variants). |
+| `viewer/js/art2d/contacts.js` | Post-bake contact fitting: markers measured in the 2D prop frame, constraints engaged only where faithful. |
 | `viewer/js/art2d/demos.js` | Native 2D authoring demos (finger tests, thumb-button contact, hover palm constraint, named poses). |
 | `characters2d/aureate_knight/` | Editable knight project: `character.json`, `images/`, `reference/` (editor-only concept art). |
 | `characters2d/dwarf/` | Proportion variant built from the same template. |
@@ -171,6 +172,12 @@ transparent pixels to avoid dark fringes).
   world rotation). `support_L_hover` pins the left palm to the blade throughout the hover vigil (keyed in
   its corrections layer). `thumb_button_R` drives the thumb pad onto the detonator button in
   `contact_detonator_2d`. Errors and unreachable targets are shown live and in the report.
+* Contact markers are **fitted in 2D after the bake** (`viewer/js/art2d/contacts.js`): a flat prop can
+  rotate and scale but not skew, so a marker measured in 3D prop space drifts once a prop turns toward
+  the camera. Each marker is measured from the baked 2D pose, and a constraint is engaged only on clips
+  where pinning stays within 1.5 px of the baked (3D-faithful) contact. Where it would not (the recoil
+  clips `pistol_fire_2h`, `rifle_fire`), the contact follows the bake, the constraint stays off and the
+  clip's status says so.
 
 ## Exports
 
@@ -181,6 +188,16 @@ transparent pixels to avoid dark fringes).
   of a clip shares frame size and registration point (the ground origin), frames are trimmed with
   offsets, packed with padding/extrusion, split across sheets, straight alpha, looping clips without a
   duplicated end frame.
+
+## Acceptance checks
+
+`node scripts/check-2d.mjs` runs the brief's acceptance list headless and writes
+`validation/2d/REPORT.md` (+ `report.json` and screenshots): 3D still works and 3D data is untouched,
+separate attachments and weighted meshes, bind reassembly (silhouette IoU vs the 3D render), inverse
+binds, finite meshes for every clip, joint drift vs projected 3D (≤ 2 px at 1024 px), contacts,
+timing/loops, draw-order flicker, elbow/knee bends, hit testing, undo/redo of pivot/weight/keyframe/
+layer order, image + prop replacement, layered import, save → fresh reopen, runtime-only playback,
+runtime = editor pose, sprite frame = editor render, the dwarf variant, narrow viewport, performance.
 
 ## Views and what is not supported
 

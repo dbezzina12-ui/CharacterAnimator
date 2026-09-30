@@ -24,12 +24,12 @@ const CSS = `
 .modeSwitch{display:flex;gap:4px;margin:0 0 12px}.modeSwitch button{flex:1}
 body.mode2d #side>details,body.mode2d #side>.knight-only{display:none}
 #side2d{display:none}body.mode2d #side2d{display:block}
-#stage2d{position:absolute;inset:0;display:none;background:#171b22;touch-action:none}body.mode2d #stage2d{display:block}
+#stage2d{position:absolute;inset:0;display:none;background:#171b22;touch-action:none;overflow:hidden}body.mode2d #stage2d{display:block}
 body.mode2d #main>.viewport-label,body.mode2d #legend{display:none}
 #stage2d canvas{position:absolute;inset:0;width:100%;height:100%}
-#stage2d .badge{position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:12px;font:600 11px system-ui;letter-spacing:1px;pointer-events:none}
+#stage2d .badge{position:absolute;left:10px;top:10px;max-width:calc(100% - 150px);padding:4px 10px;border-radius:12px;font:600 11px system-ui;letter-spacing:1px;pointer-events:none}
 #stage2d .badge.setup{background:#7a4b12;color:#ffe2b0}#stage2d .badge.animate{background:#1f5a3a;color:#c8f5dc}
-#stage2d .hud{position:absolute;right:10px;bottom:10px;background:#000a;padding:4px 8px;border-radius:4px;font:11px ui-monospace,monospace;pointer-events:none;white-space:pre;max-width:60%}
+#stage2d .hud{position:absolute;right:10px;bottom:10px;background:#000a;padding:4px 8px;border-radius:4px;font:11px ui-monospace,monospace;pointer-events:none;white-space:pre;max-width:60%;overflow:hidden;text-overflow:ellipsis}
 #stage2d .zoom{position:absolute;right:10px;top:10px;display:flex;gap:4px}
 body.mode2d.compare-inset #main>canvas{position:absolute;left:10px;bottom:10px;width:30%!important;height:34%!important;border:1px solid #cfb078;border-radius:4px;z-index:3;pointer-events:none}
 body.mode2d.compare-overlay #main>canvas{position:absolute;inset:0;opacity:.45;z-index:3;pointer-events:none}
@@ -90,7 +90,7 @@ class Editor2D {
     this.v = viewer; this.hooks = hooks; this.panel = panel; this.stage = stage;
     this.mode = 'animate'; this.tool = 'select'; this.bend = 'keep';
     this.sel = { bone: null, slot: null, attachment: null, vertex: -1 };
-    this.overlay = { bones: true, mesh: false, weights: false, pivots: false, markers: true, contacts: true, alphaPick: true };
+    this.overlay = { bones: true, mesh: false, weights: false, pivots: false, markers: false, contacts: true, alphaPick: true };
     this.hidden = new Set(); this.isolate = null;
     this.preview = { hands: { L: { ...HAND_PRESETS.open, curl: 0 }, R: { ...HAND_PRESETS.open, curl: 0 } }, pose: null, props: {} };
     this.brush = { radius: 24, strength: 0.25, mode: 'add', locked: new Set() };
@@ -199,6 +199,7 @@ class Editor2D {
   begin(label, targets, attId = null) { this.pending = { label, targets, before: targets.map(([o, k]) => clone(res(o)[k])), attId }; }
   end() { const p = this.pending; this.pending = null; if (p) this.push(p.label, p.targets, p.before, p.attId); }
   push(label, targets, before, attId) {
+    if (targets.some(([, k]) => k === 'bones')) computeInverseBinds(this.project);   // stored inverse binds follow the setup pose
     const after = targets.map(([o, k]) => clone(res(o)[k]));
     if (JSON.stringify(after) === JSON.stringify(before)) return;
     this.undoStack.push({ label, targets, before, after, attId }); this.redoStack = [];
@@ -208,6 +209,7 @@ class Editor2D {
   undo() { const h = this.undoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.before[i]); }); this.redoStack.push(h); this.afterHistory(h); return h.label; }
   redo() { const h = this.redoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.after[i]); }); this.undoStack.push(h); this.afterHistory(h); return h.label; }
   afterHistory(h) { if (h.attId) this.rebuild(h.attId); else this.rebuild(); this.refreshPanel(); }
+  // (inverse binds are part of every bones snapshot, so undo/redo restore them together with the setup pose)
 
   // ---------------------------------------------------------------- clips & keys --
   get clip() { return this.player?.clip || null; }
@@ -556,7 +558,7 @@ class Editor2D {
   onUp(e) {
     const d = this.drag; this.drag = null;
     if (!d) return;
-    if (this.pending) { this.end(); if (this.tool === 'pivot' || this.tool === 'mesh') computeInverseBinds(this.project); }
+    if (this.pending) this.end();
     void e;
   }
 
@@ -1032,7 +1034,7 @@ class Editor2D {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment];
     if (!a) { alert('Select a layer (attachment) first.'); return; }
     this.record(label, [[() => this.project.attachments, a.id]], () => fn(a), a.id);
-    this.rebuild(a.id); computeInverseBinds(this.project); this.refreshPanel();
+    this.rebuild(a.id); this.refreshPanel();
   }
   async autoMesh() {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment]; if (!a) return;
@@ -1103,7 +1105,7 @@ class Editor2D {
       evaluate: () => ed.evaluate(), openURL: (u) => ed.openURL(u), openZip: (b) => ed.openZip(b), reopenSaved: () => ed.reopenSaved(),
       importLayered: (m) => ed.importLayered(m), replaceSelected: (b) => ed.replaceSelected(b), selectSlot: (s, a) => ed.selectSlot(s, a), selectBone: (b) => ed.selectBone(b),
       applyOrder: (o, l) => ed.applyOrder(o, l), keyBone: (id, f, v) => ed.keyBone(id, f, () => v), setTool: (t) => { ed.tool = t; }, setCompare: (m) => ed.setCompare(m),
-      movePivot: (id, x, y) => { ed.begin(`move pivot ${id}`, [[ed.project, 'bones'], [ed.project, 'attachments']]); ed.movePivot(id, x, y); ed.end(); computeInverseBinds(ed.project); },
+      movePivot: (id, x, y) => { ed.begin(`move pivot ${id}`, [[ed.project, 'bones'], [ed.project, 'attachments']]); ed.movePivot(id, x, y); ed.end(); },
       paintWeights: (att, bone, ix, iy, r, s, mode = 'add') => { ed.sel.attachment = att; ed.sel.bone = bone; const a = ed.project.attachments[att]; ed.record(`paint weights ${bone}`, [[() => ed.project.attachments, att]], () => { const m = { vertices: a.vertices, triangles: a.triangles, weights: a.weights }; paintWeights(m, bone, ix, iy, r, s, mode); a.weights = m.weights; }, att); ed.rebuild(att); },
       setHand: (s, v) => ed.setHand(s, v), swapHandArt: (s, n) => ed.swapHandArt(s, n), validate: () => validateProject(ed.project, { images: new Set(ed.store.paths()) }),
       history: () => ed.undoStack.map((h) => h.label),

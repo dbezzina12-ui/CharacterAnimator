@@ -1,0 +1,597 @@
+{
+  "date": "2026-09-30T22:47:07.298Z",
+  "passed": 29,
+  "failed": 0,
+  "results": [
+    {
+      "id": "3d-works",
+      "title": "3D knight still loads, exports, reloads (scripts/knight-check.mjs)",
+      "pass": true,
+      "details": {
+        "bones": 63,
+        "clips": 24,
+        "loopMax": 0
+      }
+    },
+    {
+      "id": "frozen-untouched",
+      "title": "3D character data, props and frozen builds are not rewritten by the 2D work",
+      "pass": true,
+      "details": "no changes under characters/ props/ tools/"
+    },
+    {
+      "id": "3d-default",
+      "title": "Viewer opens in 3D mode with the mode selector added",
+      "pass": true,
+      "details": {
+        "body": "",
+        "clip": "hover_sword_vigil",
+        "switch": true
+      }
+    },
+    {
+      "id": "separate-art",
+      "title": "Character is separately addressable images on slots (not a flattened render)",
+      "pass": true,
+      "details": {
+        "slots": 37,
+        "attachments": 130,
+        "images": 130
+      }
+    },
+    {
+      "id": "weighted-meshes",
+      "title": "Deformable weighted meshes: ≤4 influences, normalised weights",
+      "pass": true,
+      "details": {
+        "weighted": 19,
+        "maxInfluences": 4,
+        "worstSumError": 2.220446049250313e-16
+      }
+    },
+    {
+      "id": "valid",
+      "title": "Project validates (schema gamboligy.character2d/1.0)",
+      "pass": true,
+      "details": "0 errors, 0 warnings"
+    },
+    {
+      "id": "inverse-binds",
+      "title": "Stored inverse binds invert the setup pose; setup pose reproduces the bind mesh (float32 output)",
+      "pass": true,
+      "details": {
+        "invErr": 2.3158419695801236e-9,
+        "bindVertexErr": 0.000051914054893131834
+      }
+    },
+    {
+      "id": "finite",
+      "title": "All 26 clips evaluate to finite meshes at 30 fps",
+      "pass": true,
+      "details": {
+        "frames": 2211,
+        "nonFinite": 0
+      }
+    },
+    {
+      "id": "bind-reassembly",
+      "title": "Setup pose reassembles the character: 2D silhouette matches the 3D render at the art camera",
+      "pass": true,
+      "details": {
+        "silhouetteIoU": 0.9958
+      }
+    },
+    {
+      "id": "joint-drift",
+      "title": "Every 2D joint/socket within 2 px of the projected 3D joint (1024 px reference height), all bridged clips",
+      "pass": true,
+      "details": {
+        "worstPx": 0.883
+      }
+    },
+    {
+      "id": "contacts",
+      "title": "Support hand / hover palm / thumb-button contacts hold (≤2 px) wherever engaged",
+      "pass": true,
+      "details": {
+        "pistol_aim_2h": {
+          "frames": 61,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "rifle_aim": {
+          "frames": 61,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "sword_2h_idle": {
+          "frames": 61,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "sword_2h_slash": {
+          "frames": 61,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "hover_sword_vigil": {
+          "frames": 151,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "contact_detonator_2d": {
+          "frames": 25,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        }
+      }
+    },
+    {
+      "id": "unreachable-reported",
+      "title": "Unreachable targets are reported per frame (not hidden)",
+      "pass": true,
+      "details": "no unreachable frames"
+    },
+    {
+      "id": "timing",
+      "title": "Clip durations equal the 3D clips; looping clips add no endpoint jump beyond their 3D source (joint px)",
+      "pass": true,
+      "details": {
+        "durationErr": 0.000033396911621075276,
+        "worstExtraJumpPx": 0,
+        "loops": {
+          "float_idle": {
+            "jump2d": 1.966,
+            "jump3d": 1.966
+          },
+          "float_monk_loop": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "idle": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "pistol_aim": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "pistol_aim_2h": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "rifle_aim": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "run_in_place": {
+            "jump2d": 0,
+            "jump3d": 0.044
+          },
+          "staff_idle": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "sword_2h_idle": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "walk_in_place": {
+            "jump2d": 0,
+            "jump3d": 0.013
+          },
+          "hover_sword_vigil": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "finger_tests_2d": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "contact_detonator_2d": {
+            "jump2d": 0,
+            "jump3d": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "no-flicker",
+      "title": "Draw order never flips for a single frame",
+      "pass": true,
+      "details": {
+        "singleFrameFlips": 0
+      }
+    },
+    {
+      "id": "bend-stress",
+      "title": "Elbows/knees at 0/45/90/120°: % of weighted-mesh triangles that fold over (< 2 %)",
+      "pass": true,
+      "details": {
+        "bend_0": 0,
+        "bend_45": 0.17,
+        "bend_90": 0.57,
+        "bend_120": 0.63
+      }
+    },
+    {
+      "id": "pose-stress",
+      "title": "Raised / crossed / salute / wind-up poses measured (info: folds are in the hand meshes; these clips are marked attention/needs-art)",
+      "pass": true,
+      "details": {
+        "arms_raised": 8.82,
+        "arms_crossed_legs": 8.82,
+        "salute": 1.78,
+        "slash_windup": 1.39
+      }
+    },
+    {
+      "id": "hit-test",
+      "title": "Clicking picks slots on the deformed (animated) mesh",
+      "pass": true,
+      "details": {
+        "expect": "forearm_R or a slot drawn over it",
+        "got": "forearm_R",
+        "topmostAtPoint": "forearm_R"
+      }
+    },
+    {
+      "id": "undo-redo",
+      "title": "Undo/redo of pivot, weight paint, keyframe and layer order",
+      "pass": true,
+      "details": {
+        "undoRestores": true,
+        "redoReapplies": true,
+        "labels": [
+          "move pivot forearm_L",
+          "paint weights forearm_L",
+          "key rotate upperarm_R",
+          "test reorder (setup)"
+        ],
+        "clean": true
+      }
+    },
+    {
+      "id": "replace-art",
+      "title": "Replace one art piece (helmet, mesh + binding kept) and one prop (staff, new size re-meshed)",
+      "pass": true,
+      "details": {
+        "meshKept": true,
+        "staffSize": [
+          2275,
+          94
+        ],
+        "staffVerts": 147,
+        "imported": [
+          "forearm_L.painted",
+          "shin_R.painted"
+        ],
+        "skipped": [
+          "tail.png: no slot \"tail\" in this character"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "id": "layered-import",
+      "title": "Layered PNG + layers.json import binds painted layers to existing slots; unknown slots reported",
+      "pass": true,
+      "details": {
+        "added": [
+          "forearm_L.painted",
+          "shin_R.painted"
+        ],
+        "skipped": [
+          "tail.png: no slot \"tail\" in this character"
+        ]
+      }
+    },
+    {
+      "id": "save-reopen",
+      "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
+      "pass": true,
+      "details": {
+        "zipKB": 4709,
+        "errors": 0,
+        "painted": [
+          "forearm_L.painted",
+          "shin_R.painted"
+        ]
+      }
+    },
+    {
+      "id": "sprite-vs-editor",
+      "title": "Sprite-sheet frame equals the editor render of the same pose (stable registration + trim offsets; mean alpha diff of 255)",
+      "pass": true,
+      "details": {
+        "meanAlphaDiff": 1.058
+      }
+    },
+    {
+      "id": "no-dup-endpoint",
+      "title": "Looping sprite export has no duplicated loop endpoint frame",
+      "pass": true,
+      "details": {
+        "frames": 34,
+        "expected": 34
+      }
+    },
+    {
+      "id": "runtime-standalone",
+      "title": "Standalone runtime plays the exported package alone (no editor/3D requests), events fire",
+      "pass": true,
+      "details": {
+        "requests": [
+          "/runtime/example/",
+          "/runtime/gamboligy-character2d.js",
+          "/validation/2d/_pkg/aureate_knight_2d.runtime.json",
+          "/validation/2d/_pkg/atlas_0.png",
+          "/validation/2d/_pkg/atlas_1.png"
+        ],
+        "foreign": [],
+        "events": [
+          "contact_detonator_2d 1.90s  button_up",
+          "contact_detonator_2d 1.10s  button_down"
+        ]
+      }
+    },
+    {
+      "id": "runtime-matches-editor",
+      "title": "Runtime pose equals the editor pose for the same clip/time",
+      "pass": true,
+      "details": {
+        "editor": [
+          -34.7259,
+          1026.472
+        ],
+        "runtime": [
+          -34.7259,
+          1026.472
+        ]
+      }
+    },
+    {
+      "id": "variant",
+      "title": "Second proportion variant (dwarf) uses the same rig template, validates and plays",
+      "pass": true,
+      "details": {
+        "errors": [],
+        "clips": 8,
+        "slots": 21,
+        "height": 753.2239,
+        "bad": 0
+      }
+    },
+    {
+      "id": "narrow",
+      "title": "Narrow (390 px) viewport: no horizontal overflow, stage usable",
+      "pass": true,
+      "details": {
+        "fits": true,
+        "scrollWidth": 390,
+        "stageW": 390,
+        "stageH": 481,
+        "overflowing": []
+      }
+    },
+    {
+      "id": "performance",
+      "title": "Performance measured (honest numbers, CPU-emulated WebGL here)",
+      "pass": true,
+      "details": {
+        "evalMs": 0.032,
+        "editorFrameMs": 2.22,
+        "attachments": 130,
+        "vertices": 6512,
+        "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
+      }
+    },
+    {
+      "id": "no-errors",
+      "title": "No page errors during the whole run",
+      "pass": true,
+      "details": []
+    }
+  ],
+  "drift": {
+    "_qa_pose_cycle": {
+      "max": 0.763,
+      "at": "ring_03_R@7.80"
+    },
+    "cheer": {
+      "max": 0.593,
+      "at": "middle_03_R@0.03"
+    },
+    "float_idle": {
+      "max": 0.69,
+      "at": "index_03_L@2.37"
+    },
+    "float_monk": {
+      "max": 0.747,
+      "at": "toe_R@1.00"
+    },
+    "float_monk_loop": {
+      "max": 0.601,
+      "at": "ring_03_R@0.67"
+    },
+    "idle": {
+      "max": 0.883,
+      "at": "index_03_R@3.60"
+    },
+    "jump_in_place": {
+      "max": 0.708,
+      "at": "toe_R@1.20"
+    },
+    "pistol_aim": {
+      "max": 0.374,
+      "at": "middle_03_L@0.40"
+    },
+    "pistol_aim_2h": {
+      "max": 0.38,
+      "at": "index_03_L@0.30"
+    },
+    "pistol_fire": {
+      "max": 0.49,
+      "at": "index_03_L@0.57"
+    },
+    "pistol_fire_2h": {
+      "max": 0.591,
+      "at": "socket_head_accessory@0.40"
+    },
+    "press_detonator": {
+      "max": 0.598,
+      "at": "middle_03_L@0.50"
+    },
+    "reach_grip_handle": {
+      "max": 0.756,
+      "at": "middle_03_L@0.13"
+    },
+    "rifle_aim": {
+      "max": 0.425,
+      "at": "elbow_helper_R@1.57"
+    },
+    "rifle_fire": {
+      "max": 0.646,
+      "at": "socket_head_accessory@0.33"
+    },
+    "run_in_place": {
+      "max": 0.802,
+      "at": "toe_R@0.63"
+    },
+    "staff_idle": {
+      "max": 0.337,
+      "at": "thumb_03_L@0.20"
+    },
+    "staff_stomp": {
+      "max": 0.774,
+      "at": "pinky_03_L@0.60"
+    },
+    "sword_2h_idle": {
+      "max": 0.537,
+      "at": "forearm_L@1.33"
+    },
+    "sword_2h_slash": {
+      "max": 0.714,
+      "at": "forearm_L@1.43"
+    },
+    "walk_in_place": {
+      "max": 0.733,
+      "at": "middle_03_R@0.40"
+    },
+    "wave": {
+      "max": 0.719,
+      "at": "middle_03_L@1.93"
+    },
+    "hover_sword_vigil": {
+      "max": 0.466,
+      "at": "shin_R@4.07"
+    },
+    "knight_salute": {
+      "max": 0.429,
+      "at": "middle_03_R@3.47"
+    }
+  },
+  "contacts": {
+    "pistol_aim_2h": {
+      "frames": 61,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "rifle_aim": {
+      "frames": 61,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "sword_2h_idle": {
+      "frames": 61,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "sword_2h_slash": {
+      "frames": 61,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "hover_sword_vigil": {
+      "frames": 151,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "contact_detonator_2d": {
+      "frames": 25,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    }
+  },
+  "timing": {
+    "float_idle": {
+      "jump2d": 1.966,
+      "jump3d": 1.966
+    },
+    "float_monk_loop": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "idle": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "pistol_aim": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "pistol_aim_2h": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "rifle_aim": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "run_in_place": {
+      "jump2d": 0,
+      "jump3d": 0.044
+    },
+    "staff_idle": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "sword_2h_idle": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "walk_in_place": {
+      "jump2d": 0,
+      "jump3d": 0.013
+    },
+    "hover_sword_vigil": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "finger_tests_2d": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "contact_detonator_2d": {
+      "jump2d": 0,
+      "jump3d": 0
+    }
+  },
+  "stress": {
+    "bend_0": 0,
+    "bend_45": 0.17,
+    "bend_90": 0.57,
+    "bend_120": 0.63,
+    "arms_raised": 8.82,
+    "arms_crossed_legs": 8.82,
+    "salute": 1.78,
+    "slash_windup": 1.39
+  },
+  "perf": {
+    "evalMs": 0.032,
+    "editorFrameMs": 2.22,
+    "attachments": 130,
+    "vertices": 6512,
+    "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
+  }
+}

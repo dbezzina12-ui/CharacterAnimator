@@ -1,12 +1,12 @@
 {
   "checks": {
     "bones": 63,
-    "meshCount": 348,
-    "morphCount": 2,
+    "meshCount": 347,
+    "morphCount": 1,
     "loopMax": 0,
-    "maxContactDrift": 1.5949508996818208e-7,
+    "maxContactDrift": 1.594950897290976e-7,
     "minFoot": 0.4175469950668769,
-    "exportBytes": 13639376,
+    "exportBytes": 13576244,
     "countBefore": 24,
     "countAfter": 24,
     "exportCfgRebuildsArmor": false

@@ -15,11 +15,13 @@ const pageUrl = which === 'knight' ? 'viewer/knight.html?hideui=1' : `viewer/ind
 
 const { stringifyProject, validateProject, computeInverseBinds } = await import('../viewer/js/art2d/schema.js');
 const { addNativeDemos } = await import('../viewer/js/art2d/demos.js');
+const { fitContactMarkers } = await import('../viewer/js/art2d/contacts.js');
 function finish(project) {
   project.clips = project.clips.filter((c) => c.source?.type !== 'native2d');
   project.poses = [];
   addNativeDemos(project);
   computeInverseBinds(project);
+  for (const r of fitContactMarkers(project)) console.log(`contact ${r.constraint} on ${r.clip}: marker error ${r.maxMarkerErrorPx} px → ${r.engaged ? 'engaged' : 'off (follows the 3D bake)'}`);
   const imgs = new Set(); const walk = (d, pre = '') => { for (const f of fs.readdirSync(path.join(out, d))) { const r = path.join(d, f); if (fs.statSync(path.join(out, r)).isDirectory()) walk(r); else imgs.add(r.split(path.sep).join('/')); } };
   walk('.');
   const rep = validateProject(project, { images: imgs });

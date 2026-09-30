@@ -4311,7 +4311,7 @@
    "markers": {
     "grip_L": [189.88,168.79],
     "tip": [1824.37,168.79],
-    "support": [189.88,168.79]
+    "support": [189.67,168.8]
    },
    "source": {
     "kind": "render3d",
@@ -5592,7 +5592,14 @@
     "y": [-1,0,0]
    },
    "markers": ["grip_L","tip","support"],
-   "source": "props/weapons.glb"
+   "source": "props/weapons.glb",
+   "support": {
+    "marker": "support",
+    "from": "3D clips",
+    "frames": 122,
+    "spreadPx": 0,
+    "note": "mean position of socket_hand_L_prop in prop space over the support clips; spread = how far the 3D hand slides"
+   }
   }
  },
  "constraints": [
@@ -10823,12 +10830,12 @@
      "y": 0
     },
     "forearm_L": {
-     "rotate": -65.113,
+     "rotate": -65.112,
      "x": 0,
      "y": 0
     },
     "hand_L": {
-     "rotate": 18.753,
+     "rotate": 18.752,
      "x": 0,
      "y": 0
     },

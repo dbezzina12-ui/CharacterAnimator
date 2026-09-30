@@ -332,7 +332,9 @@ const dwarf = await page.evaluate(async () => {
 });
 check('variant', 'Second proportion variant (dwarf) uses the same rig template, validates and plays', !dwarf.errors.length && dwarf.bad === 0, dwarf);
 
-// ---- 3D vs 2D comparison at the same clip time (screenshot) + featured demos
+// ---- 3D vs 2D comparison at the same clip time (screenshot) + featured demos (the untouched knight again)
+await page.evaluate(() => art2d.openURL('../characters2d/aureate_knight/character.json'));
+await page.evaluate(() => art2d.editor.ready);
 await page.evaluate(() => { art2d.setCompare('inset'); art2d.selectClip('hover_sword_vigil'); art2d.seek(1.5); art2d.editor.fitView(true); });
 await page.waitForTimeout(700); await page.screenshot({ path: `${OUT}/compare_3d_inset_hover.png` });
 await page.evaluate(() => { art2d.setCompare('off'); });
@@ -344,7 +346,10 @@ for (const [clip, t] of [['idle', 1], ['hover_sword_vigil', 0], ['sword_2h_idle'
 // ---- narrow viewport + honest performance numbers
 await page.setViewportSize({ width: 390, height: 844 });
 await page.waitForTimeout(600);
-const narrow = await page.evaluate(() => ({ fits: document.documentElement.scrollWidth <= innerWidth, stageW: document.getElementById('stage2d').clientWidth, stageH: document.getElementById('stage2d').clientHeight }));
+const narrow = await page.evaluate(() => {
+  const over = []; document.querySelectorAll('body *').forEach((e) => { const r = e.getBoundingClientRect(); if ((r.right > innerWidth + 1 || (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).overflowX === 'visible')) && r.width > 0 && getComputedStyle(e).display !== 'none') over.push(`${e.tagName.toLowerCase()}#${e.id}.${String(e.className).split(' ')[0]} r${Math.round(r.right)} sw${e.scrollWidth}/${e.clientWidth}`); });
+  return { fits: document.documentElement.scrollWidth <= innerWidth, scrollWidth: document.documentElement.scrollWidth, stageW: document.getElementById('stage2d').clientWidth, stageH: document.getElementById('stage2d').clientHeight, overflowing: over.slice(0, 6) };
+});
 await page.screenshot({ path: `${OUT}/narrow_390.png` });
 check('narrow', 'Narrow (390 px) viewport: no horizontal overflow, stage usable', narrow.fits && narrow.stageW >= 300 && narrow.stageH >= 200, narrow);
 await page.setViewportSize({ width: 1440, height: 950 });
