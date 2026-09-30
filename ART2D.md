@@ -23,6 +23,7 @@ node scripts/build-2d-knight.mjs --demos-only        # re-apply the native 2D de
 node scripts/build-2d-knight.mjs --character=dwarf_blank      # proportion variant → characters2d/dwarf
 node scripts/export-2d.mjs [--sheets=all] [--scale=0.5]       # runtime package + sprite sheets + PNG frame → exports/
 node scripts/build-runtime.mjs                       # re-bundle runtime/gamboligy-character2d.js
+node scripts/build-standalone-player.mjs             # one-file offline player → exports/player/
 node scripts/check-2d.mjs                            # acceptance checks → validation/2d/REPORT.md
 node tests/art2d-core.test.mjs                       # unit tests of the 2D core
 node scripts/compare-2d.mjs out.png hover_sword_vigil:0,idle:1   # 3D | 2D side by side at the same time
