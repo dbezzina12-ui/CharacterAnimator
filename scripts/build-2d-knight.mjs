@@ -10,8 +10,8 @@ import { startServer, CHROME, CHROME_ARGS } from './serve.mjs';
 const arg = (k, d = null) => { const a = process.argv.find((x) => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const which = arg('character', 'knight');
 const clips = arg('clips') ? arg('clips').split(',') : null;
-const out = path.resolve(arg('out', which === 'knight' ? 'characters2d/aureate_knight' : `characters2d/${which}_2d`));
-const pageUrl = which === 'knight' ? 'viewer/knight.html?hideui=1' : `viewer/index.html?hideui=1&character=${which}`;
+const out = path.resolve(arg('out', which === 'knight' ? 'characters2d/aureate_knight' : `characters2d/${which.replace(/_blank$/, '')}`));
+const pageUrl = which === 'knight' ? 'viewer/knight.html?hideui=1' : `viewer/index.html?hideui=1&char=${which}`;
 
 const { stringifyProject, validateProject, computeInverseBinds } = await import('../viewer/js/art2d/schema.js');
 const { addNativeDemos } = await import('../viewer/js/art2d/demos.js');

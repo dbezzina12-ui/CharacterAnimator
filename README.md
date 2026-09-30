@@ -4,6 +4,10 @@
 Run the viewer and open `/viewer/knight.html` for the armored rig, floating sword
 vigil, salute, and existing animation library.
 
+**2D artwork mode:** [ART2D.md](ART2D.md) — switch the viewer to *2D artwork* to edit and play the
+knight as separate images on a 2D skeleton with weighted meshes; export a runtime package
+(standalone player in [`runtime/`](runtime/README.md)) or sprite sheets.
+
 A reusable, rigged, **blank** stylized adult humanoid for the slot-game pipeline:
 
 ```

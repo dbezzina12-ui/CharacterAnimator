@@ -5,3 +5,4 @@ validation/screens/
 validation/roundtrip/*.glb
 dist-web/
 dist-knight/
+exports/

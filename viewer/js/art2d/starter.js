@@ -60,9 +60,18 @@ void main(){
 }
 
 // ------------------------------------------------------------------ stage -----------
+/** Copies of the viewer's scene lights (lit materials render black without them; painted ones ignore them). */
+function sceneLights(viewer) {
+  const out = [];
+  viewer.scene.traverse((o) => { if (o.isLight) { const c = o.clone(); o.updateMatrixWorld(true); c.position.setFromMatrixPosition(o.matrixWorld); if (o.target) { c.target = o.target.clone(); c.target.position.setFromMatrixPosition(o.target.matrixWorld); out.push(c.target); } c.castShadow = false; out.push(c); } });
+  if (!out.some((o) => o.isLight)) out.push(new THREE.HemisphereLight(0xffffff, 0x404858, 2.2));
+  return out;
+}
+
 class Stage {
   constructor(viewer) {
     this.v = viewer; this.r = viewer.renderer; this.scene = new THREE.Scene();
+    for (const l of sceneLights(viewer)) this.scene.add(l);
     this.canvas = document.createElement('canvas'); this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
   }
   begin() {
@@ -371,6 +380,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     const X = new THREE.Vector3(...axes.x).normalize(), Y = new THREE.Vector3(...axes.y).normalize(), N = X.clone().cross(Y).normalize();
     const clone = src.clone(true); clone.position.set(0, 0, 0); clone.quaternion.identity(); clone.scale.set(1, 1, 1); clone.updateMatrixWorld(true);
     const holder = new THREE.Scene(); holder.add(clone);
+    for (const l of sceneLights(viewer)) holder.add(l);
     if (ill && spec.illustrated) { ill.prepare(clone); ill.apply(); }
     const pts = []; const v = new THREE.Vector3();
     clone.traverse((o) => { if (o.isMesh && !o.userData.illustrationInk) { const p = o.geometry.attributes.position; for (let i = 0; i < p.count; i++) pts.push(v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld).clone()); } });
@@ -526,6 +536,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
   rig = new Rig(project);
   if (spec.debug) { const v = occ.votes(ch.root); log('setup order: ' + setupOrder.join(' ')); log('coverage: ' + JSON.stringify([...occ.lastCoverage])); log('votes: ' + JSON.stringify([...v].filter(([k]) => /cuirass|upperarm_R/.test(k)))); }
 
+  const supportAcc = {};                 // prop -> 3D contact of the left-hand socket in prop space
   for (const name of clipList) {
     const clip = ch.clip(name), meta = clipMeta(name) || {};
     const loop = !!meta.loop, dur = clip.duration;
@@ -552,6 +563,11 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         orders.push(full);
         if (pass < passes - 1) continue;
         const sm = bridge.sampleWorld(axes);
+        if (SUPPORT_CLIPS[name] && propId && viewer.state.clipProp) {
+          const inv = viewer.state.clipProp.matrixWorld.clone().invert();
+          const p = new THREE.Vector3().setFromMatrixPosition(ch.sockets.socket_hand_L_prop.matrixWorld).applyMatrix4(inv);
+          (supportAcc[propId] ||= []).push(p);
+        }
         frames.push(bridge.toLocal(sm));
         // status analysis
         const q = new THREE.Quaternion(), fwd = new THREE.Vector3(0, 0, 1);
@@ -567,6 +583,9 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         if (mantleLookup && fi % 2 === 0) deforms.push([times[fi], mantleDeform(sm)]);
       }
     }
+    // single-frame draw-order blips (A → B → A) are removed: an order must hold for at least 2 frames
+    const okey = (o) => o.join(',');
+    for (let i = 1; i < orders.length - 1; i++) if (okey(orders[i]) !== okey(orders[i - 1]) && okey(orders[i + 1]) === okey(orders[i - 1])) orders[i] = orders[i - 1];
     // ---- tracks
     const tracks = { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] };
     defs.forEach((d, i) => {
@@ -627,6 +646,19 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       tracks, corrections: { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] },
       status: { level: lvl, notes: [...notes] } });
     log(`clip ${name}: ${frames.length} frames, ${Object.keys(tracks.bones).length} bone tracks, ${tracks.drawOrder.t.length} order keys, ${lvl}`);
+  }
+
+  // the support-hand marker of each prop is where the 3D clips actually put the left-hand socket
+  for (const [pid, pts] of Object.entries(supportAcc)) {
+    const a = attachments[`prop_R.${pid}`]; if (!a) continue;
+    const axes = PROP_AXES[pid], X = new THREE.Vector3(...axes.x), Y = new THREE.Vector3(...axes.y);
+    const m = pts.reduce((acc, p) => acc.add(p), new THREE.Vector3()).multiplyScalar(1 / pts.length);
+    const toImg = (p) => [a.pivot[0] + p.dot(X) * ppm * S, a.pivot[1] - p.dot(Y) * ppm * S];
+    const c = toImg(m), spread = Math.max(...pts.map((p) => { const q = toImg(p); return Math.hypot(q[0] - c[0], q[1] - c[1]) / S; }));
+    a.markers.support = c.map((x) => +x.toFixed(2));
+    project.props[pid].support = { marker: 'support', from: '3D clips', frames: pts.length, spreadPx: +spread.toFixed(2),
+      note: 'mean position of socket_hand_L_prop in prop space over the support clips; spread = how far the 3D hand slides' };
+    log(`prop ${pid}: support marker from 3D contact (spread ${spread.toFixed(2)} px)`);
   }
 
   function mantleDeform(sm) {

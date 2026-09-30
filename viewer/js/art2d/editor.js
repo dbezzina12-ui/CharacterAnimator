@@ -16,6 +16,7 @@ const HAND_PRESETS = {
   grip: { curl: 0.8, thumb: -0.2, index: -0.1, middle: 0, ring: 0.05, pinky: 0.1 },
 };
 const clone = (x) => (x === undefined ? undefined : structuredClone(x));
+const res = (o) => (typeof o === 'function' ? o() : o);
 const $ = (root, sel) => root.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -187,23 +188,25 @@ class Editor2D {
 
   // ---------------------------------------------------------------- history -------
   /** Record an edit of obj[key] for each target; fn mutates. Returns fn's result. */
+  // targets: [container, key]; a container may be a function resolved at apply time (containers that an
+  // undo can replace, e.g. project.attachments or a clip, must be looked up again, never held)
   record(label, targets, fn, attId = null) {
-    const before = targets.map(([o, k]) => clone(o[k]));
+    const before = targets.map(([o, k]) => clone(res(o)[k]));
     const out = fn();
     this.push(label, targets, before, attId);
     return out;
   }
-  begin(label, targets, attId = null) { this.pending = { label, targets, before: targets.map(([o, k]) => clone(o[k])), attId }; }
+  begin(label, targets, attId = null) { this.pending = { label, targets, before: targets.map(([o, k]) => clone(res(o)[k])), attId }; }
   end() { const p = this.pending; this.pending = null; if (p) this.push(p.label, p.targets, p.before, p.attId); }
   push(label, targets, before, attId) {
-    const after = targets.map(([o, k]) => clone(o[k]));
+    const after = targets.map(([o, k]) => clone(res(o)[k]));
     if (JSON.stringify(after) === JSON.stringify(before)) return;
     this.undoStack.push({ label, targets, before, after, attId }); this.redoStack = [];
     if (this.undoStack.length > 200) this.undoStack.shift();
     this.dirty = true; this.refreshPanel();
   }
-  undo() { const h = this.undoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { o[k] = clone(h.before[i]); }); this.redoStack.push(h); this.afterHistory(h); return h.label; }
-  redo() { const h = this.redoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { o[k] = clone(h.after[i]); }); this.undoStack.push(h); this.afterHistory(h); return h.label; }
+  undo() { const h = this.undoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.before[i]); }); this.redoStack.push(h); this.afterHistory(h); return h.label; }
+  redo() { const h = this.redoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.after[i]); }); this.undoStack.push(h); this.afterHistory(h); return h.label; }
   afterHistory(h) { if (h.attId) this.rebuild(h.attId); else this.rebuild(); this.refreshPanel(); }
 
   // ---------------------------------------------------------------- clips & keys --
@@ -223,6 +226,7 @@ class Editor2D {
     if (clip.source?.type === 'native2d') return ensureLayer(clip.tracks ||= {});
     return ensureLayer(clip.corrections ||= {});
   }
+  clipRef(clip) { const name = clip.name; return () => this.project.clips.find((c) => c.name === name); }
   editKey() { return this.clip?.source?.type === 'native2d' ? 'tracks' : 'corrections'; }
   keyTime() { const fps = this.clip?.fps || 30; return Math.round(this.player.time * fps) / fps; }
   layerValue(tr, f) { return tr ? (sampleField(tr, f, this.player.time) ?? 0) : 0; }
@@ -230,7 +234,7 @@ class Editor2D {
   keyBone(id, field, fnValues, label) {
     const clip = this.clip; if (!clip) return;
     const L = this.editLayer(clip), k = this.editKey();
-    this.record(label || `key ${field} ${id}`, [[clip, k]], () => {
+    this.record(label || `key ${field} ${id}`, [[this.clipRef(clip), k]], () => {
       const LL = this.editLayer(clip);
       const tr = (LL.bones[id] ||= {}); tr[field] ||= { t: [] };
       setKey(tr[field], this.keyTime(), fnValues(tr[field]));
@@ -490,7 +494,7 @@ class Editor2D {
     if (!this.sel.bone && ['rotate', 'move', 'ik', 'pivot'].includes(t)) { const b = this.pickBone(e); if (b) this.selectBone(b); else return; }
     if (t === 'rotate' || t === 'move' || t === 'ik') {
       if (this.mode === 'animate' && !this.clip) return;
-      const targets = this.mode === 'setup' ? [[this.project, 'bones'], [this.project, 'attachments']] : [[this.clip, this.editKey()]];
+      const targets = this.mode === 'setup' ? [[this.project, 'bones'], [this.project, 'attachments']] : [[this.clipRef(this.clip), this.editKey()]];
       this.begin(`${t} ${this.sel.bone}`, targets);
       const i = this.rig.boneIndex.get(this.sel.bone), m = this.rig.world[i];
       this.drag.origin = [m[4], m[5]]; this.drag.a0 = Math.atan2(wy - m[5], wx - m[4]);
@@ -502,7 +506,7 @@ class Editor2D {
       let hit = -1, bd = 8;
       for (let v = 0; v < d.pos.length / 2; v++) { const [x, y] = this.w2s(d.pos[v * 2], d.pos[v * 2 + 1]); const dd = Math.hypot(x - (e.clientX - this.ovCanvas.getBoundingClientRect().left), y - (e.clientY - this.ovCanvas.getBoundingClientRect().top)); if (dd < bd) { bd = dd; hit = v; } }
       const a = this.project.attachments[this.sel.attachment];
-      this.begin('edit mesh', [[this.project.attachments, a.id]], a.id);
+      this.begin('edit mesh', [[() => this.project.attachments, a.id]], a.id);
       if (hit < 0) {
         const [ix, iy] = this.toImage(a.id, wx, wy);
         const mesh = { vertices: a.vertices, triangles: a.triangles, weights: a.weights };
@@ -515,7 +519,7 @@ class Editor2D {
     } else if (t === 'weights' && this.mode === 'setup' && this.sel.attachment && this.sel.bone) {
       const a = this.project.attachments[this.sel.attachment];
       if (!a.weights) { a.weights = a.vertices.map(() => [a.bone, 1]).filter((_, i) => i % 2 === 0); }
-      this.begin(`paint weights ${this.sel.bone}`, [[this.project.attachments, a.id]], a.id);
+      this.begin(`paint weights ${this.sel.bone}`, [[() => this.project.attachments, a.id]], a.id);
       this.paintAt(e);
     }
   }
@@ -613,7 +617,7 @@ class Editor2D {
   }
   deleteSelectedVertex() {
     const a = this.project.attachments[this.sel.attachment]; if (!a) return;
-    this.record('delete vertex', [[this.project.attachments, a.id]], () => {
+    this.record('delete vertex', [[() => this.project.attachments, a.id]], () => {
       const mesh = { vertices: a.vertices, triangles: a.triangles, weights: a.weights };
       if (deleteVertex(mesh, this.sel.vertex) !== false) { a.vertices = mesh.vertices; a.triangles = mesh.triangles; a.weights = mesh.weights; }
     }, a.id);
@@ -819,9 +823,9 @@ class Editor2D {
     });
     const sa = box.querySelector('[data-sa]'); if (sa) sa.onchange = () => this.setSlotAttachment(s.id, sa.value || null);
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment];
-    box.querySelectorAll('[data-ap]').forEach((i) => i.onchange = () => { this.record(`${i.dataset.ap} ${a.id}`, [[this.project.attachments, a.id]], () => { a[i.dataset.ap] = i.dataset.ap === 'tint' ? [1, 3, 5].map((k) => parseInt(i.value.slice(k, k + 2), 16) / 255) : i.dataset.ap === 'opacity' ? +i.value : i.value; }, a.id); });
-    box.querySelectorAll('[data-at]').forEach((i) => i.onchange = () => { this.record(`transform ${a.id}`, [[this.project.attachments, a.id]], () => { a.transform[i.dataset.at] = i.type === 'checkbox' ? i.checked : +i.value; }, a.id); this.rebuild(a.id); });
-    box.querySelectorAll('[data-pv]').forEach((i) => i.onchange = () => { this.record(`pivot ${a.id}`, [[this.project.attachments, a.id]], () => this.setAttachmentPivot(a, +i.dataset.pv, +i.value), a.id); this.rebuild(a.id); });
+    box.querySelectorAll('[data-ap]').forEach((i) => i.onchange = () => { this.record(`${i.dataset.ap} ${a.id}`, [[() => this.project.attachments, a.id]], () => { a[i.dataset.ap] = i.dataset.ap === 'tint' ? [1, 3, 5].map((k) => parseInt(i.value.slice(k, k + 2), 16) / 255) : i.dataset.ap === 'opacity' ? +i.value : i.value; }, a.id); });
+    box.querySelectorAll('[data-at]').forEach((i) => i.onchange = () => { this.record(`transform ${a.id}`, [[() => this.project.attachments, a.id]], () => { a.transform[i.dataset.at] = i.type === 'checkbox' ? i.checked : +i.value; }, a.id); this.rebuild(a.id); });
+    box.querySelectorAll('[data-pv]').forEach((i) => i.onchange = () => { this.record(`pivot ${a.id}`, [[() => this.project.attachments, a.id]], () => this.setAttachmentPivot(a, +i.dataset.pv, +i.value), a.id); this.rebuild(a.id); });
   }
 
   /** Move an attachment's pivot (image px) while keeping the art where it is. */
@@ -839,7 +843,7 @@ class Editor2D {
       this.record(`setup attachment ${slot}`, [[this.project, 'slots']], () => { s.attachment = att; });
     } else {
       const clip = this.clip;
-      this.record(`key attachment ${slot}`, [[clip, this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.slots[slot] ||= {}); tr.attachment ||= { t: [], v: [] }; setKey(tr.attachment, this.keyTime(), { v: att }); });
+      this.record(`key attachment ${slot}`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.slots[slot] ||= {}); tr.attachment ||= { t: [], v: [] }; setKey(tr.attachment, this.keyTime(), { v: att }); });
     }
     this.rebuild(); this.refreshPanel();
   }
@@ -874,13 +878,13 @@ class Editor2D {
       this.record(label + ' (setup)', [[this.project, 'slots']], () => { this.project.slots = order.map((sid) => this.project.slots.find((s) => s.id === sid)); });
     } else {
       const clip = this.clip;
-      this.record(label + ` @${this.keyTime().toFixed(2)}s`, [[clip, this.editKey()]], () => { const L = this.editLayer(clip); setKey(L.drawOrder, this.keyTime(), { v: order }); });
+      this.record(label + ` @${this.keyTime().toFixed(2)}s`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); setKey(L.drawOrder, this.keyTime(), { v: order }); });
     }
     this.rebuild(); this.refreshPanel();
   }
   clearOrderKey() {
     const clip = this.clip; if (!clip) return;
-    this.record('clear order key', [[clip, this.editKey()]], () => deleteKey(this.editLayer(clip).drawOrder, this.keyTime()));
+    this.record('clear order key', [[this.clipRef(clip), this.editKey()]], () => deleteKey(this.editLayer(clip).drawOrder, this.keyTime()));
     this.rebuild(); this.refreshPanel();
   }
 
@@ -893,7 +897,7 @@ class Editor2D {
   setHand(side, values, label) {
     if (this.mode === 'setup' || !this.clip) { Object.assign(this.preview.hands[side], values); this.renderHands(); return; }
     const clip = this.clip, cur = this.handValue(side);
-    this.record(label || `hand ${side}`, [[clip, this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.hands[side] ||= { t: [] }); setKey(tr, this.keyTime(), { ...cur, ...values }); });
+    this.record(label || `hand ${side}`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.hands[side] ||= { t: [] }); setKey(tr, this.keyTime(), { ...cur, ...values }); });
     this.rebuild(); this.renderHands();
   }
   renderHands() {
@@ -919,7 +923,7 @@ class Editor2D {
   /** Swap the whole hand (palm + five finger layers) to one captured art set, keyed in Animate. */
   swapHandArt(side, name) {
     const slots = ['hand', ...FINGERS].map((g) => `${g}_${side}`).filter((s) => this.rig.slotIndex.has(s));
-    const target = this.mode === 'setup' || !this.clip ? [this.project, 'slots'] : [this.clip, this.editKey()];
+    const target = this.mode === 'setup' || !this.clip ? [this.project, 'slots'] : [this.clipRef(this.clip), this.editKey()];
     this.record(`hand ${side} art ${name}`, [target], () => {
       for (const s of slots) {
         const id = `${s}.${name}`; const att = this.project.attachments[id] ? id : null;
@@ -956,7 +960,7 @@ class Editor2D {
     box.querySelectorAll('[data-cm]').forEach((i) => i.onchange = () => {
       const id = i.dataset.cm;
       if (this.mode === 'setup' || !this.clip) { this.record(`constraint ${id} mix`, [[this.project, 'constraints']], () => { this.project.constraints.find((c) => c.id === id).mix = +i.value; }); }
-      else { const clip = this.clip; this.record(`key ${id} mix`, [[clip, this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.constraints[id] ||= { t: [], v: [] }); setKey(tr, this.keyTime(), { v: +i.value }); }); }
+      else { const clip = this.clip; this.record(`key ${id} mix`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); const tr = (L.constraints[id] ||= { t: [], v: [] }); setKey(tr, this.keyTime(), { v: +i.value }); }); }
       this.rebuild();
     });
     box.querySelectorAll('[data-cb]').forEach((sel) => sel.onchange = () => { this.record(`constraint bend`, [[this.project, 'constraints']], () => { const c = this.project.constraints.find((x) => x.id === sel.dataset.cb); c.bend = sel.value === 'keep' ? 'keep' : +sel.value; }); this.rebuild(); });
@@ -984,7 +988,7 @@ class Editor2D {
     const clip = this.clip, t = this.player.time;
     this.rig.evaluate(clip, t, { corrections: false });
     const base = new Float64Array(this.rig.local), S = this.rig.setup;
-    this.record(`key pose ${pose.name}`, [[clip, this.editKey()]], () => {
+    this.record(`key pose ${pose.name}`, [[this.clipRef(clip), this.editKey()]], () => {
       const Lr = this.editLayer(clip);
       this.rig.bones.forEach((b, i) => {
         const want = pose.bones[b.id] || { rotate: 0, x: 0, y: 0 };
@@ -1000,12 +1004,12 @@ class Editor2D {
 
   deleteBoneKey() {
     const clip = this.clip, id = this.sel.bone; if (!clip || !id) return;
-    this.record(`delete key ${id}`, [[clip, this.editKey()]], () => { const tr = this.editLayer(clip).bones[id]; if (tr) for (const f of ['rotate', 'translate', 'scale']) if (tr[f]) deleteKey(tr[f], this.keyTime()); });
+    this.record(`delete key ${id}`, [[this.clipRef(clip), this.editKey()]], () => { const tr = this.editLayer(clip).bones[id]; if (tr) for (const f of ['rotate', 'translate', 'scale']) if (tr[f]) deleteKey(tr[f], this.keyTime()); });
     this.rebuild();
   }
   clearBone() {
     const clip = this.clip, id = this.sel.bone; if (!clip || !id) return;
-    this.record(`clear ${id}`, [[clip, this.editKey()]], () => { delete this.editLayer(clip).bones[id]; });
+    this.record(`clear ${id}`, [[this.clipRef(clip), this.editKey()]], () => { delete this.editLayer(clip).bones[id]; });
     this.rebuild();
   }
   newClip() {
@@ -1020,14 +1024,14 @@ class Editor2D {
   }
   addEvent(name) {
     const clip = this.clip; if (!clip || !name) return;
-    this.record(`event ${name}`, [[clip, this.editKey()]], () => { const L = this.editLayer(clip); L.events.push({ t: this.keyTime(), name }); L.events.sort((a, b) => a.t - b.t); });
+    this.record(`event ${name}`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); L.events.push({ t: this.keyTime(), name }); L.events.sort((a, b) => a.t - b.t); });
     this.rebuild();
   }
 
   withAttachment(label, fn) {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment];
     if (!a) { alert('Select a layer (attachment) first.'); return; }
-    this.record(label, [[this.project.attachments, a.id]], () => fn(a), a.id);
+    this.record(label, [[() => this.project.attachments, a.id]], () => fn(a), a.id);
     this.rebuild(a.id); computeInverseBinds(this.project); this.refreshPanel();
   }
   async autoMesh() {
@@ -1100,7 +1104,7 @@ class Editor2D {
       importLayered: (m) => ed.importLayered(m), replaceSelected: (b) => ed.replaceSelected(b), selectSlot: (s, a) => ed.selectSlot(s, a), selectBone: (b) => ed.selectBone(b),
       applyOrder: (o, l) => ed.applyOrder(o, l), keyBone: (id, f, v) => ed.keyBone(id, f, () => v), setTool: (t) => { ed.tool = t; }, setCompare: (m) => ed.setCompare(m),
       movePivot: (id, x, y) => { ed.begin(`move pivot ${id}`, [[ed.project, 'bones'], [ed.project, 'attachments']]); ed.movePivot(id, x, y); ed.end(); computeInverseBinds(ed.project); },
-      paintWeights: (att, bone, ix, iy, r, s, mode = 'add') => { ed.sel.attachment = att; ed.sel.bone = bone; const a = ed.project.attachments[att]; ed.record(`paint weights ${bone}`, [[ed.project.attachments, att]], () => { const m = { vertices: a.vertices, triangles: a.triangles, weights: a.weights }; paintWeights(m, bone, ix, iy, r, s, mode); a.weights = m.weights; }, att); ed.rebuild(att); },
+      paintWeights: (att, bone, ix, iy, r, s, mode = 'add') => { ed.sel.attachment = att; ed.sel.bone = bone; const a = ed.project.attachments[att]; ed.record(`paint weights ${bone}`, [[() => ed.project.attachments, att]], () => { const m = { vertices: a.vertices, triangles: a.triangles, weights: a.weights }; paintWeights(m, bone, ix, iy, r, s, mode); a.weights = m.weights; }, att); ed.rebuild(att); },
       setHand: (s, v) => ed.setHand(s, v), swapHandArt: (s, n) => ed.swapHandArt(s, n), validate: () => validateProject(ed.project, { images: new Set(ed.store.paths()) }),
       history: () => ed.undoStack.map((h) => h.label),
     };

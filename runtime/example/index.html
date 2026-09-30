@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2D Runtime Example</title>
+<style>
+  :root { --bg: #11151c; --panel: #1a2029; --fg: #e8ecf2; --muted: #9aa5b5; --acc: #cfb078; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 13px system-ui, sans-serif; }
+  #app { display: flex; height: 100%; }
+  #ui { width: 280px; padding: 14px; background: var(--panel); overflow-y: auto; }
+  #ui h1 { font-size: 15px; margin: 0 0 4px; } #ui p { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+  label { display: flex; gap: 6px; align-items: center; margin: 8px 0; } select, button { font: inherit; background: #243042; color: var(--fg); border: 1px solid #34435a; border-radius: 5px; padding: 5px 8px; }
+  select { width: 100%; } input[type=range] { flex: 1; accent-color: var(--acc); }
+  #log { font: 11px ui-monospace, monospace; color: var(--muted); white-space: pre; max-height: 160px; overflow: auto; margin-top: 10px; }
+  #view { flex: 1; position: relative; min-width: 0; } canvas { width: 100%; height: 100%; display: block; }
+  @media (max-width: 700px) { #app { flex-direction: column-reverse; } #ui { width: 100%; height: 42%; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="ui">
+    <h1>Standalone 2D runtime</h1>
+    <p>This page loads only <code>package/*.runtime.json</code> + atlas pages through <code>../gamboligy-character2d.js</code>. No editor, no three.js, no 3D files.</p>
+    <label>Clip <select id="clip"></select></label>
+    <div><button id="play">Play</button> <button id="pause">Pause</button> <label style="display:inline-flex"><input type="checkbox" id="loop" checked> loop</label></div>
+    <label>Time <input type="range" id="seek" min="0" max="1" step="0.001"></label>
+    <label>Speed <input type="range" id="speed" min="0.1" max="2" step="0.05" value="1"></label>
+    <label>Skin <select id="skin"></select></label>
+    <label>Right-hand prop <select id="prop"></select></label>
+    <div id="log"></div>
+  </div>
+  <div id="view"><canvas id="c"></canvas></div>
+</div>
+<script type="module">
+import { Character2D } from '../gamboligy-character2d.js';
+const q = new URLSearchParams(location.search);
+const pkgUrl = q.get('package') || './package/aureate_knight_2d.runtime.json';
+const $ = (id) => document.getElementById(id), log = [];
+const ch = await Character2D.load(pkgUrl, { canvas: $('c'), background: [0.07, 0.08, 0.11, 1] });
+window.character = ch;
+$('clip').innerHTML = ch.clips.map((c) => `<option>${c.name}</option>`).join('');
+$('skin').innerHTML = ch.skins.map((s) => `<option>${s}</option>`).join('');
+$('prop').innerHTML = ['<option value="">(clip decides)</option>', '<option value="none">none</option>', ...ch.propsFor('prop_R').map((p) => `<option>${p}</option>`)].join('');
+const start = (name) => { ch.play(name, { loop: $('loop').checked }); $('seek').max = ch.player.duration; };
+$('clip').value = q.get('clip') || (ch.clips.find((c) => c.name === 'hover_sword_vigil') ? 'hover_sword_vigil' : ch.clips[0].name);
+start($('clip').value);
+$('clip').onchange = (e) => start(e.target.value);
+$('play').onclick = () => ch.resume(); $('pause').onclick = () => ch.pause();
+$('loop').onchange = (e) => { ch.player.loop = e.target.checked; };
+$('seek').oninput = (e) => { ch.pause(); ch.seek(+e.target.value); };
+$('speed').oninput = (e) => ch.setSpeed(+e.target.value);
+$('skin').onchange = (e) => ch.setSkin(e.target.value);
+$('prop').onchange = (e) => ch.setProp('prop_R', e.target.value === '' ? undefined : e.target.value === 'none' ? null : e.target.value);
+ch.on('*', (e) => { log.unshift(`${e.clip} ${e.time.toFixed(2)}s  ${e.name}`); log.length = Math.min(log.length, 12); $('log').textContent = log.join('\n'); });
+const H = ch.pkg.referenceHeightPx || 1024;
+let last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  ch.update(Math.min(0.1, (now - last) / 1000)); last = now;
+  const c = $('c'), zoom = Math.min(c.clientHeight / (H * 1.35), c.clientWidth / (H * 1.1));
+  ch.draw({ x: 0, y: H * 0.55, zoom });
+  if (document.activeElement !== $('seek')) $('seek').value = ch.time;
+}
+requestAnimationFrame(frame);
+window.runtimeReady = true;
+</script>
+</body>
+</html>
