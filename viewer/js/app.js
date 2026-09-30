@@ -547,6 +547,7 @@ $('btnReload').onclick = async () => {
 let frames = 0, fpsT = 0, fps = 0;
 function tick() {
   requestAnimationFrame(tick);
+  if (state.suspendLoop) return;   // offline tools (2D starter-skin builder) own the renderer meanwhile
   const dt = clock.getDelta();
   if (state.ch) {
     if (state.playing) state.ch.mixer.update(dt);

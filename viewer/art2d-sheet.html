@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2D Contact Sheet</title>
+<style>body{margin:0;background:#20242b;color:#dde;font:12px system-ui,sans-serif}canvas{display:block}#lab{position:absolute;inset:0;pointer-events:none}
+#lab div{position:absolute;padding:2px 4px;background:#0008;border-radius:3px}</style></head>
+<body><canvas id="c"></canvas><div id="lab"></div>
+<script type="module">
+// Dev/validation page: renders clips of a 2D project at several times in a grid.
+// ?project=../characters2d/aureate_knight/character.json&clips=idle,walk_in_place&n=6&cell=260&bg=1
+import { Rig } from './js/art2d/core.js';
+import { Renderer2D } from './js/art2d/render2d.js';
+const q = new URLSearchParams(location.search);
+const url = q.get('project') || '../characters2d/aureate_knight/character.json';
+const project = await (await fetch(url)).json();
+const rig = new Rig(project);
+const clips = (q.get('clips') || [...rig.clips.keys()].join(',')).split(',').filter(Boolean);
+const n = +(q.get('n') || 6), cell = +(q.get('cell') || 240), cellH = Math.round(cell * 1.35);
+const cols = q.get('bind') ? 1 : n, rows = q.get('bind') ? 1 : clips.length;
+const cv = document.getElementById('c'); cv.width = cols * cell; cv.height = rows * cellH; cv.style.width = cv.width + 'px'; cv.style.height = cv.height + 'px';
+const r = new Renderer2D(cv, { background: q.get('bg') === 'light' ? [0.93, 0.92, 0.88, 1] : [0.13, 0.14, 0.17, 1] });
+await r.loadImages(project, (p) => new URL(p, new URL(url, location.href)).href);
+r.clear();
+const H = project.referenceHeightPx, zoom = cellH / (H * 1.45), lab = document.getElementById('lab');
+const label = (x, y, t) => { const d = document.createElement('div'); d.style.left = x + 'px'; d.style.top = y + 'px'; d.textContent = t; lab.appendChild(d); };
+const drawCell = (col, row, clip, t, opts = {}) => {
+  const pose = rig.evaluate(clip, t, opts);
+  r.draw(rig, pose, { clear: false, dpr: 1, viewport: [col * cell, cv.height - (row + 1) * cellH, cell, cellH], view: { x: +(q.get('cx') || 0), y: +(q.get('cy') || H * 0.62), zoom: zoom * +(q.get('mag') || 1) } });
+  return pose;
+};
+if (q.get('bind')) { drawCell(0, 0, null, 0); label(4, 4, 'setup pose'); }
+else clips.forEach((name, row) => {
+  const c = rig.clips.get(name); if (!c) return;
+  for (let i = 0; i < n; i++) {
+    const t = c.loop ? c.duration * i / n : c.duration * i / (n - 1);
+    drawCell(i, row, c, t);
+    label(i * cell + 4, row * cellH + 4, `${name} ${t.toFixed(2)}s`);
+  }
+});
+window.sheetReady = true;
+</script></body></html>
