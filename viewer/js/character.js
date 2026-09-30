@@ -47,6 +47,10 @@ export function partColorBytes(name) {
 
 export async function loadGLB(src) {
   const loader = new GLTFLoader();
+  if (typeof src === 'string' && window.__CB_EMBED?.binary[src]) {
+    const raw=atob(window.__CB_EMBED.binary[src]);
+    src=Uint8Array.from(raw,c=>c.charCodeAt(0)).buffer;
+  }
   if (src instanceof ArrayBuffer) return await loader.parseAsync(src, '');
   return await loader.loadAsync(src);
 }
@@ -61,7 +65,7 @@ export class Character {
     this.bones = {};
     this.sockets = {};
     this.root.traverse((o) => {
-      if (o.isSkinnedMesh) this.parts[o.name] = o;
+      if (o.isSkinnedMesh && !o.userData.illustrationInk) this.parts[o.name] = o;
       if (o.isBone) this.bones[o.name] = o;
       if (o.name && o.name.startsWith('socket_')) this.sockets[o.name] = o;
     });
@@ -207,8 +211,8 @@ export class Character {
   }
 
   _patchExplode(mat, n) {
-    if (!mat || mat.userData.explodePatched) return;
-    mat.userData.explodePatched = true;
+    if (!mat || mat._explodePatched) return;
+    mat._explodePatched = true;
     const uni = this.explode[n];
     if (mat.isShaderMaterial) {
       mat.uniforms.explodeOffset = uni;
@@ -254,9 +258,12 @@ export class Character {
   }
 
   height() {
-    const b = new THREE.Box3();
-    for (const m of Object.values(this.parts)) { m.geometry.computeBoundingBox(); b.union(m.geometry.boundingBox); }
-    return b.max.y - Math.min(b.min.y, 0);
+    if (this._bindHeight === undefined) {
+      this.root.updateMatrixWorld(true);
+      const b = new THREE.Box3().setFromObject(this.root, true);
+      this._bindHeight = b.max.y - Math.min(b.min.y, 0);
+    }
+    return this._bindHeight;
   }
 
   clip(name) { return this.clips.find((c) => c.name === name); }

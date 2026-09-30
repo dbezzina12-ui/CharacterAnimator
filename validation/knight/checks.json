@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "bones": 63,
+    "meshCount": 348,
+    "morphCount": 2,
+    "loopMax": 0,
+    "maxContactDrift": 1.5949508996818208e-7,
+    "minFoot": 0.4175469950668769,
+    "exportBytes": 13639376,
+    "countBefore": 24,
+    "countAfter": 24,
+    "exportCfgRebuildsArmor": false
+  },
+  "mobile": {
+    "fits": true,
+    "canvasWidth": 390
+  },
+  "errors": []
+}

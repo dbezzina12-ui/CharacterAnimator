@@ -44,6 +44,15 @@
    "glb": "diag_textured_test.glb",
    "config": "diag_textured_test.character.json",
    "props": "test_props.glb"
+  },
+  {
+   "id": "aureate_knight",
+   "displayName": "Aureate \u00b7 Knight of the Dawn",
+   "status": "armored",
+   "frozen": false,
+   "glb": "aureate_knight.glb",
+   "config": "aureate_knight.character.json",
+   "props": "test_props.glb"
   }
  ]
 }

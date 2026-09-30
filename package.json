@@ -10,9 +10,12 @@
     "vendor": "node scripts/vendor-three.mjs",
     "refs": "node scripts/render-references.mjs",
     "validate": "node scripts/validate.mjs && python tools/make_report.py",
-    "report": "python tools/make_report.py"
+    "report": "python tools/make_report.py",
+    "build:knight": "python3 tools/knight_motion.py && node scripts/build-knight.mjs",
+    "check:knight": "node scripts/knight-check.mjs"
   },
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "playwright-core": "1.56.1",
     "three": "0.180.0"
   }

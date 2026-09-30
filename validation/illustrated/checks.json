@@ -1,0 +1,19 @@
+{
+  "info": {
+    "bones": 63,
+    "clips": 24,
+    "flat": true
+  },
+  "result": {
+    "cacheSize": 201,
+    "exportBytes": 13576244,
+    "paintedMaterials": 174,
+    "ink": 200,
+    "converted": 201,
+    "invalid": 0,
+    "bones": 63,
+    "clips": 24,
+    "importedPaint": 201
+  },
+  "errors": []
+}

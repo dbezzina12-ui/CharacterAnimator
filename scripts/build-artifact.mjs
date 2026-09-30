@@ -3,6 +3,7 @@
 // and the character GLBs/configs/textures are copied next to it.
 //   node scripts/build-artifact.mjs <outDir>
 import fs from 'node:fs';
+import { build } from 'esbuild';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -12,13 +13,7 @@ const THREE_V = fs.readFileSync(path.join(ROOT, 'viewer/vendor/three/VERSION'), 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-const strip = (src) => src.split('\n')
-  .filter((l) => !/^import\s.+from\s+['"].+['"];?\s*$/.test(l))
-  .map((l) => l.replace(/^export\s+(?=(async\s+)?(function|class|const|let)\b)/, ''))
-  .join('\n');
-const mods = ['refcams.js', 'character.js', 'coverage.js', 'app.js']
-  .map((f) => `// ---- ${f}\n` + strip(fs.readFileSync(path.join(ROOT, 'viewer/js', f), 'utf8')));
-
+const bundle = await build({entryPoints:[path.join(ROOT,'viewer/js/app.js')],bundle:true,write:false,format:'esm',external:['three','three/*']});
 const html = fs.readFileSync(path.join(ROOT, 'viewer/index.html'), 'utf8');
 const style = html.match(/<style>([\s\S]*?)<\/style>/)[1]
   .replace('html, body { margin: 0; height: 100%;', 'html, body { margin: 0; height: 100%; color-scheme: dark;')
@@ -40,12 +35,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 ${body}
 <script>window.__CB_HOSTED = true; window.__CB_BASE = '';</script>
 <script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-${mods.join('\n')}
+${bundle.outputFiles[0].text}
 </script>
 `;
 fs.writeFileSync(path.join(OUT, 'index.html'), page);

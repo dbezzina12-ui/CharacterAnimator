@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aureate Knight · Animation Playground</title>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+</script>
+<style>
+  :root { --bg: #1d1f23; --panel: #262930; --line: #3a3e47; --fg: #e6e7ea; --muted: #9aa0aa; --acc: #6aa7ff; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 13px/1.35 system-ui, sans-serif; }
+  #app { display: flex; height: 100%; }
+  #side { width: 300px; min-width: 300px; overflow-y: auto; background: var(--panel); border-right: 1px solid var(--line); padding: 8px 10px 40px; }
+  #main { flex: 1; position: relative; min-width: 0; }
+  #main canvas { display: block; width: 100%; height: 100%; }
+  h1 { font-size: 14px; margin: 4px 0 8px; }
+  details { border-top: 1px solid var(--line); padding: 6px 0; }
+  summary { cursor: pointer; font-weight: 600; margin-bottom: 4px; }
+  label { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+  button, select, input[type=file]::file-selector-button { background: #343844; color: var(--fg); border: 1px solid var(--line);
+    border-radius: 4px; padding: 3px 7px; cursor: pointer; font: inherit; }
+  button:hover { border-color: var(--acc); }
+  button.on { background: #2f4a75; border-color: var(--acc); }
+  select { width: 100%; }
+  input[type=range] { flex: 1; }
+  .muted { color: var(--muted); font-size: 12px; }
+  #parts { max-height: 260px; overflow-y: auto; }
+  #parts .p { display: flex; align-items: center; gap: 4px; padding: 1px 3px; border-radius: 3px; }
+  #parts .p.sel { background: #2f4a75; }
+  #parts .sw { width: 10px; height: 10px; border-radius: 2px; }
+  #parts .n { flex: 1; cursor: pointer; }
+  #status { position: absolute; left: 8px; bottom: 8px; background: rgba(0,0,0,0.55); padding: 4px 8px; border-radius: 4px;
+    font: 12px ui-monospace, monospace; pointer-events: none; white-space: pre; }
+  #legend { position: absolute; right: 8px; top: 8px; background: rgba(0,0,0,0.55); padding: 6px 8px; border-radius: 4px; font-size: 12px; display: none; }
+  #legend i { display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: middle; }
+  body.hideui #side, body.hideui #status { display: none; }
+  @media (max-width: 700px) { #app { flex-direction: column-reverse; } #side { width: 100%; min-width: 0; height: 45%; } }
+
+:root{--bg:#0c111b;--panel:#131a26;--line:#293142;--fg:#edf0f5;--muted:#a0abc0;--acc:#cfb078}
+#side{width:310px;min-width:310px;padding:24px 20px 40px;background:linear-gradient(160deg,#192130,#101620)}
+.brand{font-size:10px;letter-spacing:2.3px;color:#cfb078;margin-bottom:12px}h1{font-size:24px;letter-spacing:1px;margin:0;font-weight:500}.subtitle{font-family:Georgia,serif;font-size:16px;font-style:italic;color:#acb7c9;margin:6px 0 25px}
+details{padding:12px 0}summary{font-size:12px;letter-spacing:.5px;margin-bottom:10px}button,select{border-radius:6px;padding:7px 9px;background:#202b3b;border-color:#334054;font-size:12px}button:hover{background:#2a3748}label{margin:9px 0}input[type=range]{accent-color:#cfb078;min-width:60px}input[type=file]{max-width:180px;font-size:11px}.knight-clips{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}.knight-clips button:first-child{grid-column:1 / -1;background:#c2a36d;color:#111923;border-color:#dec496;font-weight:600}.viewport-label{position:absolute;z-index:2;left:34px;top:30px;pointer-events:none;display:flex;flex-direction:column;gap:8px}.viewport-label span{font-family:Georgia,serif;font-size:28px;letter-spacing:6px;color:#f0e6d3}.viewport-label small{font-size:9px;letter-spacing:1.5px;color:#a6b3c8}#status{left:20px;bottom:18px;color:#9faec0;background:transparent;font-size:10px}#charInfo{overflow-wrap:anywhere}#legend{max-width:250px}@media(max-width:700px){#side{width:100%;height:43%;padding:16px}#main{min-height:320px}.viewport-label{left:20px;top:18px}.viewport-label span{font-size:19px}.brand,.subtitle{display:none}h1{font-size:18px;margin-bottom:12px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="side">
+    <div class="brand">GAMBOLIGY · CHARACTER LAB</div><h1>AUREATE KNIGHT</h1><div class="subtitle">Knight of the Dawn</div>
+    <details><summary>Character / import</summary>
+      <select id="charSel"></select>
+      <div class="row"><label class="muted">Load GLB <input type="file" id="glbFile" accept=".glb"></label></div>
+      <div class="row"><label class="muted">Config JSON <input type="file" id="cfgFile" accept=".json"></label></div>
+      <div id="charInfo" class="muted"></div>
+    </details>
+    <details open><summary>Art style</summary>
+      <div class="row"><button id="artPainted" class="on">Illustrated</button><button id="artOriginal">Original 3D</button></div>
+      <label><input type="checkbox" id="flatCamera" checked> Flat game camera</label>
+      <label><input type="checkbox" id="artInk" checked> Ink outlines</label>
+      <button id="btnPNG">Save transparent PNG frame</button>
+    </details>
+    <details><summary>View</summary>
+      <div class="row" id="camBtns"></div>
+      <label><input type="checkbox" id="chkSkel"> Skeleton</label>
+      <label><input type="checkbox" id="chkWire"> Wireframe</label>
+      <label><input type="checkbox" id="chkSockets"> Attachment sockets</label>
+      <label><input type="checkbox" id="chkProps"> Test props</label>
+    </details>
+    <details><summary>Material</summary>
+      <select id="matSel">
+        <option value="original">As loaded (GLB material)</option>
+        <option value="blank">Blank matte grey</option>
+        <option value="checker">UV checker</option>
+        <option value="parts">Body-part debug colours</option>
+        <option value="texture">Uploaded base-colour texture</option>
+        <option value="coverage">Projection coverage (reference views)</option>
+      </select>
+      <div class="row"><label class="muted">Base-colour texture <input type="file" id="texFile" accept="image/*"></label></div>
+    </details>
+    <details><summary>Parts</summary>
+      <div id="parts"></div>
+      <div class="row"><button id="btnIsolate">Isolate selected</button><button id="btnShowAll">Show all</button></div>
+      <label>Explode <input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
+      <div class="row"><button id="btnAssemble">Reassemble</button></div>
+    </details>
+    <details open><summary>Animation</summary><div id="knightClips" class="knight-clips"></div>
+      <select id="clipSel"></select>
+      <div class="row"><button id="btnPlay">Play</button><button id="btnPause">Pause</button>
+        <label><input type="checkbox" id="chkLoop" checked> loop</label></div>
+      <label>Time <input type="range" id="scrub" min="0" max="1" step="0.001" value="0"></label>
+      <label>Speed <input type="range" id="speed" min="0.1" max="2" step="0.05" value="1"></label>
+      <select id="qaSel"><option value="">Jump to QA test pose…</option></select>
+    </details>
+    <details><summary>Pose (A-pose, IK, fingers)</summary>
+      <div class="row"><button id="btnReset">Reset to A-pose</button></div>
+      <div class="row"><button id="btnIKL">IK target L hand</button><button id="btnIKR">IK target R hand</button></div>
+      <div class="row"><button id="btnGizMode">Gizmo: move</button><button id="btnCapture">Capture pose → clip</button></div>
+      <label>Fingers L <input type="range" id="curlL" min="0" max="1" step="0.01" value="0"></label>
+      <label>Fingers R <input type="range" id="curlR" min="0" max="1" step="0.01" value="0"></label>
+      <label>Head turn <input type="range" id="headTurn" min="-60" max="60" step="1" value="0"></label>
+      <div class="row"><button id="btnPropL">Prop in L hand</button><button id="btnPropR">Prop in R hand</button></div>
+    </details>
+    <details><summary>Save / export</summary>
+      <div class="row"><button id="btnExportGLB">Export GLB</button><button id="btnExportCfg">Export JSON</button></div>
+      <div class="row"><button id="btnReload">Reload export in fresh viewer</button></div>
+      <div class="muted">Illustrated exports include painted colors and outlines with the skeleton and all clips. The sword remains a separate prop. PNG saves the current frame on transparency.</div>
+    </details>
+  </div>
+  <div id="main"><div class="viewport-label"><span>AUREATE</span><small>DRAG TO ORBIT · SCROLL TO ZOOM</small></div><div id="status"></div><div id="legend"></div></div>
+</div>
+<script>window.__KNIGHT_PREVIEW=true;</script><script type="module" src="./js/app.js"></script>
+</body>
+</html>

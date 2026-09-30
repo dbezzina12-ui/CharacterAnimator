@@ -5,6 +5,8 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { Character, FINGERS, PART_ORDER, loadGLB, partColor } from './character.js';
 import { CoverageProbe } from './coverage.js';
 import { REF_VIEWS, makeRefCamera } from './refcams.js';
+import { dressKnight, knightSword } from './knight.js';
+import { Illustration } from './illustrated.js';
 
 const $ = (id) => document.getElementById(id);
 const ASSET_BASE = window.__CB_BASE ?? '../';   // '../' locally; '' in the hosted build
@@ -13,13 +15,13 @@ if (params.get('hideui')) document.body.classList.add('hideui');
 
 // ---------------------------------------------------------------- scene ----------
 const main = $('main');
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 main.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x30333a);
-const camera = new THREE.PerspectiveCamera(30, 1, 0.02, 100);
+let camera = new THREE.PerspectiveCamera(30, 1, 0.02, 100);
 camera.position.set(0, 1.0, 4.5);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.target.set(0, 0.9, 0);
@@ -33,6 +35,33 @@ rim.position.set(-2, 2, -3);
 scene.add(rim);
 const grid = new THREE.GridHelper(4, 16, 0x555a66, 0x3b3f48);
 scene.add(grid);
+if (window.__KNIGHT_PREVIEW) {
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  scene.background = new THREE.Color(0x111a29);
+  grid.visible = false;
+  key.intensity = 2.5; key.color.setHex(0xffebcf); key.position.set(-2.5, 4, 3);
+  key.castShadow = true; key.shadow.mapSize.set(2048,2048);
+  Object.assign(key.shadow.camera,{left:-2,right:2,top:3,bottom:-2,near:.1,far:10});
+  key.shadow.normalBias=.015;key.shadow.bias=-.0001;
+  rim.intensity=3;rim.color.setHex(0x93b8ff);rim.position.set(2,3,-2);
+  const fill=new THREE.DirectionalLight(0xb5d1ff,1.7);fill.position.set(3,1,3);scene.add(fill);
+  const room=new THREE.Scene();room.background=new THREE.Color(0x647587);
+  for(const [pos,scale,color,intensity] of [
+    [[-3,2,1],[.1,4,3],0xffe2b8,6],[[3,2,0],[.1,4,2],0xb1d0ff,4],[[0,5,0],[4,.1,4],0xffffff,5],[[0,1,-4],[3,3,.1],0x91b4e5,2]
+  ]) {const panel=new THREE.Mesh(new THREE.BoxGeometry(...scale),new THREE.MeshBasicMaterial({color:new THREE.Color(color).multiplyScalar(intensity)}));panel.position.set(...pos);room.add(panel);}
+  const pmrem=new THREE.PMREMGenerator(renderer);const env=pmrem.fromScene(room,.035);
+  scene.environment=env.texture;scene.environmentIntensity=.65;pmrem.dispose();
+  scene.fog=new THREE.FogExp2(0x111a29,.095);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x080d15,roughness:1,metalness:0,envMapIntensity:0}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-.028;ground.receiveShadow=true;scene.add(ground);
+  const platform=new THREE.Mesh(new THREE.CylinderGeometry(.78,.82,.065,96),new THREE.MeshStandardMaterial({color:0x101a28,roughness:.7,metalness:.25,envMapIntensity:.3}));
+  platform.position.y=-.04;platform.receiveShadow=true;scene.add(platform);
+  for(const radius of [.63,.755]){const r=new THREE.Mesh(new THREE.TorusGeometry(radius,.002,6,120),new THREE.MeshStandardMaterial({color:0xab8a51,metalness:.75,roughness:.4}));r.rotation.x=Math.PI/2;r.position.y=-.005;scene.add(r);}
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const r=new THREE.Mesh(new THREE.BoxGeometry(.012,.001,.034),new THREE.MeshStandardMaterial({color:0x8e744a,metalness:.7,roughness:.4}));r.position.set(Math.sin(a)*.7,-.003,Math.cos(a)*.7);r.rotation.y=a;scene.add(r);}
+}
 
 const gizmo = new TransformControls(camera, renderer.domElement);
 gizmo.setSize(0.7);
@@ -46,6 +75,8 @@ const state = {
   ik: { L: null, R: null }, exportUrl: null, exportCfgUrl: null, captured: 0, charDir: null,
 };
 const clock = new THREE.Clock();
+let illustration = null;
+let flatCamera = false;
 
 function status(msg) { $('status').textContent = msg; }
 
@@ -53,12 +84,16 @@ function resize() {
   const w = main.clientWidth, h = main.clientHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / Math.max(h, 1);
+  if(camera.isOrthographicCamera){const half=1.29;camera.left=-half*camera.aspect;camera.right=half*camera.aspect;camera.top=half;camera.bottom=-half;}
   camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
 
 // ---------------------------------------------------------------- loading --------
-async function fetchJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ' ' + r.status); return r.json(); }
+async function fetchJSON(url) {
+  if (window.__CB_EMBED?.json[url]) return structuredClone(window.__CB_EMBED.json[url]);
+  const r = await fetch(url); if (!r.ok) throw new Error(url + ' ' + r.status); return r.json();
+}
 
 // hosted build: GLBs are published as base64 text (<file>.glb.b64.txt) because the host only serves web types
 async function fetchB64(url) {
@@ -81,6 +116,14 @@ async function loadCharacter(glbSrc, cfg = null, propsUrl = null) {
   if (window.__CB_HOSTED && typeof glbSrc === 'string') glbSrc = await fetchB64(glbSrc);
   const gltf = await loadGLB(glbSrc);
   const ch = new Character(gltf, cfg);
+  if (cfg?.knightBuild) {
+    const recipes = await fetchJSON(`${ASSET_BASE}characters/aureate_knight/knight-motion.json`);
+    for (const recipe of recipes) {
+      const meta=cfg.animations.find(a=>a.name===recipe.name);
+      if (meta && recipe.propTransform) meta.propTransform=recipe.propTransform;
+    }
+    dressKnight(ch, recipes);
+  }
   state.ch = ch; state.cfg = cfg; state.selected = null; state.hidden.clear(); state.handProps = {};
   state.ik = { L: null, R: null };
   scene.add(ch.root);
@@ -94,9 +137,10 @@ async function loadCharacter(glbSrc, cfg = null, propsUrl = null) {
   applySockets();
   applySkeleton();
   const h = ch.height();
-  const tris = Object.values(ch.parts).reduce((a, m) => a + m.geometry.index.count / 3, 0);
+  let tris=0, meshes=0;
+  ch.root.traverse(m=>{if(m.isMesh){meshes++;tris+=(m.geometry.index?.count||m.geometry.attributes.position.count)/3;}});
   $('charInfo').innerHTML = `${cfg ? `<b>${cfg.displayName}</b> (${cfg.characterId}) · ${cfg.status}${cfg.frozen ? ' · frozen' : ''}<br>` : ''}` +
-    `${Object.keys(ch.parts).length} parts · ${tris} tris · ${ch.skeleton ? ch.skeleton.bones.length : 0} joints · ` +
+    `${meshes} meshes · ${Math.round(tris).toLocaleString()} tris · ${ch.skeleton ? ch.skeleton.bones.length : 0} joints · ` +
     `${ch.clips.length} clips · ${Object.keys(ch.sockets).length} sockets · height ${h.toFixed(3)} m` +
     (cfg ? `<br>UV ${cfg.uvLayout.id} v${cfg.uvLayout.version} · material: ${cfg.material.mode}` : '');
   setView('front_three_quarter');
@@ -109,13 +153,17 @@ async function loadFromIndex(id) {
   const e = idx.characters.find((c) => c.id === id) || idx.characters[0];
   state.charDir = `${ASSET_BASE}characters/${e.id}/`;
   const cfg = await fetchJSON(state.charDir + e.config).catch(() => null);
+  if (e.id === 'aureate_knight' && params.has('buildKnight')) {
+    cfg.knightBuild=true;
+    return loadCharacter(`${ASSET_BASE}characters/master_blank/master_blank.glb`, cfg, null);
+  }
   return loadCharacter(state.charDir + e.glb, cfg, state.charDir + (e.props || 'test_props.glb'));
 }
 
 // ---------------------------------------------------------------- materials ------
 function checkerTex() {
   if (!state.checker) {
-    state.checker = new THREE.TextureLoader().load(`${ASSET_BASE}textures/uv_checker_2048.png`);
+    state.checker = new THREE.TextureLoader().load(window.__CB_EMBED?.checker || `${ASSET_BASE}textures/uv_checker_2048.png`);
     state.checker.flipY = false;
     state.checker.colorSpace = THREE.SRGBColorSpace;
     state.checker.anisotropy = 8;
@@ -200,12 +248,21 @@ for (const [label, name] of [['Front', 'front'], ['Back', 'back'], ['Left', 'lef
 }
 function setView(name) {
   const v = REF_VIEWS.find((x) => x.name === name);
-  const h = state.ch ? state.ch.height() : 1.75;
+  const h = state.ch ? state.ch.height() + (state.cfg?.knight ? .3 : 0) : 1.75;
   const c = makeRefCamera(v, h, camera.aspect);
   camera.position.copy(c.position);
   camera.fov = c.fov; camera.updateProjectionMatrix();
   orbit.target.copy(c.userData.target);
   orbit.update();
+}
+function setFlatCamera(flat) {
+  flatCamera=flat;
+  const old=camera,aspect=main.clientWidth/Math.max(main.clientHeight,1);
+  camera=flat?new THREE.OrthographicCamera(-1.29*aspect,1.29*aspect,1.29,-1.29,.02,100):new THREE.PerspectiveCamera(31,aspect,.02,100);
+  camera.position.copy(old.position);camera.quaternion.copy(old.quaternion);
+  camera.aspect=aspect;orbit.object=camera;gizmo.camera=camera;
+  if(window.viewer)window.viewer.camera=camera;
+  orbit.update();resize();
 }
 function applySkeleton() {
   if (state.skel) { scene.remove(state.skel); state.skel = null; }
@@ -280,12 +337,17 @@ function attachClipProp(name) {
   if (!src || !sock) return;
   const w = src.clone(true);
   w.position.set(0, 0, 0); w.quaternion.identity(); w.scale.set(1, 1, 1);
+  if (meta.propTransform) {
+    const m = new THREE.Matrix4().set(...meta.propTransform.flat());
+    m.decompose(w.position, w.quaternion, w.scale);
+  }
   w.userData.viewerOnly = true;
   sock.add(w);
   state.clipProp = w;
 }
 
 function playClip(name, time = 0, play = true) {
+  $('clipSel').value = name;
   attachClipProp(name);
   const ch = state.ch;
   ch.mixer.stopAllAction();
@@ -311,6 +373,7 @@ function stopAnim() {
 }
 $('btnPlay').onclick = () => { if (state.clipAction && state.clipAction.getClip().name === $('clipSel').value) { state.clipAction.paused = false; state.playing = true; } else playClip($('clipSel').value); };
 $('btnPause').onclick = () => { if (state.clipAction) { state.clipAction.paused = true; state.playing = false; } };
+$('clipSel').onchange = (e) => playClip(e.target.value);
 $('scrub').oninput = (e) => {
   if (!state.clipAction || state.clipAction.getClip().name !== $('clipSel').value) playClip($('clipSel').value, 0, false);
   state.clipAction.paused = true; state.playing = false; state.clipAction.time = Number(e.target.value); state.ch.mixer.update(0);
@@ -327,7 +390,13 @@ $('btnReset').onclick = () => {
 };
 function holdPose() {
   // freeze whatever the mixer shows into the bones so manual edits start from it
-  if (state.clipAction) { state.ch.mixer.stopAllAction(); state.clipAction = null; state.playing = false; }
+  if (state.clipAction) {
+    const snapshot=Object.values(state.ch.bones).map(b=>[b,b.position.clone(),b.quaternion.clone()]);
+    state.ch.mixer.stopAllAction();
+    for(const [b,p,q] of snapshot){b.position.copy(p);b.quaternion.copy(q);}
+    state.clipAction = null; state.playing = false;
+    state.ch.root.updateMatrixWorld(true);
+  }
 }
 function ikTarget(side) {
   holdPose();
@@ -410,14 +479,21 @@ async function exportGLB() {
   ch.resetPose();
   const prevMode = state.matMode;
   if (state.upload) ch.setMaterial('texture', { map: state.upload }); else ch.setMaterial('original');
+  if(illustration?.enabled)illustration.apply();
   const viewerOnly = [];
   ch.root.traverse((o) => { if (o.userData.viewerOnly) viewerOnly.push([o, o.parent]); });
   for (const [o] of viewerOnly) o.removeFromParent();
   for (const m of Object.values(ch.parts)) m.visible = true;
-  const buf = await new GLTFExporter().parseAsync(ch.root, { binary: true, animations: ch.clips, onlyVisible: false, maxTextureSize: 4096 });
+  const hiddenInk=[];
+  if(illustration&&(!illustration.enabled||!illustration.ink))ch.root.traverse(o=>{if(o.userData.illustrationInk)hiddenInk.push([o,o.parent]);});
+  for(const [o] of hiddenInk)o.removeFromParent();
+  const clips=illustration?.enabled?illustration.exportTracks(ch.clips):ch.clips;
+  const buf = await new GLTFExporter().parseAsync(ch.root, { binary: true, animations: clips, onlyVisible: false, maxTextureSize: 4096 });
+  for(const [o,p] of hiddenInk)p.add(o);
   for (const [o, p] of viewerOnly) p.add(o);
   for (const [n, [q, p]] of Object.entries(saved)) { ch.bones[n].quaternion.copy(q); ch.bones[n].position.copy(p); }
   state.matMode = prevMode; applyMaterial();
+  if(illustration)illustration.apply();
   return buf;
 }
 function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); return a.href; }
@@ -435,6 +511,8 @@ function exportConfig() {
   } : {});
   base.animations = state.ch.clips.map((c) => ({ ...((state.cfg && state.cfg.animations || []).find((a) => a.name === c.name) || {}), name: c.name, duration: c.duration }));
   base.files = { glb: `${id}.glb` };
+  if (base.knight) base.knightBuild = false;
+  if(illustration?.enabled){base.material={...base.material,mode:'illustrated_baked_ramps',lighting:'baked unlit paint',outlines:'reversed-winding meshes'};base.illustration={version:1,portable:true,camera:'orthographic',notes:'Painted ramp textures and ink shells; uses KHR_materials_unlit.'};}
   return base;
 }
 // HOSTED: the published web version cannot start downloads or open tabs, so it keeps the
@@ -475,6 +553,7 @@ function tick() {
     if (state.clipAction && state.playing) $('scrub').value = state.clipAction.time;
   }
   orbit.update();
+  illustration?.update();
   renderer.render(scene, camera);
   frames++; fpsT += dt;
   if (fpsT > 0.5) { fps = frames / fpsT; frames = 0; fpsT = 0; }
@@ -486,7 +565,7 @@ function tick() {
 }
 
 // ---------------------------------------------------------------- boot -----------
-window.viewer = { THREE, renderer, scene, camera, orbit, state, loadCharacter, loadFromIndex, setView, applyMaterial, ikTarget, solveIK,
+window.viewer = { THREE, renderer, scene, camera, orbit, state, loadCharacter, loadFromIndex, setView, setFlatCamera, applyMaterial, ikTarget, solveIK,
   playClip, exportGLB, exportConfig, setMaterialMode: (m) => { state.matMode = m; $('matSel').value = m; applyMaterial(); } };
 
 async function boot() {
@@ -500,13 +579,44 @@ async function boot() {
     const cfg = params.get('config') ? await fetchJSON(params.get('config')).catch(() => null) : null;
     await loadCharacter(params.get('glb'), cfg, params.get('props'));
   } else {
-    const id = params.get('char') || 'master_blank';
+    const id = params.get('char') || (window.__KNIGHT_PREVIEW ? 'aureate_knight' : 'master_blank');
     $('charSel').value = id;
     await loadFromIndex(id);
   }
   await loadWeapons();
+  if (state.cfg?.knight) {
+    const old = state.weapons?.getObjectByName('Sword2H');
+    if (old) old.removeFromParent();
+    state.weapons ||= new THREE.Group();
+    state.weapons.add(knightSword());
+  }
+  if(window.__KNIGHT_PREVIEW&&!params.has('buildKnight')){
+    illustration=new Illustration(window.viewer);window.viewer.illustration=illustration;
+    if($('artOriginal'))$('artOriginal').onclick=()=>{illustration.enabled=false;illustration.apply();$('artOriginal').classList.add('on');$('artPainted').classList.remove('on');};
+    if($('artPainted'))$('artPainted').onclick=()=>{illustration.enabled=true;illustration.apply();$('artPainted').classList.add('on');$('artOriginal').classList.remove('on');};
+    if($('flatCamera'))$('flatCamera').onchange=e=>setFlatCamera(e.target.checked);
+    if($('artInk'))$('artInk').onchange=e=>{illustration.ink=e.target.checked;illustration.apply();};
+    if($('btnPNG'))$('btnPNG').onclick=()=>{
+      const bg=scene.background,alpha=renderer.getClearAlpha();
+      const hidden=[];for(const o of scene.children)if(o!==state.ch.root&&!o.isLight){hidden.push([o,o.visible]);o.visible=false;}
+      scene.background=null;renderer.setClearAlpha(0);renderer.render(scene,camera);
+      const a=document.createElement('a');a.href=renderer.domElement.toDataURL('image/png');a.download='Aureate-Knight-Frame.png';a.click();
+      scene.background=bg;renderer.setClearAlpha(alpha);for(const [o,visible] of hidden)o.visible=visible;
+    };
+  }
   if (params.get('clip')) {
     playClip(params.get('clip'), Number(params.get('t') || 0), !params.get('t'));
+  } else if (window.__KNIGHT_PREVIEW) {
+    playClip('hover_sword_vigil');
+  }
+  if ($('knightClips')) {
+    for (const [name,label] of [['hover_sword_vigil','✦ Hovering sword vigil'],['sword_2h_idle','Sword guard'],['sword_2h_slash','Sword slash'],['walk_in_place','Walk cycle'],['knight_salute','Knight salute']]) {
+      const button=document.createElement('button');button.textContent=label;
+      button.onclick=()=>{ $('chkLoop').checked=true;playClip(name); };
+      $('knightClips').appendChild(button);
+    }
+    camera.position.set(2.2,1.7,4.5);camera.fov=31;camera.updateProjectionMatrix();orbit.target.set(0,1.03,0);orbit.update();
+    if(illustration){camera.position.set(1.4,1.43,5.8);orbit.target.set(0,1.20,0);orbit.update();setFlatCamera(true);}
   }
   if (params.get('mode')) window.viewer.setMaterialMode(params.get('mode'));
   if (params.get('view')) setView(params.get('view'));

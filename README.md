@@ -1,5 +1,9 @@
 # Gamboligy character base (humanoid template v1)
 
+**Knight demo:** [Aureate playground and build instructions](KNIGHT.md).
+Run the viewer and open `/viewer/knight.html` for the armored rig, floating sword
+vigil, salute, and existing animation library.
+
 A reusable, rigged, **blank** stylized adult humanoid for the slot-game pipeline:
 
 ```
