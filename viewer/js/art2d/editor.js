@@ -213,7 +213,7 @@ class Editor2D {
   }
   undo() { const h = this.undoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.before[i]); }); this.redoStack.push(h); this.afterHistory(h); return h.label; }
   redo() { const h = this.redoStack.pop(); if (!h) return null; h.targets.forEach(([o, k], i) => { res(o)[k] = clone(h.after[i]); }); this.undoStack.push(h); this.afterHistory(h); return h.label; }
-  afterHistory(h) { if (h.attId) this.rebuild(h.attId); else this.rebuild(); this.refreshPanel(); }
+  afterHistory(h) { if (h.attId) this.rebuild(h.attId); else this.rebuild(); this.alphaCache.clear(); this.syncTextures(); this.refreshPanel(); }
   // (inverse binds are part of every bones snapshot, so undo/redo restore them together with the setup pose)
 
   // ---------------------------------------------------------------- clips & keys --
@@ -732,7 +732,7 @@ class Editor2D {
     on('p2BrushR', 'change', (e) => { this.brush.radius = +e.target.value; });
     on('p2BrushS', 'change', (e) => { this.brush.strength = +e.target.value; });
     on('p2Lock', 'change', (e) => { if (!this.sel.bone) return; e.target.checked ? this.brush.locked.add(this.sel.bone) : this.brush.locked.delete(this.sel.bone); });
-    on('p2Replace', 'change', async (e) => { const f = e.target.files[0]; if (f) await this.replaceSelected(new Uint8Array(await f.arrayBuffer())); e.target.value = ''; });
+    on('p2Replace', 'change', async (e) => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { await this.replaceSelected(new Uint8Array(await f.arrayBuffer())); } catch (err) { $(p, '#p2Report').textContent = `replace failed, nothing changed: ${err.message}`; } });
     on('p2Isolate', 'click', () => { this.isolate = this.sel.slot ? new Set([this.sel.slot]) : null; });
     on('p2ShowAll', 'click', () => { this.isolate = null; this.hidden.clear(); this.refreshPanel(); });
     on('p2OrderClear', 'click', () => this.clearOrderKey());
@@ -741,7 +741,7 @@ class Editor2D {
     on('p2Ref', 'change', (e) => { const r = this.project.editor.reference; if (r) r.visible = e.target.checked; });
     for (const k of ['O', 'S', 'X', 'Y']) on('p2Ref' + k, 'input', (e) => { const r = this.project.editor.reference; if (!r) return; r[{ O: 'opacity', S: 'scale', X: 'x', Y: 'y' }[k]] = +e.target.value; });
     on('p2Open', 'change', async (e) => { const f = e.target.files[0]; if (f) await this.openZip(new Uint8Array(await f.arrayBuffer()), f.name); e.target.value = ''; });
-    on('p2Import', 'change', async (e) => { const m = new Map(); for (const f of e.target.files) m.set(f.name, new Uint8Array(await f.arrayBuffer())); await this.importLayered(m); e.target.value = ''; });
+    on('p2Import', 'change', async (e) => { const m = new Map(); for (const f of e.target.files) m.set(f.name, new Uint8Array(await f.arrayBuffer())); e.target.value = ''; try { await this.importLayered(m); } catch { /* reported in the panel; project unchanged */ } });
     on('p2Save', 'click', () => download(saveProjectZip(this.project, this.store), `${this.project.characterId}.character2d.zip`, 'application/zip'));
     on('p2Reload', 'click', () => this.reopenSaved());
     on('p2Runtime', 'click', () => this.exportRuntime());
@@ -1054,27 +1054,44 @@ class Editor2D {
       if (hadWeights) autoWeightAttachment(this.project, att.id);
     });
   }
+  /**
+   * One undoable step around an async project change (image replacement, layered import, fitting).
+   * If anything throws, every target is restored to its prior state and no history entry is left behind.
+   */
+  async transact(label, targets, fn, attId = null) {
+    this.begin(label, targets, attId);
+    const pending = this.pending;
+    try {
+      const out = await fn();
+      this.end();
+      return out;
+    } catch (e) {
+      pending.targets.forEach(([o, k], i) => { res(o)[k] = clone(pending.before[i]); });
+      this.pending = null;
+      this.rebuild();
+      throw e;
+    } finally { await this.syncTextures(); this.refreshPanel(); }
+  }
+  /** Upload any image the renderer has not seen yet (new revisions, imports, reopened projects). */
+  async syncTextures() {
+    for (const [id, im] of Object.entries(this.project.images)) {
+      if (this.renderer.textures.has(id) || !this.store.has(im.path)) continue;
+      const img = new Image(); img.src = this.store.url(im.path); await img.decode(); this.renderer.setTexture(id, img);
+    }
+    this.rebuild(); this.renderer.invalidate();
+  }
+  allTargets() { return [[this.project, 'attachments'], [this.project, 'images'], [this.project, 'slots'], [this.project, 'bones'], [this.project, 'clips'], [this.project, 'skins']]; }
+
   async replaceSelected(bytes) {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment]; if (!a) { alert('Select a layer first.'); return; }
-    const snap = [[this.project, 'attachments'], [this.project, 'images'], [this.project, 'slots'], [this.project, 'bones'], [this.project, 'clips']];
-    this.begin(`replace image ${a.id}`, snap);
-    await replaceImage(this.project, this.store, a.id, bytes);
-    this.end();
-    this.rebuild();
-    const im = this.project.images[this.project.attachments[a.id].image];
-    const img = new Image(); img.src = this.store.url(im.path); await img.decode(); this.renderer.setTexture(this.project.attachments[a.id].image, img);
-    this.alphaCache.delete(this.project.attachments[a.id].image);
-    this.refreshPanel();
+    await this.transact(`replace image ${a.id}`, this.allTargets(), () => replaceImage(this.project, this.store, a.id, bytes));
+    this.alphaCache.clear();
   }
   async importLayered(files) {
-    const snap = [[this.project, 'attachments'], [this.project, 'images'], [this.project, 'slots'], [this.project, 'bones']];
-    this.begin('import layered art', snap);
     let res;
-    try { res = await importLayers(this.project, this.store, files); } catch (e) { this.pending = null; alert(e.message); return; }
-    this.end(); this.rebuild();
-    await this.renderer.loadImages(this.project, (p) => this.store.url(p));
+    try { res = await this.transact('import layered art', this.allTargets(), () => importLayers(this.project, this.store, files)); }
+    catch (e) { $(this.panel, '#p2Report').textContent = `import failed, nothing changed: ${e.message}`; throw e; }
     $(this.panel, '#p2Report').textContent = `imported ${res.added.length} layer(s): ${res.added.join(', ')}` + (res.skipped.length ? `\nskipped:\n  ${res.skipped.join('\n  ')}` : '');
-    this.refreshPanel();
     return res;
   }
   async reopenSaved() {

@@ -4,7 +4,7 @@
 import { SCHEMA, Rig, affInv, affMul, affApply, affCompose, affDecompose } from './core.js';
 import { readZip, writeZip, textOf, toBytes } from './zip.js';
 import { validateProject, computeInverseBinds, stringifyProject } from './schema.js';
-import { gridMesh, bleedEdges, autoWeights, pruneWeights } from './mesh.js';
+import { gridMesh, bleedEdges, autoWeights, pruneWeights, findTriangle } from './mesh.js';
 
 export class AssetStore {
   constructor() { this.files = new Map(); this.urls = new Map(); }
@@ -102,7 +102,10 @@ export async function addArtToSlot(project, store, { slotId, name, bytes, imgDat
   imgData ||= await decodeImage(bytes);
   bleedEdges(imgData.data, imgData.width, imgData.height, 2);
   const png = await encodePNG(imgData);
-  const imgId = `${slotId}__${name}`.replace(/[^\w.-]+/g, '_'), path = `images/${imgId}.png`;
+  // a re-import never overwrites bytes another revision (or Undo) may still need
+  const stem = `${slotId}__${name}`.replace(/[^\w.-]+/g, '_');
+  let imgId = stem, path = `images/${imgId}.png`;
+  for (let n = 2; project.images[imgId] || store.has(path); n++) { imgId = `${stem}__r${n}`; path = `images/${imgId}.png`; }
   store.set(path, png);
   project.images[imgId] = { path, w: imgData.width, h: imgData.height, bytes: png.length };
   const w = imgData.width, h = imgData.height;
@@ -167,17 +170,23 @@ function imageRevision(project, store, attachment, img, png) {
   return id;
 }
 
-/** Nearest bind-space samples used to transfer both weights and existing deformation keys. */
-function replacementSamples(source, target) {
+/**
+ * Transfer samples for weights and deformation keys: each new vertex takes the barycentric blend of the
+ * old triangle that contains it (bind space), so the same art at a new resolution deforms identically.
+ * Vertices outside the old mesh fall back to the nearest old vertex.
+ */
+function replacementSamples(source, sourceTris, target) {
   const result = [];
   for (let v = 0; v < target.length; v += 2) {
-    const best = [];
-    for (let u = 0; u < source.length; u += 2) {
-      const d = Math.hypot(source[u] - target[v], source[u + 1] - target[v + 1]);
-      if (best.length < 3 || d < best[2][0]) { best.push([d, u / 2]); best.sort((a, b) => a[0] - b[0]); if (best.length > 3) best.pop(); }
+    const hit = findTriangle(source, sourceTris, target[v], target[v + 1]);
+    if (hit) {
+      const t = hit.tri * 3;
+      result.push([0, 1, 2].map((k) => [sourceTris[t + k], hit.bc[k]]).filter(([, w]) => w > 1e-9));
+      continue;
     }
-    if (best[0]?.[0] < 1e-6) result.push([[best[0][1], 1]]);
-    else { const sum = best.reduce((s, [d]) => s + 1 / (d + 1) ** 2, 0); result.push(best.map(([d, i]) => [i, 1 / (d + 1) ** 2 / sum])); }
+    let bi = 0, bd = Infinity;
+    for (let u = 0; u < source.length; u += 2) { const d = Math.hypot(source[u] - target[v], source[u + 1] - target[v + 1]); if (d < bd) { bd = d; bi = u / 2; } }
+    result.push([[bi, 1]]);
   }
   return result;
 }
@@ -205,7 +214,7 @@ export async function replaceImage(project, store, attId, bytes) {
     moved.vertices = mesh.vertices; moved.triangles = mesh.triangles; moved.weights = null;
     moved.source = { kind: 'imported', note: 'artist artwork (re-meshed, footprint and contact markers preserved)' };
     project.attachments[attId] = moved;
-    const target = new Rig(project).attachments.get(attId).bind, samples = replacementSamples(source, target);
+    const target = new Rig(project).attachments.get(attId).bind, samples = replacementSamples(source, a.triangles, target);
     if (a.weights) moved.weights = samples.map((near) => {
       const weights = new Map();
       for (const [i, k] of near) for (let j = 0; j < a.weights[i].length; j += 2) {

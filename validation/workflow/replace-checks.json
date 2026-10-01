@@ -1,0 +1,52 @@
+{
+  "checks": {
+    "sameSize": true,
+    "weighted2x": true,
+    "deform2x": true,
+    "mirroredProp": true,
+    "repeatedImport": true,
+    "failures": true,
+    "valid": true,
+    "noPageErrors": true
+  },
+  "details": {
+    "sameSize": {
+      "changed": true,
+      "undoPixels": true,
+      "redoPixels": true
+    },
+    "weighted2x": {
+      "weightsValid": true,
+      "renderedIoU": 0.9923,
+      "undoPixels": true
+    },
+    "deform2x": {
+      "clip": "_qa_pose_cycle",
+      "time": 6.8,
+      "keysMatchTopology": true,
+      "finite": true,
+      "renderedIoU": 0.9989,
+      "undoPixels": true
+    },
+    "mirroredProp": {
+      "maxMarkerDriftPx": 0,
+      "mirrorKept": true,
+      "undoPixels": true
+    },
+    "repeatedImport": {
+      "secondChanged": true,
+      "undoRestoresFirstPixels": true,
+      "revisions": 1,
+      "undoAll": true
+    },
+    "failures": {
+      "replaceThrew": true,
+      "importThrew": true,
+      "projectUnchanged": true,
+      "stillUsable": true,
+      "pixels": true
+    },
+    "valid": true
+  },
+  "errors": []
+}
