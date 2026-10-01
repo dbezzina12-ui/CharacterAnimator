@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-01T03:21:27.631Z",
+  "date": "2026-10-01T14:38:58.804Z",
   "passed": 26,
   "failed": 0,
   "info": 3,
@@ -334,6 +334,7 @@
         ],
         "foreign": [],
         "events": [
+          "contact_detonator_2d 1.90s  button_up",
           "contact_detonator_2d 1.10s  button_down"
         ]
       }
@@ -383,8 +384,8 @@
       "pass": null,
       "info": true,
       "details": {
-        "evalMs": 0.035,
-        "editorFrameMs": 1.9,
+        "evalMs": 0.171,
+        "editorFrameMs": 1.93,
         "attachments": 206,
         "vertices": 10472,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
@@ -592,8 +593,8 @@
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.035,
-    "editorFrameMs": 1.9,
+    "evalMs": 0.171,
+    "editorFrameMs": 1.93,
     "attachments": 206,
     "vertices": 10472,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"

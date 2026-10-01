@@ -9,46 +9,46 @@
    "clip": "idle",
    "type": "video/webm;codecs=vp9",
    "seconds": 8,
-   "renderFps": 36.1,
+   "renderFps": 27.3,
    "skin": "painted",
    "file": "deliverables/painted-knight/videos/idle.webm",
-   "bytes": 1290711
+   "bytes": 1388502
   },
   {
    "clip": "hover_sword_vigil",
    "type": "video/webm;codecs=vp9",
    "seconds": 8,
-   "renderFps": 36,
+   "renderFps": 21.3,
    "skin": "painted",
    "file": "deliverables/painted-knight/videos/hover_sword_vigil.webm",
-   "bytes": 1267287
+   "bytes": 1060698
   },
   {
    "clip": "sword_2h_idle",
    "type": "video/webm;codecs=vp9",
    "seconds": 4,
-   "renderFps": 36.5,
+   "renderFps": 21.3,
    "skin": "painted",
    "file": "deliverables/painted-knight/videos/sword_2h_idle.webm",
-   "bytes": 545713
+   "bytes": 429704
   },
   {
    "clip": "sword_2h_slash",
    "type": "video/webm;codecs=vp9",
    "seconds": 4,
-   "renderFps": 39.3,
+   "renderFps": 17.5,
    "skin": "painted",
    "file": "deliverables/painted-knight/videos/sword_2h_slash.webm",
-   "bytes": 574346
+   "bytes": 391096
   },
   {
    "clip": "knight_salute",
    "type": "video/webm;codecs=vp9",
    "seconds": 8,
-   "renderFps": 39,
+   "renderFps": 27.4,
    "skin": "painted",
    "file": "deliverables/painted-knight/videos/knight_salute.webm",
-   "bytes": 701751
+   "bytes": 675894
   }
  ]
 }

@@ -132,6 +132,9 @@ export async function exportFramePNG(project, store, rig, pose, { scale = 1, mar
  * project origin = ground point under the character), frames are trimmed and packed with offsets.
  */
 export async function exportSpriteSheets(project, store, { clips = null, fps = 30, scale = 0.5, maxSheet = 2048, pad = 2, extrude = 1, skin = 'default', onProgress = null } = {}) {
+  // never bake frames from deformation keys that belong to another mesh (or a broken deformFrom chain)
+  const bad = validateProject(project).errors.filter((e) => /deform/.test(e));
+  if (bad.length) throw new Error('sprite export refused: ' + bad.slice(0, 3).join('; '));
   const rig = new Rig(project); rig.setSkin(skin);
   const r = await offscreenRenderer(project, store);
   const names = clips || project.clips.map((c) => c.name);

@@ -85,6 +85,34 @@ function sampleStep(tr, t) {
   const i = keyIndex(tr.t, t);
   return i < 0 ? void 0 : tr.v[i];
 }
+function meshSamples(src, srcTris, dst) {
+  const out = [];
+  for (let v = 0; v < dst.length; v += 2) {
+    const x = dst[v], y = dst[v + 1];
+    let hit = null;
+    for (let i = 0; i < srcTris.length && !hit; i += 3) {
+      const a = srcTris[i], b = srcTris[i + 1], c = srcTris[i + 2];
+      const ax = src[a * 2], ay = src[a * 2 + 1], bx = src[b * 2], by = src[b * 2 + 1], cx = src[c * 2], cy = src[c * 2 + 1];
+      const d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+      if (Math.abs(d) < 1e-12) continue;
+      const l1 = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / d, l2 = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / d, l3 = 1 - l1 - l2;
+      if (l1 >= -1e-9 && l2 >= -1e-9 && l3 >= -1e-9) hit = [[a, l1], [b, l2], [c, l3]].filter(([, w]) => w > 1e-9);
+    }
+    if (!hit) {
+      let bi = 0, bd = Infinity;
+      for (let u = 0; u < src.length; u += 2) {
+        const dd = (src[u] - x) ** 2 + (src[u + 1] - y) ** 2;
+        if (dd < bd) {
+          bd = dd;
+          bi = u / 2;
+        }
+      }
+      hit = [[bi, 1]];
+    }
+    out.push(hit);
+  }
+  return out;
+}
 function frameTimes(duration, fps, loop) {
   const n = Math.max(1, Math.round(duration * fps));
   const out = [];
@@ -133,6 +161,7 @@ var Rig = class {
     this.slotIndex = new Map(this.slots.map((s, i) => [s.id, i]));
     this.setupOrder = this.slots.map((s) => s.id);
     this.attachments = /* @__PURE__ */ new Map();
+    this.deformFromIds = /* @__PURE__ */ new Set();
     for (const a of Object.values(P.attachments)) this.rebuildAttachment(a.id);
     this.constraints = (P.constraints || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     this.hands = P.hands || {};
@@ -222,6 +251,9 @@ var Rig = class {
     }
     const rec = { def: a, bind, uvs: null, tris: a.triangles.slice(), wb, ww, place, nv };
     this.attachments.set(id, rec);
+    this.deformFromIds || (this.deformFromIds = /* @__PURE__ */ new Set());
+    if (a.deformFrom && a.deformFrom !== id) this.deformFromIds.add(id);
+    else this.deformFromIds.delete(id);
     return rec;
   }
   // ---------------------------------------------------------------- evaluation -----
@@ -330,13 +362,41 @@ var Rig = class {
     if (opts.drawOrder) order = opts.drawOrder;
     const drawOrder = resolveOrder(order, this.setupOrder).map((id) => this.slotIndex.get(id));
     const deform = /* @__PURE__ */ new Map();
+    let deformSkipped = null;
     for (const layer of layers) for (const [attId, tr] of Object.entries(layer.deform || {})) {
       if (tr.disabled) continue;
       const v = sampleVector(tr, t);
       if (!v) continue;
+      const rec = this.attachments.get(attId);
+      if (!rec || v.length !== rec.nv * 2) {
+        (deformSkipped || (deformSkipped = /* @__PURE__ */ new Set())).add(attId);
+        continue;
+      }
       const prev = deform.get(attId);
       if (!prev) deform.set(attId, Float64Array.from(v));
       else for (let k = 0; k < v.length; k++) prev[k] += v[k];
+    }
+    if (this.deformFromIds?.size) {
+      const done = /* @__PURE__ */ new Set();
+      for (let pass = 0; pass < 4; pass++) for (const id of this.deformFromIds) {
+        if (done.has(id)) continue;
+        const from = this.attachments.get(id)?.def.deformFrom;
+        if (this.deformFromIds.has(from) && !done.has(from)) continue;
+        done.add(id);
+        const src = deform.get(from), S = src && this.deformSamples(id, from);
+        if (!S) continue;
+        const own = deform.get(id), out = own || new Float64Array(S.length * 2);
+        for (let v = 0; v < S.length; v++) {
+          let x = 0, y = 0;
+          for (const [i, k] of S[v]) {
+            x += src[i * 2] * k;
+            y += src[i * 2 + 1] * k;
+          }
+          out[v * 2] += x;
+          out[v * 2 + 1] += y;
+        }
+        if (!own) deform.set(id, out);
+      }
     }
     for (let i = 0; i < this.bones.length; i++) {
       const w = this.world[i], b = this.invBind[i], m = this.skinMats[i];
@@ -347,7 +407,7 @@ var Rig = class {
       m[4] = w[0] * b[4] + w[2] * b[5] + w[4];
       m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
     }
-    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets };
+    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets, ...deformSkipped ? { deformSkipped: [...deformSkipped] } : {} };
   }
   _applyBones(bones, t) {
     if (!bones) return;
@@ -462,6 +522,16 @@ var Rig = class {
     const E = pos(fi);
     out.error = Math.hypot(E[0] - T[0], E[1] - T[1]);
     return out;
+  }
+  /** Samples of attachment `id`'s bind vertices in the bind mesh of `from` (cached per mesh pair). */
+  deformSamples(id, from) {
+    const dst = this.attachments.get(id), src = this.attachments.get(from);
+    if (!dst || !src) return null;
+    const c = (this._deformSamples || (this._deformSamples = /* @__PURE__ */ new Map())).get(id);
+    if (c && c.dst === dst && c.src === src) return c.S;
+    const S = meshSamples(src.bind, src.tris, dst.bind);
+    this._deformSamples.set(id, { dst, src, S });
+    return S;
   }
   /** Deformed vertex positions (world px) of attachment `id` for the last evaluate(). */
   skinAttachment(id, pose, out) {

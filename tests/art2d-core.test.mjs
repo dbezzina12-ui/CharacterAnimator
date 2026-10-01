@@ -1,9 +1,10 @@
 // node tests/art2d-core.test.mjs — unit tests for the pure 2D core (no browser needed).
 import assert from 'node:assert/strict';
-import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv, easeU } from '../viewer/js/art2d/core.js';
+import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv, easeU, meshSamples, remapDeformKeys } from '../viewer/js/art2d/core.js';
+import { planFit, canvasFit, footprintFit } from '../viewer/js/art2d/fitting.js';
 import { gridMesh, checkMesh, addVertex, deleteVertex, autoWeights, smoothWeights, paintWeights, normalizeWeights } from '../viewer/js/art2d/mesh.js';
 import { writeZip, readZip, textOf } from '../viewer/js/art2d/zip.js';
-import { validateProject, computeInverseBinds, runtimeSubset } from '../viewer/js/art2d/schema.js';
+import { validateProject, computeInverseBinds, runtimeSubset, stringifyProject } from '../viewer/js/art2d/schema.js';
 
 let passed = 0;
 const test = async (name, fn) => { await fn(); passed++; console.log('ok -', name); };
@@ -180,5 +181,92 @@ await test('easing per key (step keeps impacts crisp) and disabled corrections',
   assert.ok(Math.abs(on - off - 30) < 1e-9, 'disabled correction is ignored, data kept');
   p.clips[0].corrections.deform = { 'arm.default': { t: [0], v: [[1, 2]] } };
   assert.ok(validateProject(p).errors.some((e) => /deform key 0 of arm.default/.test(e)), 'deform keys that no longer match the mesh are reported');
+});
+
+// ---- importer regressions: re-meshed art, replacement art, proportion placement
+const field = (x, y) => [0.1 * x - 3, 0.05 * y + 2];               // linear offset field: barycentric remap is exact
+const fieldKey = (rig, id) => { const b = rig.attachments.get(id).bind, v = []; for (let i = 0; i < b.length; i += 2) v.push(...field(b[i], b[i + 1]).map((x) => +x.toFixed(3))); return v; };
+const finite = (rig, id, pose) => Array.from(rig.skinAttachment(id, pose)).every(Number.isFinite);
+
+await test('re-meshing an animated mesh remaps every deformation key (no stale vertex counts), through save and runtime', () => {
+  const p = toyProject(), id = 'arm.default';
+  const rig0 = new Rig(p), old = { bind: Float64Array.from(rig0.attachments.get(id).bind), tris: p.attachments[id].triangles.slice() };
+  p.clips[0].tracks.deform = { [id]: { t: [0, 1], v: [fieldKey(rig0, id), fieldKey(rig0, id).map((x) => x * 2)] } };
+  p.clips[0].corrections.deform = { [id]: { t: [0.5], v: [fieldKey(rig0, id).map((x) => -x)], ease: ['smooth'] } };
+  const n0 = p.attachments[id].vertices.length / 2;
+  const fine = gridMesh(new Uint8Array(200 * 40).fill(255), 200, 40, { cell: 7 });     // the same art at a higher mesh density
+  p.attachments[id].vertices = fine.vertices; p.attachments[id].triangles = fine.triangles; p.attachments[id].weights = null;
+  const rig1 = new Rig(p), n1 = p.attachments[id].vertices.length / 2;
+  assert.ok(n1 > n0 * 2, `denser mesh (${n0} → ${n1} vertices)`);
+  assert.ok(validateProject(p).errors.some((e) => /mesh edited without remapping keys/.test(e)), 'stale keys are detected before the remap');
+  assert.equal(remapDeformKeys(p, id, meshSamples(old.bind, old.tris, rig1.attachments.get(id).bind)), 2, 'bake and correction tracks remapped');
+  const want = fieldKey(rig1, id), got = p.clips[0].tracks.deform[id].v[0];
+  assert.equal(got.length, n1 * 2);
+  for (let i = 0; i < got.length; i++) assert.ok(Math.abs(got[i] - want[i]) < 2e-3, 'linear offsets are reproduced exactly at the new vertices');
+  assert.deepEqual(p.clips[0].corrections.deform[id].ease, ['smooth'], 'easing kept');
+  assert.equal(validateProject(p).errors.length, 0);
+  // save (project JSON) and runtime subset keep the remapped keys; poses are identical and finite
+  const saved = JSON.parse(stringifyProject(p)), rt = JSON.parse(JSON.stringify(runtimeSubset(p)));
+  for (const q of [saved, rt]) {
+    const r = new Rig(q), a = r.evaluate('bend', 0.3), b = rig1.evaluate('bend', 0.3);
+    assert.ok(finite(r, id, a));
+    assert.deepEqual(Array.from(r.skinAttachment(id, a)), Array.from(rig1.skinAttachment(id, b)));
+  }
+});
+
+await test('deformation keys made for another mesh are skipped and reported, never skinned into invalid coordinates', () => {
+  const p = toyProject(), id = 'arm.default', rig = new Rig(p);
+  const clean = Array.from(rig.skinAttachment(id, rig.evaluate('bend', 0.4)));
+  p.clips[0].tracks.deform = { [id]: { t: [0], v: [new Array(213 * 2).fill(5)] } };   // 213-vertex keys on a different mesh
+  const pose = rig.evaluate('bend', 0.4);
+  assert.deepEqual(pose.deformSkipped, [id]);
+  assert.ok(finite(rig, id, pose));
+  assert.deepEqual(Array.from(rig.skinAttachment(id, pose)), clean, 'mesh drawn undeformed instead of with garbage offsets');
+});
+
+await test('replacement art plays the deformation of the piece it replaces (deformFrom): resampled, additive, chained, validated', () => {
+  const p = toyProject(), A = 'arm.default';
+  const fine = gridMesh(new Uint8Array(200 * 40).fill(255), 200, 40, { cell: 9 });
+  p.attachments['arm.painted'] = { ...structuredClone(p.attachments[A]), id: 'arm.painted', vertices: fine.vertices, triangles: fine.triangles, weights: null, deformFrom: A };
+  p.attachments['arm.v3'] = { ...structuredClone(p.attachments['arm.painted']), id: 'arm.v3', deformFrom: 'arm.painted' };
+  p.skins = [{ id: 'default' }, { id: 'painted', replace: { [A]: 'arm.painted' } }];
+  const rig = new Rig(p); rig.setSkin('painted');
+  p.clips[0].tracks.deform = { [A]: { t: [0], v: [fieldKey(rig, A)] } };
+  let pose = rig.evaluate('bend', 0.2);
+  const want = fieldKey(rig, 'arm.painted'), got = Array.from(pose.deform.get('arm.painted'));
+  assert.equal(got.length, want.length);
+  for (let i = 0; i < got.length; i++) assert.ok(Math.abs(got[i] - want[i]) < 2e-3, 'painted mesh receives the starter offsets at its own vertices');
+  assert.equal(pose.slotAttachment[rig.slotIndex.get('arm')], 'arm.painted');
+  assert.ok(finite(rig, 'arm.painted', pose));
+  // own keys on the replacement add on top; chains resolve source-first
+  p.clips[0].corrections.deform = { 'arm.painted': { t: [0], v: [new Array(want.length).fill(1)] } };
+  pose = rig.evaluate('bend', 0.2);
+  const own = Array.from(pose.deform.get('arm.painted')), chained = Array.from(pose.deform.get('arm.v3'));
+  for (let i = 0; i < own.length; i++) { assert.ok(Math.abs(own[i] - want[i] - 1) < 2e-3); assert.ok(Math.abs(chained[i] - own[i]) < 2e-3); }
+  // survives save and runtime export (deformFrom is part of the attachment)
+  const r2 = new Rig(JSON.parse(JSON.stringify(runtimeSubset(p)))); r2.setSkin('painted');
+  assert.deepEqual(Array.from(r2.evaluate('bend', 0.2).deform.get('arm.painted')), own);
+  assert.deepEqual(validateProject(p).errors, []);
+  // validation: missing source, self reference, loops
+  p.attachments['arm.v3'].deformFrom = 'arm.v3'; assert.ok(validateProject(p).errors.some((e) => /arm.v3: deformFrom/.test(e)));
+  p.attachments['arm.v3'].deformFrom = 'nope'; assert.ok(validateProject(p).errors.some((e) => /arm.v3: deformFrom "nope"/.test(e)));
+  p.attachments['arm.v3'].deformFrom = 'arm.painted'; p.attachments[A].deformFrom = 'arm.v3';
+  assert.ok(validateProject(p).errors.some((e) => /chain loops/.test(e)));
+});
+
+await test('proportion fitting keeps the layers.json position and rotation (replace mode reports a disagreeing placement)', () => {
+  const p = toyProject(), rig = new Rig(p);
+  const reg = { origin: [1000, 1000], scale: 0.5, canvas: { w: 2000, h: 2000 } };
+  const def = { file: 'arm.png', target: 'arm.default', x: 1040, y: 760, rotation: 12, mode: 'proportion' };
+  const img = { width: 200, height: 40, data: new Uint8ClampedArray(200 * 40 * 4) };
+  const s1 = planFit(p, { registration: reg, layers: [{ file: 'arm.png', def, bytes: null, image: img }] }, { skin: 'painted' });
+  const L = s1.layers[0], want = canvasFit(reg, def, 200, 40);
+  assert.equal(L.mode, 'proportion');
+  for (const k of ['x', 'y', 'rotation', 'scale']) assert.ok(Math.abs(L.fit[k] - want[k]) < 1e-9, `proportion keeps layers.json ${k}`);
+  assert.ok(Math.abs(L.fit.rotation - 12) < 1e-9 && L.fit.x !== footprintFit(p, rig, 'arm.default', 200, 40).x);
+  const s2 = planFit(p, { registration: reg, layers: [{ file: 'arm.png', def: { ...def, mode: 'replace' }, bytes: null, image: img }] }, { skin: 'painted' });
+  const fp = footprintFit(p, rig, 'arm.default', 200, 40);
+  assert.ok(Math.abs(s2.layers[0].fit.x - fp.x) < 1e-9, 'replace mode keeps the replaced footprint');
+  assert.match(s2.layers[0].placementNote || '', /choose proportion to keep the layers.json placement/);
 });
 console.log(`${passed} tests passed`);

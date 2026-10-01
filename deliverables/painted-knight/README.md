@@ -64,6 +64,6 @@ judgement. Please re-review them. Evidence: `validation/qa/QA-REPORT.md`, `valid
    guide marks where.
 6. **QA flags are heuristics.** The 10 px joint probe reports edge-on wrists as gaps. Those cases are
    excepted with a reason after a visual check, never silently.
-7. **Videos and performance** come from headless Chromium with CPU WebGL (SwiftShader), at about 36 fps
+7. **Videos and performance** come from headless Chromium with CPU WebGL (SwiftShader), at 17–27 fps for this recording (each video’s rate is in `videos/videos.json`; motion is real-time, only the frame count drops)
    rendered. They are WebM (VP9); no MP4 encoder was available. A GPU device plays at full rate.
 8. PSD import is not supported; use PNG layers plus `layers.json`.

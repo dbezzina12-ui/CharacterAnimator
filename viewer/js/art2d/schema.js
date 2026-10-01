@@ -95,6 +95,13 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
       }
     }
   }
+  // replacement art that plays another piece's deformation: the source must exist and the chain must end
+  for (const a of Object.values(p.attachments || {})) {
+    if (a.deformFrom === undefined || a.deformFrom === null) continue;
+    if (a.deformFrom === a.id || !p.attachments[a.deformFrom]) { E(`attachment ${a.id}: deformFrom "${a.deformFrom}" is not another attachment`); continue; }
+    const seen = new Set([a.id]); let cur = p.attachments[a.deformFrom];
+    while (cur?.deformFrom) { if (seen.has(cur.id)) { E(`attachment ${a.id}: deformFrom chain loops (${[...seen].join(' → ')})`); break; } seen.add(cur.id); cur = p.attachments[cur.deformFrom]; }
+  }
   for (const [side, hv] of Object.entries(p.handViews || {})) for (const [name, set] of Object.entries(hv.sets || {})) for (const [sl, a] of Object.entries(set.slots || {})) {
     if (!slots.has(sl)) E(`hand set ${side}/${name}: slot ${sl} does not exist`);
     if (a && !p.attachments[a]) E(`hand set ${side}/${name}: attachment ${a} is missing`);

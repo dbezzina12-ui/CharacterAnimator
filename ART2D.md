@@ -156,9 +156,25 @@ Tested format: PNG layers + `layers.json` (or a ZIP containing them). PSD is **n
 ```
 
 `origin` = the ground point under the character in canvas pixels (y down); `scale` = project px per
-canvas px; `x, y` = the layer's top-left in canvas pixels. Each layer becomes attachment `<slot>.<name>`,
-set as the slot's setup attachment, meshed from its alpha and **weighted from the slot's current art**
-(nearest bind-space vertices), so painted art inherits the rig. Unknown slots are listed, never guessed.
+canvas px; `x, y` = the top-left of the layer as displayed, in canvas pixels. Optional per layer (written by
+the paint-template pack): `rotation` (degrees about the layer centre), `mirror`, `scale` (project px per
+**layer** px, when the piece's resolution differs from the canvas — hand captures, props), `scaleX`/`scaleY`
+(the bone's setup scale, e.g. a foreshortened prop) and `w`/`h` (a PNG of another resolution keeps the listed
+displayed size). Each layer becomes attachment `<slot>.<name>`, set as the slot's setup attachment, meshed from
+its alpha and **weighted from the slot's current art** (nearest bind-space vertices), so painted art inherits
+the rig. Unknown slots are listed, never guessed.
+
+**Animated meshes survive re-imports.** Whenever a mesh is rebuilt — Replace image at a new resolution, a
+layered re-import onto the same `<slot>.<name>`, re-fitting a skin piece, Auto mesh, adding/deleting
+vertices — every deformation key of that attachment (bake and corrections, all clips) is resampled onto the
+new vertices (barycentric in the old bind mesh). New art that *replaces* an animated piece (a layered import
+with a new name, or a fitted skin piece) records `deformFrom: <replaced attachment>` and plays that piece's
+deformation resampled onto its own mesh, plus any keys of its own — so a painted cape keeps the cape flutter,
+and corrections authored later on the starter cape still apply. Keys that do not match their mesh (an old,
+already-broken file) are skipped and reported by the core, listed by validation, and refused by sprite and
+runtime export; they never produce invalid coordinates.
+
+Regression suite: `node scripts/check-2d-importer.mjs` → `validation/importer/REPORT.md`.
 
 ### Painting underlap art (read this before painting)
 
@@ -179,7 +195,10 @@ previewed on the skeleton; per layer adjust position / rotation / scale / pivot 
 *Replace* keeps the rig and matches the painted length; *Proportion* keeps the art and moves the next
 joint (variants such as the dwarf). Rigid or weighted (weights transferred barycentrically from the old
 mesh). Overlays, a clip preview (idle/hover/guard/slash/salute/walk) and *Check joint coverage* run before accepting. **Accept (one undo step)** installs everything into a
-separate skin (default `painted`) as **one undo step**; **Cancel** leaves the project untouched. The fit
+separate skin (default `painted`). Initial registration: *Replace* uses the footprint of the
+replaced piece (a `layers.json` placement that disagrees is reported in the panel); *Proportion* uses the
+`layers.json` position, rotation, mirror and scale. Switching the mode of a layer you have not adjusted yet
+re-registers it for that mode; an adjusted layer is never moved. **Cancel** leaves the project untouched. The fit
 is stored in the project (`fitting.templates[skin]`) so re-painted PNGs re-fit later without the
 import folder. The starter skin is never overwritten and stays selectable (skin menu).
 

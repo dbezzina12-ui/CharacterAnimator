@@ -1,9 +1,9 @@
 // 2D artwork mode of the CharacterAnimator viewer: editor UI on top of the shared 2D core.
 // Setup mode edits the bind pose (bones, pivots, meshes, weights, layer order); Animate mode keys the
 // current clip (bridged clips: the identifiable `corrections` layer; native 2D clips: their tracks).
-import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, sampleVector, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder } from './core.js';
+import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, sampleVector, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder, meshSamples, remapDeformKeys } from './core.js';
 import { Renderer2D, hitTest } from './render2d.js';
-import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell, replacementSamples } from './project-io.js';
+import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell } from './project-io.js';
 import { validateProject, computeInverseBinds } from './schema.js';
 import { gridMesh, addVertex, deleteVertex, smoothWeights, normalizeWeights, paintWeights } from './mesh.js';
 import { exportRuntimePackage, exportFramePNG, exportSpriteSheets, download, poseBounds, offscreenRenderer } from './exporters.js';
@@ -674,7 +674,9 @@ class Editor2D {
   deformDown(e, wx, wy) {
     const id = this.sel.attachment, d = this.drawn.find((x) => x.attachment === id); if (!d) return;
     const rec = this.rig.attachments.get(id), clip = this.clip, L = this.editLayer(clip), nv = rec.nv;
-    const tr = L.deform?.[id], base = (tr && sampleVector(tr, this.player.time)) || new Array(nv * 2).fill(0);
+    const tr = L.deform?.[id], keyed = tr && sampleVector(tr, this.player.time);
+    if (keyed && keyed.length !== nv * 2) { $(this.panel, '#p2Report').textContent = `${id}: its deformation keys were made for a ${keyed.length / 2}-vertex mesh (now ${nv}); fix the project before keying (see validation)`; return; }
+    const base = keyed || new Array(nv * 2).fill(0);
     const r = this.ovCanvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, R = this.brush.radius;
     const fall = new Float64Array(nv), inv = [];
     for (let v = 0; v < nv; v++) {
@@ -702,14 +704,7 @@ class Editor2D {
    * leaves keys with the wrong vertex count.
    */
   remapDeformKeys(attId, old) {
-    const target = this.rig.attachments.get(attId).bind, samples = replacementSamples(old.bind, old.tris, target);
-    let n = 0;
-    for (const clip of this.project.clips) for (const layer of [clip.tracks, clip.corrections]) {
-      const tr = layer?.deform?.[attId]; if (!tr) continue;
-      tr.v = tr.v.map((off) => off == null ? off : samples.flatMap((near) => [0, 1].map((ax) => +near.reduce((sum, [i, k]) => sum + (off[i * 2 + ax] || 0) * k, 0).toFixed(3))));
-      n++;
-    }
-    return n;
+    return remapDeformKeys(this.project, attId, meshSamples(old.bind, old.tris, this.rig.attachments.get(attId).bind));
   }
 
   selectBone(id) { this.sel.bone = id; if (id) this.sel.vertex = -1; this.refreshPanel(); }
@@ -1380,7 +1375,7 @@ class Editor2D {
     const F = this.fit; if (!F) return;
     await this.refreshFit();
     const P = F.preview, targets = [...this.allTargets(), [this.project, 'fitting']];
-    await this.transact(`fit artwork → skin ${F.session.skin}`, targets, () => { for (const k of ['attachments', 'images', 'slots', 'bones', 'skins', 'fitting']) this.project[k] = structuredClone(P[k]); });
+    await this.transact(`fit artwork → skin ${F.session.skin}`, targets, () => { for (const k of ['attachments', 'images', 'slots', 'bones', 'skins', 'fitting', 'clips']) this.project[k] = structuredClone(P[k]); });
     this.fit = null; this.rig.setSkin(F.session.skin);
     $(this.panel, '#p2Skin').innerHTML = (this.project.skins || []).map((x) => `<option ${x.id === F.session.skin ? 'selected' : ''}>${esc(x.id)}</option>`).join('');
     this.setMode(this.wasMode || 'animate'); this.renderFitPanel(); this.refreshPanel();
@@ -1438,6 +1433,7 @@ class Editor2D {
       <label class="small">paints <select id="p2FTarget"><option value="">(choose attachment)</option>${atts.map((id) => `<option ${id === L.target ? 'selected' : ''}>${esc(id)}</option>`).join('')}</select></label>
       <div class="grid2"><label class="small">mode <select id="p2FMode"><option value="replace" ${L.mode === 'replace' ? 'selected' : ''}>replace texture (same displayed size)</option><option value="proportion" ${L.mode === 'proportion' ? 'selected' : ''}>change proportions (rig follows art)</option></select></label>
       <label class="small">mesh <select id="p2FMesh">${['auto', 'rigid', 'weighted'].map((m) => `<option ${m === L.mesh ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
+      ${L.placementNote ? `<div class="small" style="color:#ffb86b">${esc(L.placementNote)}</div>` : ''}
       <div class="grid3">${['x', 'y', 'rotation', 'scale'].map((k) => `<label class="small">${k} <input type="number" data-ff="${k}" value="${(+L.fit[k]).toFixed(k === 'scale' ? 4 : 2)}" step="${k === 'scale' ? 0.005 : k === 'rotation' ? 0.5 : 0.5}"></label>`).join('')}
       <label class="small">pivot x <input type="number" data-fp="0" value="${L.fit.pivot[0].toFixed(1)}" step="1"></label><label class="small">pivot y <input type="number" data-fp="1" value="${L.fit.pivot[1].toFixed(1)}" step="1"></label>
       <label class="small"><input type="checkbox" id="p2FMirror" ${L.fit.mirror ? 'checked' : ''}> mirror (L/R)</label></div>
@@ -1454,7 +1450,8 @@ class Editor2D {
     box.querySelectorAll('[data-fi]').forEach((c) => c.onchange = () => { S.layers[+c.dataset.fi].include = c.checked; this.refreshFit(); });
     if (L) {
       q('#p2FTarget').onchange = (e) => this.updateFitLayer((l) => { l.target = e.target.value || null; l.slot = l.target ? this.project.attachments[l.target].slot : null; l.mapping = { ...l.mapping, status: l.target ? 'ok' : 'unresolved' }; l.include = !!l.target; if (l.target) resetFit(this.project, new Rig(this.project), l, S.registration); });
-      q('#p2FMode').onchange = (e) => this.updateFitLayer((l) => { l.mode = e.target.value; });
+      // switching mode re-registers a layer that was not adjusted yet (proportion uses the layers.json placement)
+      q('#p2FMode').onchange = (e) => this.updateFitLayer((l) => { const untouched = JSON.stringify(l.fit) === l.initialFit; l.mode = e.target.value; if (untouched) { resetFit(this.project, new Rig(this.project), l, S.registration); l.initialFit = JSON.stringify(l.fit); } });
       q('#p2FMesh').onchange = (e) => this.updateFitLayer((l) => { l.mesh = e.target.value; });
       box.querySelectorAll('[data-ff]').forEach((i) => i.onchange = () => this.updateFitLayer((l) => { l.fit = { ...l.fit, [i.dataset.ff]: +i.value }; }));
       box.querySelectorAll('[data-fp]').forEach((i) => i.onchange = () => this.updateFitLayer((l) => { const k = +i.dataset.fp, np = l.fit.pivot.slice(); const w0 = imageToWorld(l, 0, 0); np[k] = +i.value; l.fit = { ...l.fit, pivot: np }; const w1 = imageToWorld(l, 0, 0); l.fit.x += w0[0] - w1[0]; l.fit.y += w0[1] - w1[1]; }));

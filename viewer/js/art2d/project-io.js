@@ -1,7 +1,7 @@
 // Loading / saving 2D projects and importing layered artwork. Every file of a project lives in an
 // AssetStore (project-relative path -> bytes) so a project opened from a folder URL, a ZIP or a fresh
 // import saves identically, and nothing ever references blob:/absolute paths.
-import { SCHEMA, Rig, affInv, affMul, affApply, affCompose, affDecompose } from './core.js';
+import { SCHEMA, Rig, affInv, affMul, affApply, affCompose, affDecompose, meshSamples, remapDeformKeys } from './core.js';
 import { readZip, writeZip, textOf, toBytes } from './zip.js';
 import { validateProject, computeInverseBinds, stringifyProject } from './schema.js';
 import { gridMesh, bleedEdges, autoWeights, pruneWeights, findTriangle } from './mesh.js';
@@ -95,7 +95,7 @@ function bindPoints(rig, attId) { const r = rig.attachments.get(attId); return r
  * Weights are transferred from the slot's current attachment (nearest bind-space vertex, blended over the
  * 3 nearest), or created automatically from nearby bones when the slot is rigid/empty.
  */
-export async function addArtToSlot(project, store, { slotId, name, bytes, imgData = null, worldX, worldY, scale = 1, bone = null, weights = 'inherit', setDefault = true }) {
+export async function addArtToSlot(project, store, { slotId, name, bytes, imgData = null, worldX, worldY, scale = 1, scaleX = 1, scaleY = 1, rotation = 0, mirror = false, bone = null, weights = 'inherit', setDefault = true }) {
   let rig = new Rig(project);
   const slot = project.slots.find((s) => s.id === slotId);
   if (!slot) throw new Error(`unknown slot ${slotId}`);
@@ -111,17 +111,24 @@ export async function addArtToSlot(project, store, { slotId, name, bytes, imgDat
   const w = imgData.width, h = imgData.height;
   const mesh = gridMesh(alphaOf(imgData), w, h, { cell: meshCell(w, h), threshold: 6, margin: 2 });
   const boneId = bone || slot.bone, bi = rig.boneIndex.get(boneId);
-  const pivot = [w / 2, h / 2], pw = [worldX + w / 2 * scale, worldY - h / 2 * scale];
-  const T = affDecompose(affMul(affInv(rig.bindWorld[bi]), affCompose(pw[0], pw[1], 0, 1, 1)));
+  const pivot = [w / 2, h / 2], pw = [worldX + w / 2 * scale * Math.abs(scaleX), worldY - h / 2 * scale * Math.abs(scaleY)];
+  const T = affDecompose(affMul(affInv(rig.bindWorld[bi]), affCompose(pw[0], pw[1], rotation, scaleX, scaleY)));   // about the image centre
   const id = `${slotId}.${name}`;
   const prev = slot.attachment && project.attachments[slot.attachment];
+  // re-importing onto an existing attachment (e.g. the same layer at a higher resolution) changes its mesh:
+  // its deformation keys must be resampled, never left with the old vertex count
+  const before = project.attachments[id] ? { bind: Float64Array.from(rig.attachments.get(id).bind), tris: project.attachments[id].triangles.slice(), deformFrom: project.attachments[id].deformFrom } : null;
   const att = { id, name: `${slotId} (${name})`, slot: slotId, type: 'region', bone: boneId, image: imgId, imageScale: scale, pivot,
-    transform: { x: +T.x.toFixed(4), y: +T.y.toFixed(4), rotation: +T.rotation.toFixed(4), scaleX: 1, scaleY: 1, mirror: false },
+    transform: { x: +T.x.toFixed(4), y: +T.y.toFixed(4), rotation: +T.rotation.toFixed(4), scaleX: +T.scaleX.toFixed(6), scaleY: +T.scaleY.toFixed(6), mirror: !!mirror },
     vertices: mesh.vertices, triangles: mesh.triangles, weights: null, visible: true, opacity: 1, tint: [1, 1, 1], blend: 'normal',
     view: prev?.view || project.artView?.id || 'front', markers: null, source: { kind: 'imported', note: 'artist artwork' } };
+  // new art for a slot plays the deformation animation of the piece it replaces (a cape keeps its flutter)
+  if (before?.deformFrom) att.deformFrom = before.deformFrom;
+  else if (prev && prev.id !== id) att.deformFrom = prev.id;
   project.attachments[id] = att;
   rig = new Rig(project);
   const rec = rig.attachments.get(id);
+  if (before) remapDeformKeys(project, id, meshSamples(before.bind, before.tris, rec.bind));
   if (weights === 'inherit' && prev?.weights) {
     const src = bindPoints(rig, prev.id), sw = prev.weights;
     att.weights = [];
@@ -173,23 +180,9 @@ function imageRevision(project, store, attachment, img, png) {
 /**
  * Transfer samples for weights and deformation keys: each new vertex takes the barycentric blend of the
  * old triangle that contains it (bind space), so the same art at a new resolution deforms identically.
- * Vertices outside the old mesh fall back to the nearest old vertex.
+ * Vertices outside the old mesh fall back to the nearest old vertex. (Same sampler as core.meshSamples.)
  */
-export function replacementSamples(source, sourceTris, target) {
-  const result = [];
-  for (let v = 0; v < target.length; v += 2) {
-    const hit = findTriangle(source, sourceTris, target[v], target[v + 1]);
-    if (hit) {
-      const t = hit.tri * 3;
-      result.push([0, 1, 2].map((k) => [sourceTris[t + k], hit.bc[k]]).filter(([, w]) => w > 1e-9));
-      continue;
-    }
-    let bi = 0, bd = Infinity;
-    for (let u = 0; u < source.length; u += 2) { const d = Math.hypot(source[u] - target[v], source[u + 1] - target[v + 1]); if (d < bd) { bd = d; bi = u / 2; } }
-    result.push([[bi, 1]]);
-  }
-  return result;
-}
+export const replacementSamples = meshSamples;
 
 /** Replace art while preserving its canvas footprint, pivot, transform and marker positions. */
 export async function replaceImage(project, store, attId, bytes) {
@@ -223,11 +216,7 @@ export async function replaceImage(project, store, attId, bytes) {
       return pruneWeights(weights);
     });
     // A different mesh has different vertex indices; keep cape/deformation animation valid too.
-    for (const clip of project.clips || []) for (const layer of [clip.tracks, clip.corrections]) {
-      const tr = layer?.deform?.[attId]; if (!tr) continue;
-      tr.v = tr.v.map((offsets) => offsets == null ? offsets : samples.flatMap((near) =>
-        [0, 1].map((axis) => near.reduce((sum, [i, k]) => sum + (offsets[i * 2 + axis] || 0) * k, 0))));
-    }
+    remapDeformKeys(project, attId, samples);
   }
   if (!Object.values(project.attachments).some((att) => att.image === oldImage)) delete project.images[oldImage];
   computeInverseBinds(project);
@@ -237,8 +226,9 @@ export async function replaceImage(project, store, attId, bytes) {
 /**
  * Layered artwork import (tested formats: PNG layers + layers.json, or a ZIP of the same).
  * layers.json: { "canvas": {"w","h"}, "origin": [x, y] (ground point under the character, canvas px, y down),
- *   "scale": project px per canvas px (default 1), "layers": [{ "file": "forearm_L.png", "x": 10, "y": 20,
- *   "slot": "forearm_L" (default: file name), "name": "painted" (attachment name), "bone": optional }] }
+ *   "scale": project px per canvas px (default 1), "layers": [{ "file": "forearm_L.png", "x": 10, "y": 20 (top-left of the
+ *   displayed layer, canvas px), "rotation": degrees about the layer centre, "mirror", "scale": project px per LAYER px
+ *   (default: the canvas scale), "slot": "forearm_L" (default: file name), "name": "painted" (attachment name), "bone": optional }] }
  * Layers whose slot does not exist are reported, not guessed. Returns {added:[ids], skipped:[msg]}.
  */
 export async function importLayers(project, store, files) {
@@ -257,7 +247,10 @@ export async function importLayers(project, store, files) {
     if (!bytes) { skipped.push(`${L.file}: file missing`); continue; }
     const slotId = L.slot || L.file.replace(/\.png$/i, '');
     if (!project.slots.some((s) => s.id === slotId)) { skipped.push(`${L.file}: no slot "${slotId}" in this character`); continue; }
-    const id = await addArtToSlot(project, store, { slotId, name: L.name || 'painted', bytes, worldX: (L.x - ox) * scale, worldY: (oy - L.y) * scale, scale, bone: L.bone || null });
+    // per-layer scale / rotation / mirror as written by the paint-template pack (see fitting.canvasFit)
+    const img = await decodeImage(bytes), ls = (L.scale ?? scale) * (L.w ? L.w / img.width : 1);
+    const id = await addArtToSlot(project, store, { slotId, name: L.name || 'painted', bytes, imgData: img, worldX: (L.x - ox) * scale, worldY: (oy - L.y) * scale, scale: ls,
+      scaleX: L.scaleX ?? 1, scaleY: L.scaleY ?? 1, rotation: L.rotation || 0, mirror: !!L.mirror, bone: L.bone || null });
     added.push(id);
   }
   return { added, skipped };

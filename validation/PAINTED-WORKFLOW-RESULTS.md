@@ -5,12 +5,13 @@ values. Rows that only report a measurement are marked info and are not counted 
 
 | suite | command | result | output |
 |---|---|---|---|
-| 2D core unit tests | `node tests/art2d-core.test.mjs` | 16 / 16 pass | console |
+| 2D core unit tests | `node tests/art2d-core.test.mjs` | 20 / 20 pass (incl. exact key remap, stale-key guard, `deformFrom`, proportion placement) | console |
 | Acceptance (original brief) | `node scripts/check-2d.mjs` | 26 pass, 0 fail, 3 info (unreachable report, pose stress, CPU performance) | `validation/2d/REPORT.md` |
 | Upgrade-kit UI regression | `node scripts/check-2d-workflow.mjs` | pass (artwork undo/redo pixel hashes, inspector joint + hand corrections, save/reopen, resized prop landmarks 0 px drift, one render loop) | `validation/workflow/checks.json` |
 | Art replacement edge cases | `node scripts/check-2d-replace.mjs` | 8 / 8 pass | console |
 | Fitting workflow | `node scripts/check-2d-fitting.mjs` | 13 / 13 pass | `validation/fitting/checks.json` |
 | Corrections, hand views, colour, determinism | `node scripts/check-2d-corrections.mjs` | 14 / 14 pass | `validation/corrections/REPORT.md` |
+| Importer regressions (reported bugs) | `node scripts/check-2d-importer.mjs` | 14 / 14 pass: 2× cape re-import keeps keys (213 → 753 vertices) and motion; fitted painted cape plays the cape animation through save, runtime and sprites; proportion fit keeps layers.json position/rotation; pack placement exact for 206 pieces. The same suite fails on the previous code. | `validation/importer/REPORT.md` |
 | Visual QA (heuristics + human review) | `node scripts/qa-2d.mjs` | hero clips: 0 open flags except salute (2: brief vambrace squash); finger_tests_2d needs-work | `validation/qa/QA-REPORT.md`, `validation/qa/*.png` |
 
 Fitting check footage: the painted helmet is the only real painted art. The other pieces in

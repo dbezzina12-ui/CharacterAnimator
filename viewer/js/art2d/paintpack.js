@@ -5,7 +5,7 @@
 //  * paintTemplatePack(): per-piece canvases with SEPARATE guide layers (silhouette, joints/pivot/markers,
 //    underlap zones), a layers.json the fitting workflow re-imports directly, a clean preview without
 //    guides and a manifest of what exists / is still missing.
-import { Rig, affApply, affInv } from './core.js';
+import { Rig, affApply, affInv, affDecompose } from './core.js';
 import { offscreenRenderer, renderPose, poseBounds } from './exporters.js';
 import { decodeImage, encodePNG } from './project-io.js';
 import { slotAnchors, jointName } from './fitting.js';
@@ -120,7 +120,12 @@ export async function paintTemplatePack(project, store, { skin = 'painted', canv
       { path: `${dir}/guide-joints.png`, data: await canvasPNG(c2) }, { path: `${dir}/guide-underlap.png`, data: await canvasPNG(c3) });
     const cx = (centre[0] - x0) / cs, cy = (y1 - centre[1]) / cs;
     const status = sk.replace?.[a.id] ? (sk.status?.[a.id] || 'finished') : 'missing';
-    layers.push({ file: id2file(a.id), target: a.id, slot: a.slot, name: skin, x: +(cx - W / 2).toFixed(2), y: +(cy - H / 2).toFixed(2), rotation: +rot.toFixed(3), w: W, h: H,
+    // per-layer display scale: project px per image px (imageScale × the bone/attachment setup scale, e.g. a
+    // foreshortened prop); x, y = top-left of the DISPLAYED footprint in canvas px, so pieces whose resolution
+    // differs from the canvas scale are placed and sized exactly (fitting and layered import read the same fields)
+    const dp = affDecompose(rec.place), lsx = +dp.scaleX.toFixed(6), lsy = +dp.scaleY.toFixed(6), Wc = W * s * Math.abs(lsx) / cs, Hc = H * s * Math.abs(lsy) / cs;
+    layers.push({ file: id2file(a.id), target: a.id, slot: a.slot, name: skin, x: +(cx - Wc / 2).toFixed(2), y: +(cy - Hc / 2).toFixed(2), rotation: +rot.toFixed(3), w: W, h: H,
+      scale: s, ...(Math.abs(lsx - 1) > 1e-6 ? { scaleX: lsx } : {}), ...(Math.abs(lsy - 1) > 1e-6 ? { scaleY: lsy } : {}), ...(mir < 0 ? { mirror: true } : {}),
       mode: 'replace', mesh: a.weights ? 'weighted' : 'rigid' });
     pieces.push({ attachment: a.id, slot: a.slot, bone: a.bone, setupArt: isDefault, file: id2file(a.id), size: [W, H], displayScale: s, pivot: a.pivot, joints: anchorImg,
       markers: a.markers || null, mesh: a.weights ? 'weighted (bends: paint underlap at the joints)' : 'rigid (keep plates solid)', view: a.view, status,
@@ -134,7 +139,7 @@ export async function paintTemplatePack(project, store, { skin = 'painted', canv
   for (const b of rig.bones) { if (!/^(head|neck|chest|upperarm|forearm|hand|thigh|shin|foot)(_[LR])?$/.test(b.id)) continue; const m = rig.bindWorld[rig.boneIndex.get(b.id)], X = (m[4] - x0) / cs, Y = (y1 - m[5]) / cs; pg.strokeStyle = '#00e5ff'; pg.beginPath(); pg.arc(X, Y, 8, 0, 7); pg.stroke(); pg.fillStyle = '#00e5ff'; pg.fillText(jointName(b.id), X + 10, Y - 8); }
   files.push({ path: 'preview-joints.png', data: await canvasPNG(pc) });
   const manifest = { schema: 'gamboligy.paint-template/1.0', character: P.characterId, skin, canvas: { w: CW, h: CH }, origin, scale: cs,
-    note: 'Paint each piece on its own transparent PNG at exactly the listed size, named as in layers.json. Guides are separate layers: do not bake them into the art.',
+    note: 'Paint each piece on its own transparent PNG at exactly the listed size, named as in layers.json (a different resolution keeps the listed displayed size). Guides are separate layers: do not bake them into the art.',
     counts: { pieces: pieces.length, finished: pieces.filter((p) => p.status === 'finished').length, missing: pieces.filter((p) => p.status === 'missing').length },
     coverage, pieces };
   files.push({ path: 'layers.json', data: JSON.stringify({ canvas: { w: CW, h: CH }, origin, scale: cs, skin, layers }, null, 1) });

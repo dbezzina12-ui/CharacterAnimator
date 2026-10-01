@@ -12,7 +12,7 @@
 //                 art's second anchor (child bones and their art follow).
 // Mesh per layer: rigid (armour plates, props), weighted (inherits the replaced piece's weights by
 // barycentric transfer, or automatic weights when the piece was rigid).
-import { Rig, affApply, affInv, affMul, affCompose, affDecompose } from './core.js';
+import { Rig, affApply, affInv, affMul, affCompose, affDecompose, meshSamples, remapDeformKeys } from './core.js';
 import { gridMesh, bleedEdges, pruneWeights, findTriangle, autoWeights } from './mesh.js';
 import { decodeImage, encodePNG, meshCell } from './project-io.js';
 import { readZip, textOf, toBytes } from './zip.js';
@@ -106,11 +106,17 @@ export function footprintFit(project, rig, attId, w, h) {
     mirror: !!T.mirror, pivot: [a.pivot[0] * rx, a.pivot[1] * ry] };
 }
 
-/** Fit from layers.json canvas coordinates (top-left x, y; optional rotation about the layer centre). */
+/**
+ * Fit from layers.json canvas coordinates: x, y = top-left of the layer's displayed footprint (canvas px),
+ * optional rotation (degrees, about the layer centre), mirror, and per-layer scale = project px per layer px
+ * (default: the canvas scale) with optional scaleX/scaleY. A PNG of another resolution than the listed w keeps
+ * the listed displayed size.
+ */
 export function canvasFit(reg, L, w, h) {
-  const s = reg.scale || 1, [ox, oy] = reg.origin;
-  const cx = (L.x + w / 2 - ox) * s, cy = (oy - (L.y + h / 2)) * s;
-  return { x: cx, y: cy, rotation: L.rotation || 0, scale: s, scaleX: 1, scaleY: 1, mirror: !!L.mirror, pivot: [w / 2, h / 2] };
+  const s = reg.scale || 1, [ox, oy] = reg.origin, ls = (L.scale ?? s) * (L.w ? L.w / w : 1), sx = L.scaleX ?? 1, sy = L.scaleY ?? 1;
+  const wc = w * ls * Math.abs(sx) / s, hc = h * ls * Math.abs(sy) / s;
+  const cx = (L.x + wc / 2 - ox) * s, cy = (oy - (L.y + hc / 2)) * s;
+  return { x: cx, y: cy, rotation: L.rotation || 0, scale: ls, scaleX: sx, scaleY: sy, mirror: !!L.mirror, pivot: [w / 2, h / 2] };
 }
 
 /**
@@ -167,13 +173,14 @@ export function planFit(project, source, { template = null, skin = 'painted' } =
     const t = byFile.get(src.file), d = src.def, w = src.image.width, h = src.image.height;
     const sug = d.slot || d.target ? { slot: d.slot || project.attachments[d.target]?.slot, target: d.target || project.slots.find((s) => s.id === d.slot)?.attachment, confidence: 1, candidates: [], status: 'ok' }
       : t ? { slot: t.slot, target: t.target, confidence: 1, candidates: [], status: 'ok' } : suggestMapping(project, d.name ? `${d.slot || ''}_${d.name}` : src.file);
-    const L = { file: src.file, bytes: src.bytes, image: src.image, w, h, slot: sug.slot, target: sug.target, mapping: sug,
+    const L = { file: src.file, bytes: src.bytes, image: src.image, w, h, slot: sug.slot, target: sug.target, mapping: sug, def: d,
       mode: t?.mode || d.mode || 'replace', mesh: t?.mesh || d.mesh || 'auto', fit: null, anchors: null, include: sug.status !== 'unresolved' };
     if (t?.fit) {                                            // template: same footprint for a re-painted file of any resolution
       const rx = w / (t.w || w), ry = h / (t.h || h);
       L.fit = { ...t.fit, scaleX: (t.fit.scaleX ?? 1) / rx, scaleY: (t.fit.scaleY ?? 1) / ry, pivot: [t.fit.pivot[0] * rx, t.fit.pivot[1] * ry] };
       L.anchors = t.anchors && { A: [t.anchors.A[0] * rx, t.anchors.A[1] * ry], B: [t.anchors.B[0] * rx, t.anchors.B[1] * ry] };
     } else resetFit(project, rig, L, source.registration);
+    L.initialFit = JSON.stringify(L.fit);
     return L;
   });
   markDuplicates(layers);
@@ -193,11 +200,21 @@ export function markDuplicates(layers) {
   return layers;
 }
 
-/** Initial registration: footprint of the replaced piece (replace mode) or the canvas position. */
+/**
+ * Initial registration: footprint of the replaced piece (replace mode), or the layers.json canvas placement
+ * (position, rotation, mirror) when given — always in proportion mode — else the slot bone.
+ */
 export function resetFit(project, rig, L, reg) {
   const d = L.def || {};
-  if (L.target && project.attachments[L.target] && (L.mode === 'replace' || d.x == null)) L.fit = footprintFit(project, rig, L.target, L.w, L.h);
-  else if (d.x != null && reg) L.fit = canvasFit(reg, d, L.w, L.h);
+  L.placementNote = null;
+  if (L.target && project.attachments[L.target] && (L.mode === 'replace' || d.x == null)) {
+    L.fit = footprintFit(project, rig, L.target, L.w, L.h);
+    // replace mode keeps the displayed size of the piece it replaces; say so when layers.json placed it elsewhere
+    if (d.x != null && reg) {
+      const c = canvasFit(reg, d, L.w, L.h), dp = Math.hypot(c.x - L.fit.x, c.y - L.fit.y), dr = Math.abs(((c.rotation - L.fit.rotation + 540) % 360) - 180);
+      if (dp > 1 || dr > 0.5) L.placementNote = `layers.json places this layer ${dp.toFixed(1)} px / ${dr.toFixed(1)}° away from the piece it replaces; replace mode uses the replaced piece's footprint — choose proportion to keep the layers.json placement`;
+    }
+  } else if (d.x != null && reg) L.fit = canvasFit(reg, d, L.w, L.h);
   else { const s = L.slot && project.slots.find((x) => x.id === L.slot), W = s ? rig.bindWorld[rig.boneIndex.get(s.bone)] : [1, 0, 0, 1, 0, 0]; L.fit = { x: W[4], y: W[5], rotation: 0, scale: reg?.scale || 1, scaleX: 1, scaleY: 1, mirror: false, pivot: [L.w / 2, L.h / 2] }; }
   const an = L.slot && slotAnchors(project, rig, L.slot);
   L.anchors = an ? { A: worldToImage(L, ...an[0].world), B: worldToImage(L, ...an[1].world) } : null;
@@ -226,6 +243,8 @@ export async function installFit(project, session, store) {
       Object.assign(L, { _imgId: imgId, _bytes: png.length, _mesh: gridMesh(alpha, L.w, L.h, { cell: meshCell(L.w, L.h), threshold: 6, margin: 2 }) });
     }
     const imgId = L._imgId, mesh = L._mesh;
+    // re-fitting a piece that is already in the skin replaces its mesh: its own deformation keys are remapped
+    const before = P.attachments[id] && rig0.attachments.get(id) ? { bind: Float64Array.from(rig0.attachments.get(id).bind), tris: P.attachments[id].triangles.slice() } : null;
     P.images[imgId] = { path: `images/${imgId}.png`, w: L.w, h: L.h, bytes: L._bytes };
     const bone = old.bone, bi = rig0.boneIndex.get(bone), f = L.fit;
     const T = affDecompose(affMul(affInv(rig0.bindWorld[bi]), fitMatrix({ ...f, scale: 1 })));
@@ -235,9 +254,11 @@ export async function installFit(project, session, store) {
       transform: { x: +T.x.toFixed(4), y: +T.y.toFixed(4), rotation: +T.rotation.toFixed(4), scaleX: +T.scaleX.toFixed(6), scaleY: +T.scaleY.toFixed(6), mirror: !!f.mirror },
       vertices: mesh.vertices.slice(), triangles: mesh.triangles.slice(), weights: null, visible: true, opacity: 1, tint: [1, 1, 1], blend: old.blend || 'normal',
       view: old.view, markers, source: { kind: 'painted', file: L.file, note: `fitted by the artwork fitting workflow (${L.mode})` },
+      deformFrom: old.id,                                   // plays the replaced piece's deformation (cape flutter), resampled
       fit: { file: L.file, mode: L.mode, mesh: L.mesh, fit: f, anchors: L.anchors, w: L.w, h: L.h } };
     P.attachments[id] = att;
     const rig1 = new Rig(P), rec = rig1.attachments.get(id);
+    if (before) remapDeformKeys(P, id, meshSamples(before.bind, before.tris, rec.bind));
     const wantWeights = L.mesh === 'weighted' || (L.mesh === 'auto' && old.weights);
     if (wantWeights) {
       if (old.weights) {                                    // barycentric transfer from the replaced piece
