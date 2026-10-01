@@ -157,29 +157,70 @@ export function autoWeightAttachment(project, attId, { bones = null } = {}) {
   return att.weights;
 }
 
-/** Replace the image of an attachment in place (same slot/bone/binding); re-mesh when the size changed. */
+/** New image bytes get a new path, so history can restore the actual artwork as well as its metadata. */
+function imageRevision(project, store, attachment, img, png) {
+  const stem = attachment.id.replace(/[^\w.-]+/g, '_');
+  let n = 1, id, path;
+  do { id = `${stem}__r${n++}`; path = `images/${id}.png`; } while (project.images[id] || store.has(path));
+  store.set(path, png);
+  project.images[id] = { path, w: img.width, h: img.height, bytes: png.length };
+  return id;
+}
+
+/** Nearest bind-space samples used to transfer both weights and existing deformation keys. */
+function replacementSamples(source, target) {
+  const result = [];
+  for (let v = 0; v < target.length; v += 2) {
+    const best = [];
+    for (let u = 0; u < source.length; u += 2) {
+      const d = Math.hypot(source[u] - target[v], source[u + 1] - target[v + 1]);
+      if (best.length < 3 || d < best[2][0]) { best.push([d, u / 2]); best.sort((a, b) => a[0] - b[0]); if (best.length > 3) best.pop(); }
+    }
+    if (best[0]?.[0] < 1e-6) result.push([[best[0][1], 1]]);
+    else { const sum = best.reduce((s, [d]) => s + 1 / (d + 1) ** 2, 0); result.push(best.map(([d, i]) => [i, 1 / (d + 1) ** 2 / sum])); }
+  }
+  return result;
+}
+
+/** Replace art while preserving its canvas footprint, pivot, transform and marker positions. */
 export async function replaceImage(project, store, attId, bytes) {
   const a = project.attachments[attId]; if (!a) throw new Error(`unknown attachment ${attId}`);
   const img = await decodeImage(bytes);
   const old = project.images[a.image];
+  if (!old) throw new Error(`missing image metadata for ${attId}`);
+  bleedEdges(img.data, img.width, img.height, 2);
+  const png = await encodePNG(img), oldImage = a.image;
   if (old && old.w === img.width && old.h === img.height) {
-    bleedEdges(img.data, img.width, img.height, 2);
-    const png = await encodePNG(img); store.set(old.path, png); old.bytes = png.length;
+    a.image = imageRevision(project, store, a, img, png);
     a.source = { kind: 'imported', note: 'artist artwork (replaced in place, mesh and weights kept)' };
-    return attId;
+  } else {
+    const oldRig = new Rig(project), source = oldRig.attachments.get(attId).bind;
+    const rx = img.width / old.w, ry = img.height / old.h;
+    const mesh = gridMesh(alphaOf(img), img.width, img.height, { cell: meshCell(img.width, img.height), threshold: 6, margin: 2 });
+    const moved = structuredClone(a);
+    moved.image = imageRevision(project, store, a, img, png);
+    moved.pivot = [a.pivot[0] * rx, a.pivot[1] * ry];
+    moved.transform = { ...a.transform, scaleX: (a.transform.scaleX ?? 1) / rx, scaleY: (a.transform.scaleY ?? 1) / ry };
+    moved.markers = a.markers && Object.fromEntries(Object.entries(a.markers).map(([k, p]) => [k, [p[0] * rx, p[1] * ry]]));
+    moved.vertices = mesh.vertices; moved.triangles = mesh.triangles; moved.weights = null;
+    moved.source = { kind: 'imported', note: 'artist artwork (re-meshed, footprint and contact markers preserved)' };
+    project.attachments[attId] = moved;
+    const target = new Rig(project).attachments.get(attId).bind, samples = replacementSamples(source, target);
+    if (a.weights) moved.weights = samples.map((near) => {
+      const weights = new Map();
+      for (const [i, k] of near) for (let j = 0; j < a.weights[i].length; j += 2) {
+        const b = a.weights[i][j]; weights.set(b, (weights.get(b) || 0) + a.weights[i][j + 1] * k);
+      }
+      return pruneWeights(weights);
+    });
+    // A different mesh has different vertex indices; keep cape/deformation animation valid too.
+    for (const clip of project.clips || []) for (const layer of [clip.tracks, clip.corrections]) {
+      const tr = layer?.deform?.[attId]; if (!tr) continue;
+      tr.v = tr.v.map((offsets) => offsets == null ? offsets : samples.flatMap((near) =>
+        [0, 1].map((axis) => near.reduce((sum, [i, k]) => sum + (offsets[i * 2 + axis] || 0) * k, 0))));
+    }
   }
-  // different size: keep the same centre, re-mesh and transfer weights from the old art
-  const rig = new Rig(project), bi = rig.boneIndex.get(a.bone);
-  const place = affMul(rig.bindWorld[bi], affCompose(a.transform.x, a.transform.y, a.transform.rotation, 1, 1));
-  const c = affApply(place, 0, 0), s = (a.imageScale ?? 1) * (old ? Math.max(old.w / img.width, old.h / img.height) : 1);
-  const name = `${a.id.split('.').pop()}_r${Date.now().toString(36)}`;
-  const slot = project.slots.find((x) => x.id === a.slot), origDefault = slot.attachment;
-  slot.attachment = attId;                                  // weights are inherited from the art being replaced
-  const id = await addArtToSlot(project, store, { slotId: a.slot, name, imgData: img, worldX: c[0] - img.width / 2 * s, worldY: c[1] + img.height / 2 * s, scale: s, bone: a.bone, setDefault: false });
-  // the new attachment takes over the old id's role everywhere (clip keys, skins) via its id
-  const moved = project.attachments[id];
-  moved.id = attId; moved.name = a.name; moved.markers = a.markers; delete project.attachments[id]; project.attachments[attId] = moved;
-  delete project.images[a.image]; slot.attachment = origDefault;
+  if (!Object.values(project.attachments).some((att) => att.image === oldImage)) delete project.images[oldImage];
   computeInverseBinds(project);
   return attId;
 }

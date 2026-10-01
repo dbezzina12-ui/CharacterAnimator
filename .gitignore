@@ -6,3 +6,5 @@ validation/roundtrip/*.glb
 dist-web/
 dist-knight/
 exports/
+validation/workflow/frames/
+validation/workflow/runtime/

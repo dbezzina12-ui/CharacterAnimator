@@ -1,0 +1,32 @@
+{
+  "undoArtwork": {
+    "originalHash": "3c808dfa9d2cd2381ef0f3fdcd90c2506cdd399c2e376b9bbdb198be893a7af6",
+    "paintedHash": "0c75de642fda2d1666ad9a54aaa96adb40a3f98156164a94d5bc7d9da8ce4b98",
+    "undoneHash": "0c75de642fda2d1666ad9a54aaa96adb40a3f98156164a94d5bc7d9da8ce4b98",
+    "redoneHash": "0c75de642fda2d1666ad9a54aaa96adb40a3f98156164a94d5bc7d9da8ce4b98",
+    "pass": false
+  },
+  "saveReopen": true,
+  "prop": {
+    "id": "prop_R.Detonator",
+    "before": {
+      "button": [
+        -311.18671256681546,
+        483.80102924496947
+      ]
+    },
+    "after": {
+      "button": [
+        -309.323119615625,
+        491.1453441619918
+      ]
+    },
+    "maxDrift": 7.577066733777861
+  },
+  "loops": {
+    "before": 1,
+    "after": 3,
+    "pass": false
+  },
+  "errors": []
+}

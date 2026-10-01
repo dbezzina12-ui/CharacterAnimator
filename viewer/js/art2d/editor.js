@@ -59,17 +59,20 @@ export function installModeSwitch(viewer, hooks = {}) {
   side.insertBefore(sw, anchor);
   const panel = document.createElement('div'); panel.id = 'side2d'; side.insertBefore(panel, anchor);
   const stage = document.createElement('div'); stage.id = 'stage2d'; main.appendChild(stage);
-  let editor = null;
+  let editor = null, initializing = null, requestedMode = '3d';
   const api = viewer.art2d = {
     get editor() { return editor; },
     async setMode(m) {
+      requestedMode = m;
       sw.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
       if (m === '2d') {
+        if (editor?.active) return m;
         const a = viewer.state.clipAction, carry = a ? { clip: a.getClip().name, time: a.time } : null;
         document.body.classList.add('mode2d');
         viewer.state.suspendLoop = true; viewer.state.playing = false;
-        if (!editor) { editor = new Editor2D(viewer, hooks, panel, stage); await editor.init(); }
-        editor.activate(carry);
+        if (!editor) { editor = new Editor2D(viewer, hooks, panel, stage); initializing = editor.init(); }
+        await initializing;
+        if (requestedMode === '2d' && !editor.active) editor.activate(carry);
       } else {
         const carry = editor?.active ? editor.deactivate() : null;
         document.body.classList.remove('mode2d', 'compare-inset', 'compare-overlay');
@@ -120,20 +123,22 @@ class Editor2D {
   }
 
   activate(carry) {
+    if (this.active) return;
     this.active = true;
+    const generation = this.loopGeneration = (this.loopGeneration || 0) + 1;
     if (carry && this.rig?.clips.has(carry.clip)) { this.selectClip(carry.clip); this.player.seek(carry.time); }
     this.setCompare(this.compare);
     requestAnimationFrame(() => this.fitView(true));
     this.last = performance.now();
     const loop = (now) => {
-      if (!this.active) return;
-      requestAnimationFrame(loop);
+      if (!this.active || generation !== this.loopGeneration) return;
+      this.frameRequest = requestAnimationFrame(loop);
       const dt = Math.min(0.1, (now - this.last) / 1000); this.last = now;
       this.frame(dt);
     };
-    requestAnimationFrame(loop);
+    this.frameRequest = requestAnimationFrame(loop);
   }
-  deactivate() { this.active = false; this.player?.pause(); return { clip: this.player?.clip?.name, time: this.player?.time || 0 }; }
+  deactivate() { this.active = false; this.loopGeneration = (this.loopGeneration || 0) + 1; cancelAnimationFrame(this.frameRequest); this.player?.pause(); return { clip: this.player?.clip?.name, time: this.player?.time || 0 }; }
 
   // ---------------------------------------------------------------- project -------
   async openURL(url) { const r = await loadProjectURL(url); this.setProject(r.project, r.store, r.report, url); }
@@ -1051,7 +1056,7 @@ class Editor2D {
   }
   async replaceSelected(bytes) {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment]; if (!a) { alert('Select a layer first.'); return; }
-    const snap = [[this.project, 'attachments'], [this.project, 'images'], [this.project, 'slots'], [this.project, 'bones']];
+    const snap = [[this.project, 'attachments'], [this.project, 'images'], [this.project, 'slots'], [this.project, 'bones'], [this.project, 'clips']];
     this.begin(`replace image ${a.id}`, snap);
     await replaceImage(this.project, this.store, a.id, bytes);
     this.end();
