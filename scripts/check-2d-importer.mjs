@@ -120,6 +120,18 @@ try {
   check('stale-keys-guard', 'Keys made for another mesh: core skips + reports them (finite coordinates); sprite and runtime export refuse the project',
     guard.finite && guard.skipped?.includes(CAPE) && /refused/.test(guard.sprite) && /failed validation/.test(guard.runtime), guard);
 
+  // 1e: a valid key followed by a SHORTER key (213 → 212 vertices) on the real cape, evaluated halfway between them
+  const seg = await page.evaluate(async ({ CAPE }) => { const { Rig } = await import('./js/art2d/core.js'), ex = await import('./js/art2d/exporters.js');
+    const io = await import('./js/art2d/project-io.js'), { project: P, store } = await io.loadProjectURL('../characters2d/aureate_knight/character.json'), n = P.attachments[CAPE].vertices.length, c = P.clips.find((x) => x.name === 'idle');
+    const good = c.tracks.deform[CAPE].v[0]; c.tracks.deform[CAPE] = { t: [0, 1], v: [good, good.slice(0, n - 2)] };
+    const r = new Rig(P), ps = r.evaluate('idle', 0.5), v = Array.from(r.skinAttachment(CAPE, ps));
+    let sprite = 'exported', runtime = 'exported';
+    try { await ex.exportSpriteSheets(P, store, { clips: ['idle'], scale: 0.25 }); } catch (e) { sprite = e.message.slice(0, 140); }
+    try { await ex.exportRuntimePackage(P, store, {}); } catch (e) { runtime = e.message.slice(0, 140); }
+    return { meshVerts: n / 2, keyVerts: [good.length / 2, (n - 2) / 2], nonFinite: v.filter((x) => !Number.isFinite(x)).length, issues: ps.deformIssues, sprite, runtime }; }, { CAPE });
+  check('malformed-segment', 'Cape with a 213-vertex key followed by a 212-vertex key, evaluated halfway: both keys validated before interpolating — segment skipped and reported, no invalid coordinates, exports refuse it',
+    seg.nonFinite === 0 && seg.issues?.[0]?.keys?.[0]?.floats === 424 && /212 vertices but the mesh has 213/.test(seg.sprite) && /failed validation/.test(seg.runtime), seg);
+
   // ================= (2) a fitted painted cape keeps the cape's deformation animation =================
   await openEditor(page);
   fs.writeFileSync(`${TMP}/mantle.default.png`, Buffer.from(await page.evaluate(async (CAPE) => H.b64(await H.resample(CAPE, 1.5, 40)), CAPE), 'base64'));

@@ -1,6 +1,6 @@
 // node tests/art2d-core.test.mjs — unit tests for the pure 2D core (no browser needed).
 import assert from 'node:assert/strict';
-import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv, easeU, meshSamples, remapDeformKeys } from '../viewer/js/art2d/core.js';
+import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv, easeU, meshSamples, remapDeformKeys, sampleDeform } from '../viewer/js/art2d/core.js';
 import { planFit, canvasFit, footprintFit } from '../viewer/js/art2d/fitting.js';
 import { gridMesh, checkMesh, addVertex, deleteVertex, autoWeights, smoothWeights, paintWeights, normalizeWeights } from '../viewer/js/art2d/mesh.js';
 import { writeZip, readZip, textOf } from '../viewer/js/art2d/zip.js';
@@ -268,5 +268,42 @@ await test('proportion fitting keeps the layers.json position and rotation (repl
   const fp = footprintFit(p, rig, 'arm.default', 200, 40);
   assert.ok(Math.abs(s2.layers[0].fit.x - fp.x) < 1e-9, 'replace mode keeps the replaced footprint');
   assert.match(s2.layers[0].placementNote || '', /choose proportion to keep the layers.json placement/);
+});
+
+await test('a valid deformation key followed by a shorter one: both keys are validated before interpolating (213 + 212 vertex keys)', () => {
+  const p = toyProject();
+  // a 213-vertex cape: 71 × 3 vertex strip on the upper bone
+  const V = [], T = []; for (let i = 0; i < 71; i++) for (let j = 0; j < 3; j++) V.push(i * 2, j * 10);
+  for (let i = 0; i < 70; i++) for (let j = 0; j < 2; j++) { const a = i * 3 + j, b = a + 3; T.push(a, b, a + 1, b, b + 1, a + 1); }
+  p.images.img_cape = { path: 'images/cape.png', w: 142, h: 21 };
+  p.attachments['cape.default'] = { id: 'cape.default', slot: 'cape', bone: 'upper', image: 'img_cape', imageScale: 1, pivot: [0, 0], transform: { x: 0, y: 0, rotation: 0 }, vertices: V, triangles: T, weights: null };
+  p.slots.push({ id: 'cape', bone: 'upper', attachment: 'cape.default' });
+  const n = 213 * 2, good = new Array(n).fill(2), short = new Array(212 * 2).fill(2), nan = good.map((x, i) => (i === 7 ? NaN : x));
+  assert.equal(V.length, n);
+  const rig = new Rig(p), clean = Array.from(rig.skinAttachment('cape.default', rig.evaluate('bend', 0.5)));
+  const at = (t, keys, times) => { p.clips[0].tracks.deform = { 'cape.default': { t: times, v: keys } }; return rig.evaluate('bend', t); };
+  // the reported case: halfway between a 213- and a 212-vertex key
+  let pose = at(0.5, [good, short], [0, 1]);
+  assert.deepEqual(pose.deformSkipped, ['cape.default']);
+  assert.deepEqual(pose.deformIssues[0].keys.map((k) => [k.index, k.floats / 2]), [[1, 212]], 'the malformed key is named with its vertex count');
+  assert.equal(pose.deformIssues[0].expected, n);
+  let v = Array.from(rig.skinAttachment('cape.default', pose));
+  assert.ok(v.every(Number.isFinite), 'no invalid coordinates');
+  assert.deepEqual(v, clean, 'malformed segment skipped: mesh drawn undeformed');
+  // malformed first key, non-numeric offsets, and clamped single keys are all caught
+  for (const [keys, times, t] of [[[short, good], [0, 1], 0.5], [[good, nan], [0, 1], 0.5], [[short], [0], 0.5], [[good, short], [0, 1], 2]]) {
+    pose = at(t, keys, times); assert.ok(pose.deformSkipped?.includes('cape.default')); assert.ok(Array.from(rig.skinAttachment('cape.default', pose)).every(Number.isFinite));
+  }
+  // a valid segment next to a malformed one still plays; only the malformed segment is skipped
+  pose = at(0.25, [good, good.map((x) => x * 3), short], [0, 0.5, 1]);
+  assert.equal(pose.deformSkipped, undefined);
+  assert.ok(Math.abs(pose.deform.get('cape.default')[0] - 4) < 1e-9, 'interpolated halfway between 2 and 6');
+  assert.ok(at(0.75, [good, good.map((x) => x * 3), short], [0, 0.5, 1]).deformSkipped.includes('cape.default'));
+  // the sampler reports without interpolating; validation names the bad keys
+  assert.deepEqual(sampleDeform({ t: [0, 1], v: [good, short] }, 0.5, n), { bad: [1] });
+  p.clips[0].tracks.deform = { 'cape.default': { t: [0, 1, 2], v: [good, short, nan] } };
+  const errs = validateProject(p).errors.join('\n');
+  assert.match(errs, /deform key 1 of cape.default has 212 vertices but the mesh has 213/);
+  assert.match(errs, /deform key 2 of cape.default contains non-numeric offsets/);
 });
 console.log(`${passed} tests passed`);

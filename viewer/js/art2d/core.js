@@ -87,6 +87,32 @@ export function sampleVector(tr, t) {
   for (let k = 0; k < a.length; k++) out[k] = a[k] + (b[k] - a[k]) * u;
   return out;
 }
+/**
+ * Deformation sample for a mesh of `n` floats (2 per vertex). Both keys of the active segment (or the single
+ * clamped key) are checked first: an array of exactly n finite numbers. Returns {v} for a valid sample,
+ * {bad: [keyIndex, ...]} for a malformed segment (never interpolated), or null when there are no keys.
+ */
+const keyOk = new WeakMap();
+function deformKeyValid(k, n) {
+  if (!Array.isArray(k) && !ArrayBuffer.isView(k)) return false;
+  if (k.length !== n) return false;
+  const c = keyOk.get(k); if (c && c.n === n && c.len === k.length) return c.ok;
+  let ok = true; for (let i = 0; i < n; i++) if (!Number.isFinite(k[i])) { ok = false; break; }
+  keyOk.set(k, { n, len: k.length, ok });
+  return ok;
+}
+export function sampleDeform(tr, t, n) {
+  const T = tr?.t, V = tr?.v;
+  if (!T || !T.length) return null;
+  const i = keyIndex(T, t), lo = i < 0 ? 0 : Math.min(i, T.length - 1), hi = i < 0 || i >= T.length - 1 ? lo : i + 1;
+  const bad = [lo, hi].filter((k, j, arr) => arr.indexOf(k) === j && V[k] != null && !deformKeyValid(V[k], n));
+  if (bad.length) return { bad };
+  const a = V[lo], b = V[hi];
+  if (lo === hi || a == null || b == null) { const one = lo === hi ? a : (easeU(tr, lo, (t - T[lo]) / (T[hi] - T[lo])) < 1 ? a : b); return one == null ? null : { v: one }; }
+  const u = easeU(tr, lo, (t - T[lo]) / (T[hi] - T[lo])), out = new Array(n);
+  for (let k = 0; k < n; k++) out[k] = a[k] + (b[k] - a[k]) * u;
+  return { v: out };
+}
 export function sampleStep(tr, t) {
   if (!tr || !tr.t || !tr.t.length) return undefined;
   const i = keyIndex(tr.t, t);
@@ -377,13 +403,22 @@ export class Rig {
     const drawOrder = resolveOrder(order, this.setupOrder).map((id) => this.slotIndex.get(id));
     // deform offsets (bind space), additive across layers
     const deform = new Map();
-    let deformSkipped = null;
+    let deformSkipped = null, deformIssues = null;
     for (const layer of layers) for (const [attId, tr] of Object.entries(layer.deform || {})) {
       if (tr.disabled) continue;
-      const v = sampleVector(tr, t); if (!v) continue;
-      // keys made for another mesh (wrong vertex count) are skipped and reported, never skinned into garbage
+      // both keys of the segment are validated BEFORE interpolating: keys made for another mesh (wrong vertex
+      // count) or holding non-numbers are skipped and reported, never skinned into invalid coordinates
       const rec = this.attachments.get(attId);
-      if (!rec || v.length !== rec.nv * 2) { (deformSkipped ||= new Set()).add(attId); continue; }
+      const layerName = layer === clip?.corrections ? 'corrections' : 'tracks';
+      if (!rec) { (deformSkipped ||= new Set()).add(attId); (deformIssues ||= []).push({ attachment: attId, layer: layerName, reason: 'no such attachment' }); continue; }
+      const smp = sampleDeform(tr, t, rec.nv * 2); if (!smp) continue;
+      if (smp.bad) {
+        (deformSkipped ||= new Set()).add(attId);
+        (deformIssues ||= []).push({ attachment: attId, layer: layerName, keys: smp.bad.map((k) => ({ index: k, t: tr.t[k], floats: tr.v[k]?.length ?? null })), expected: rec.nv * 2,
+          reason: 'segment key(s) malformed: wrong vertex count or non-numeric offsets' });
+        continue;
+      }
+      const v = smp.v;
       const prev = deform.get(attId);
       if (!prev) deform.set(attId, Float64Array.from(v));
       else for (let k = 0; k < v.length; k++) prev[k] += v[k];
@@ -409,7 +444,7 @@ export class Rig {
       m[2] = w[0] * b[2] + w[2] * b[3]; m[3] = w[1] * b[2] + w[3] * b[3];
       m[4] = w[0] * b[4] + w[2] * b[5] + w[4]; m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
     }
-    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets, ...(deformSkipped ? { deformSkipped: [...deformSkipped] } : {}) };
+    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets, ...(deformSkipped ? { deformSkipped: [...deformSkipped], deformIssues } : {}) };
   }
 
   _applyBones(bones, t) {

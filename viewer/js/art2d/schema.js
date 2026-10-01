@@ -90,6 +90,7 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
         const a = p.attachments[attId];
         if (!a) { E(`clip ${c.name}: deform keys for missing attachment ${attId}`); continue; }
         const n = a.vertices.length;
+        (tr.v || []).forEach((v, k) => { if (v && v.length === n && !Array.from(v).every(Number.isFinite)) E(`clip ${c.name}: deform key ${k} of ${attId} contains non-numeric offsets`); });
         (tr.v || []).forEach((v, k) => { if (v && v.length !== n) E(`clip ${c.name}: deform key ${k} of ${attId} has ${v.length / 2} vertices but the mesh has ${n / 2} (mesh edited without remapping keys)`); });
         if (tr.ease && tr.ease.length !== tr.t.length) E(`clip ${c.name}: deform easing of ${attId} does not match its keys`);
       }

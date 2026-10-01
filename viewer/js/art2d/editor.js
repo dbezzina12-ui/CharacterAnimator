@@ -1,7 +1,7 @@
 // 2D artwork mode of the CharacterAnimator viewer: editor UI on top of the shared 2D core.
 // Setup mode edits the bind pose (bones, pivots, meshes, weights, layer order); Animate mode keys the
 // current clip (bridged clips: the identifiable `corrections` layer; native 2D clips: their tracks).
-import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, sampleVector, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder, meshSamples, remapDeformKeys } from './core.js';
+import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, sampleVector, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder, meshSamples, remapDeformKeys, sampleDeform } from './core.js';
 import { Renderer2D, hitTest } from './render2d.js';
 import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell } from './project-io.js';
 import { validateProject, computeInverseBinds } from './schema.js';
@@ -674,8 +674,9 @@ class Editor2D {
   deformDown(e, wx, wy) {
     const id = this.sel.attachment, d = this.drawn.find((x) => x.attachment === id); if (!d) return;
     const rec = this.rig.attachments.get(id), clip = this.clip, L = this.editLayer(clip), nv = rec.nv;
-    const tr = L.deform?.[id], keyed = tr && sampleVector(tr, this.player.time);
-    if (keyed && keyed.length !== nv * 2) { $(this.panel, '#p2Report').textContent = `${id}: its deformation keys were made for a ${keyed.length / 2}-vertex mesh (now ${nv}); fix the project before keying (see validation)`; return; }
+    const tr = L.deform?.[id], smp = tr && sampleDeform(tr, this.player.time, nv * 2);
+    if (smp?.bad) { $(this.panel, '#p2Report').textContent = `${id}: deformation key(s) ${smp.bad.map((k) => `#${k} (${(tr.v[k]?.length ?? 0) / 2} vertices)`).join(', ')} do not fit this ${nv}-vertex mesh; fix the project before keying (see validation)`; return; }
+    const keyed = smp?.v;
     const base = keyed || new Array(nv * 2).fill(0);
     const r = this.ovCanvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, R = this.brush.radius;
     const fall = new Float64Array(nv), inv = [];

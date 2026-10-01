@@ -1,6 +1,6 @@
 {
- "date": "2026-10-01T14:35:07.677Z",
- "passed": 14,
+ "date": "2026-10-01T16:00:38.257Z",
+ "passed": 15,
  "failed": 0,
  "results": [
   {
@@ -101,6 +101,36 @@
     "finite": true,
     "sprite": "sprite export refused: clip idle: deform key 0 of mantle.default has 213 vertices but the mesh has 753 (mesh edited with",
     "runtime": "runtime package failed validation: clip idle: deform key 0 of mantle.default has 213 vertices but the mesh has 753 (mesh"
+   }
+  },
+  {
+   "id": "malformed-segment",
+   "title": "Cape with a 213-vertex key followed by a 212-vertex key, evaluated halfway: both keys validated before interpolating — segment skipped and reported, no invalid coordinates, exports refuse it",
+   "pass": true,
+   "details": {
+    "meshVerts": 213,
+    "keyVerts": [
+     213,
+     212
+    ],
+    "nonFinite": 0,
+    "issues": [
+     {
+      "attachment": "mantle.default",
+      "layer": "tracks",
+      "keys": [
+       {
+        "index": 1,
+        "t": 1,
+        "floats": 424
+       }
+      ],
+      "expected": 426,
+      "reason": "segment key(s) malformed: wrong vertex count or non-numeric offsets"
+     }
+    ],
+    "sprite": "sprite export refused: clip idle: deform key 1 of mantle.default has 212 vertices but the mesh has 213 (mesh edited without remapping keys)",
+    "runtime": "runtime package failed validation: clip idle: deform key 1 of mantle.default has 212 vertices but the mesh has 213 (mesh edited without rema"
    }
   },
   {
