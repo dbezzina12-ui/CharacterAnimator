@@ -1,0 +1,612 @@
+{
+ "skin": "painted",
+ "finished": [
+  "helmet.default"
+ ],
+ "provisional": [],
+ "missing": [
+  "mantle.default",
+  "under_leg_L.default",
+  "under_foot_L.default",
+  "thigh_L.default",
+  "tabard_L.default",
+  "shin_L.default",
+  "foot_L.default",
+  "under_leg_R.default",
+  "under_foot_R.default",
+  "thigh_R.default",
+  "tabard_R.default",
+  "shin_R.default",
+  "foot_R.default",
+  "under_torso.default",
+  "belt.default",
+  "abdomen.default",
+  "cuirass.default",
+  "under_arm_L.default",
+  "upperarm_L.default",
+  "forearm_L.default",
+  "hand_L.default",
+  "thumb_L.default",
+  "index_L.default",
+  "middle_L.default",
+  "ring_L.default",
+  "pinky_L.default",
+  "under_arm_R.default",
+  "upperarm_R.default",
+  "forearm_R.default",
+  "hand_R.default",
+  "thumb_R.default",
+  "index_R.default",
+  "middle_R.default",
+  "ring_R.default",
+  "pinky_R.default",
+  "prop_R.Sword2H",
+  "prop_R.Staff",
+  "prop_R.Pistol",
+  "prop_R.Rifle",
+  "prop_R.Detonator",
+  "hand_L.hover",
+  "thumb_L.hover",
+  "index_L.hover",
+  "middle_L.hover",
+  "ring_L.hover",
+  "pinky_L.hover",
+  "hand_R.hover",
+  "thumb_R.hover",
+  "index_R.hover",
+  "middle_R.hover",
+  "ring_R.hover",
+  "pinky_R.hover",
+  "forearm_L.hover",
+  "forearm_R.hover",
+  "hand_L.grip_sword",
+  "thumb_L.grip_sword",
+  "index_L.grip_sword",
+  "middle_L.grip_sword",
+  "ring_L.grip_sword",
+  "pinky_L.grip_sword",
+  "hand_R.grip_sword",
+  "thumb_R.grip_sword",
+  "index_R.grip_sword",
+  "middle_R.grip_sword",
+  "ring_R.grip_sword",
+  "pinky_R.grip_sword",
+  "hand_R.grip_staff",
+  "thumb_R.grip_staff",
+  "index_R.grip_staff",
+  "middle_R.grip_staff",
+  "ring_R.grip_staff",
+  "pinky_R.grip_staff",
+  "hand_R.grip_pistol",
+  "thumb_R.grip_pistol",
+  "index_R.grip_pistol",
+  "middle_R.grip_pistol",
+  "ring_R.grip_pistol",
+  "pinky_R.grip_pistol",
+  "hand_L.grip_pistol_2h",
+  "thumb_L.grip_pistol_2h",
+  "index_L.grip_pistol_2h",
+  "middle_L.grip_pistol_2h",
+  "ring_L.grip_pistol_2h",
+  "pinky_L.grip_pistol_2h",
+  "hand_R.grip_pistol_2h",
+  "thumb_R.grip_pistol_2h",
+  "index_R.grip_pistol_2h",
+  "middle_R.grip_pistol_2h",
+  "ring_R.grip_pistol_2h",
+  "pinky_R.grip_pistol_2h",
+  "hand_L.grip_rifle",
+  "thumb_L.grip_rifle",
+  "index_L.grip_rifle",
+  "middle_L.grip_rifle",
+  "ring_L.grip_rifle",
+  "pinky_L.grip_rifle",
+  "hand_R.grip_rifle",
+  "thumb_R.grip_rifle",
+  "index_R.grip_rifle",
+  "middle_R.grip_rifle",
+  "ring_R.grip_rifle",
+  "pinky_R.grip_rifle",
+  "hand_R.grip_detonator",
+  "index_R.grip_detonator",
+  "middle_R.grip_detonator",
+  "ring_R.grip_detonator",
+  "pinky_R.grip_detonator",
+  "upperarm_L.guard",
+  "upperarm_R.guard",
+  "forearm_L.guard",
+  "forearm_R.guard",
+  "upperarm_L.windup",
+  "upperarm_R.windup",
+  "forearm_L.windup",
+  "forearm_R.windup",
+  "upperarm_L.strike",
+  "upperarm_R.strike",
+  "forearm_L.strike",
+  "forearm_R.strike",
+  "hand_R.salute",
+  "thumb_R.salute",
+  "index_R.salute",
+  "middle_R.salute",
+  "ring_R.salute",
+  "pinky_R.salute",
+  "upperarm_R.salute_arm",
+  "forearm_R.salute_arm",
+  "hand_R.salute_open",
+  "thumb_R.salute_open",
+  "index_R.salute_open",
+  "middle_R.salute_open",
+  "ring_R.salute_open",
+  "pinky_R.salute_open",
+  "hand_L.walk_swing_L",
+  "thumb_L.walk_swing_L",
+  "index_L.walk_swing_L",
+  "middle_L.walk_swing_L",
+  "ring_L.walk_swing_L",
+  "pinky_L.walk_swing_L",
+  "hand_R.walk_swing_R",
+  "thumb_R.walk_swing_R",
+  "index_R.walk_swing_R",
+  "middle_R.walk_swing_R",
+  "ring_R.walk_swing_R",
+  "pinky_R.walk_swing_R",
+  "hand_L.fist",
+  "thumb_L.fist",
+  "index_L.fist",
+  "middle_L.fist",
+  "ring_L.fist",
+  "pinky_L.fist",
+  "hand_R.fist",
+  "thumb_R.fist",
+  "index_R.fist",
+  "middle_R.fist",
+  "ring_R.fist",
+  "pinky_R.fist",
+  "hand_L.relaxed",
+  "thumb_L.relaxed",
+  "index_L.relaxed",
+  "middle_L.relaxed",
+  "ring_L.relaxed",
+  "pinky_L.relaxed",
+  "hand_R.relaxed",
+  "thumb_R.relaxed",
+  "index_R.relaxed",
+  "middle_R.relaxed",
+  "ring_R.relaxed",
+  "pinky_R.relaxed",
+  "hand_L.open_turned",
+  "thumb_L.open_turned",
+  "index_L.open_turned",
+  "middle_L.open_turned",
+  "ring_L.open_turned",
+  "pinky_L.open_turned",
+  "hand_R.open_turned",
+  "thumb_R.open_turned",
+  "index_R.open_turned",
+  "middle_R.open_turned",
+  "ring_R.open_turned",
+  "pinky_R.open_turned",
+  "hand_L.relaxed_turned",
+  "thumb_L.relaxed_turned",
+  "index_L.relaxed_turned",
+  "middle_L.relaxed_turned",
+  "ring_L.relaxed_turned",
+  "pinky_L.relaxed_turned",
+  "hand_R.relaxed_turned",
+  "thumb_R.relaxed_turned",
+  "index_R.relaxed_turned",
+  "middle_R.relaxed_turned",
+  "ring_R.relaxed_turned",
+  "pinky_R.relaxed_turned",
+  "hand_L.fist_turned",
+  "thumb_L.fist_turned",
+  "index_L.fist_turned",
+  "middle_L.fist_turned",
+  "ring_L.fist_turned",
+  "pinky_L.fist_turned",
+  "hand_R.fist_turned",
+  "thumb_R.fist_turned",
+  "index_R.fist_turned",
+  "middle_R.fist_turned",
+  "ring_R.fist_turned",
+  "pinky_R.fist_turned"
+ ],
+ "missingHandSets": [
+  "L open_back",
+  "L relaxed_back",
+  "L fist_back",
+  "L open_palm",
+  "L relaxed_palm",
+  "L fist_palm",
+  "L hover",
+  "L grip_sword",
+  "L grip_pistol_2h",
+  "L grip_rifle",
+  "L walk_swing_L",
+  "R open_palm",
+  "R relaxed_palm",
+  "R fist_palm",
+  "R open_back",
+  "R relaxed_back",
+  "R fist_back",
+  "R hover",
+  "R grip_sword",
+  "R grip_staff",
+  "R grip_pistol",
+  "R grip_pistol_2h",
+  "R grip_rifle",
+  "R grip_detonator",
+  "R salute",
+  "R salute_open",
+  "R walk_swing_R"
+ ],
+ "coverage": [
+  {
+   "joint": "neck",
+   "bone": "head",
+   "worstAngle": -25,
+   "gapPct": 0.1,
+   "thresholdPct": 3,
+   "radiusPx": 43.4,
+   "pieces": {
+    "parent": [
+     "under_arm_L",
+     "under_arm_R"
+    ],
+    "child": [
+     "under_torso",
+     "helmet"
+    ],
+    "all": [
+     "under_torso",
+     "under_arm_L",
+     "under_arm_R",
+     "helmet"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "shoulder_L",
+   "bone": "upperarm_L",
+   "worstAngle": 75,
+   "gapPct": 10.6,
+   "thresholdPct": 3,
+   "radiusPx": 68,
+   "pieces": {
+    "parent": [],
+    "child": [
+     "under_torso",
+     "under_arm_L",
+     "upperarm_L"
+    ],
+    "all": [
+     "under_torso",
+     "under_arm_L",
+     "upperarm_L"
+    ]
+   },
+   "flagged": true,
+   "hint": "at 75° the joint opens 10.6% of its area: paint hidden material on under_torso/under_arm_L/upperarm_L extending under (parent piece) (or extend the parent piece under the child)"
+  },
+  {
+   "joint": "shoulder_R",
+   "bone": "upperarm_R",
+   "worstAngle": -60,
+   "gapPct": 7.6,
+   "thresholdPct": 3,
+   "radiusPx": 70.5,
+   "pieces": {
+    "parent": [],
+    "child": [
+     "under_torso",
+     "under_arm_R",
+     "upperarm_R"
+    ],
+    "all": [
+     "under_torso",
+     "under_arm_R",
+     "upperarm_R"
+    ]
+   },
+   "flagged": true,
+   "hint": "at -60° the joint opens 7.6% of its area: paint hidden material on under_torso/under_arm_R/upperarm_R extending under (parent piece) (or extend the parent piece under the child)"
+  },
+  {
+   "joint": "elbow_L",
+   "bone": "forearm_L",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 28.1,
+   "pieces": {
+    "parent": [
+     "under_torso",
+     "under_arm_L",
+     "upperarm_L"
+    ],
+    "child": [
+     "forearm_L"
+    ],
+    "all": [
+     "under_torso",
+     "under_arm_L",
+     "upperarm_L",
+     "forearm_L"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "elbow_R",
+   "bone": "forearm_R",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 28.9,
+   "pieces": {
+    "parent": [
+     "under_torso",
+     "under_arm_R",
+     "upperarm_R"
+    ],
+    "child": [
+     "forearm_R"
+    ],
+    "all": [
+     "under_torso",
+     "under_arm_R",
+     "forearm_R",
+     "upperarm_R"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "wrist_L",
+   "bone": "hand_L",
+   "worstAngle": -40,
+   "gapPct": 8.8,
+   "thresholdPct": 3,
+   "radiusPx": 22.9,
+   "pieces": {
+    "parent": [
+     "forearm_L"
+    ],
+    "child": [
+     "under_arm_L",
+     "pinky_L",
+     "ring_L",
+     "middle_L",
+     "index_L",
+     "hand_L",
+     "thumb_L"
+    ],
+    "all": [
+     "under_arm_L",
+     "pinky_L",
+     "ring_L",
+     "middle_L",
+     "index_L",
+     "forearm_L",
+     "hand_L",
+     "thumb_L"
+    ]
+   },
+   "flagged": true,
+   "hint": "at -40° the joint opens 8.8% of its area: paint hidden material on under_arm_L/pinky_L/ring_L/middle_L/index_L/hand_L/thumb_L extending under forearm_L (or extend the parent piece under the child)"
+  },
+  {
+   "joint": "wrist_R",
+   "bone": "hand_R",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 9.3,
+   "pieces": {
+    "parent": [
+     "forearm_R"
+    ],
+    "child": [
+     "under_arm_R",
+     "hand_R",
+     "pinky_R",
+     "thumb_R",
+     "ring_R",
+     "middle_R",
+     "index_R"
+    ],
+    "all": [
+     "under_arm_R",
+     "forearm_R",
+     "hand_R",
+     "pinky_R",
+     "thumb_R",
+     "ring_R",
+     "middle_R",
+     "index_R"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "hip_L",
+   "bone": "thigh_L",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 39.1,
+   "pieces": {
+    "parent": [
+     "under_torso",
+     "belt"
+    ],
+    "child": [
+     "under_leg_L",
+     "under_leg_R",
+     "thigh_L",
+     "tabard_L"
+    ],
+    "all": [
+     "under_leg_L",
+     "under_leg_R",
+     "under_torso",
+     "thigh_L",
+     "tabard_L",
+     "belt"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "hip_R",
+   "bone": "thigh_R",
+   "worstAngle": 50,
+   "gapPct": 2.5,
+   "thresholdPct": 3,
+   "radiusPx": 51,
+   "pieces": {
+    "parent": [
+     "under_torso",
+     "belt"
+    ],
+    "child": [
+     "under_leg_L",
+     "under_leg_R",
+     "thigh_R",
+     "tabard_R"
+    ],
+    "all": [
+     "under_leg_L",
+     "under_leg_R",
+     "under_torso",
+     "thigh_R",
+     "belt",
+     "tabard_R"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "knee_L",
+   "bone": "shin_L",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 35.7,
+   "pieces": {
+    "parent": [
+     "under_leg_L",
+     "under_leg_R",
+     "thigh_L",
+     "tabard_L"
+    ],
+    "child": [
+     "under_foot_L",
+     "shin_L"
+    ],
+    "all": [
+     "under_leg_L",
+     "under_foot_L",
+     "shin_L",
+     "under_leg_R",
+     "thigh_L",
+     "tabard_L"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "knee_R",
+   "bone": "shin_R",
+   "worstAngle": 0,
+   "gapPct": 0,
+   "thresholdPct": 3,
+   "radiusPx": 35.7,
+   "pieces": {
+    "parent": [
+     "under_leg_L",
+     "under_leg_R",
+     "thigh_R",
+     "tabard_R"
+    ],
+    "child": [
+     "under_foot_R",
+     "shin_R"
+    ],
+    "all": [
+     "under_leg_L",
+     "under_leg_R",
+     "under_foot_R",
+     "shin_R",
+     "thigh_R",
+     "tabard_R"
+    ]
+   },
+   "flagged": false,
+   "hint": "covered"
+  },
+  {
+   "joint": "ankle_L",
+   "bone": "foot_L",
+   "worstAngle": -30,
+   "gapPct": 9,
+   "thresholdPct": 3,
+   "radiusPx": 42.5,
+   "pieces": {
+    "parent": [
+     "shin_L"
+    ],
+    "child": [
+     "under_leg_L",
+     "under_foot_L",
+     "foot_L"
+    ],
+    "all": [
+     "under_leg_L",
+     "under_foot_L",
+     "shin_L",
+     "foot_L"
+    ]
+   },
+   "flagged": true,
+   "hint": "at -30° the joint opens 9.0% of its area: paint hidden material on under_leg_L/under_foot_L/foot_L extending under shin_L (or extend the parent piece under the child)"
+  },
+  {
+   "joint": "ankle_R",
+   "bone": "foot_R",
+   "worstAngle": -30,
+   "gapPct": 7.4,
+   "thresholdPct": 3,
+   "radiusPx": 28.9,
+   "pieces": {
+    "parent": [
+     "shin_R"
+    ],
+    "child": [
+     "under_leg_R",
+     "under_foot_R",
+     "foot_R"
+    ],
+    "all": [
+     "under_leg_R",
+     "under_foot_R",
+     "shin_R",
+     "foot_R"
+    ]
+   },
+   "flagged": true,
+   "hint": "at -30° the joint opens 7.4% of its area: paint hidden material on under_leg_R/under_foot_R/foot_R extending under shin_R (or extend the parent piece under the child)"
+  }
+ ],
+ "fitMapping": [
+  "helmet.default.png → helmet.default (ok)"
+ ]
+}

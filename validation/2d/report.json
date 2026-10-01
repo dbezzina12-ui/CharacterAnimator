@@ -1,7 +1,8 @@
 {
-  "date": "2026-09-30T22:52:26.870Z",
-  "passed": 29,
+  "date": "2026-10-01T03:21:27.631Z",
+  "passed": 26,
   "failed": 0,
+  "info": 3,
   "results": [
     {
       "id": "3d-works",
@@ -35,8 +36,8 @@
       "pass": true,
       "details": {
         "slots": 37,
-        "attachments": 130,
-        "images": 130
+        "attachments": 206,
+        "images": 206
       }
     },
     {
@@ -129,7 +130,8 @@
     {
       "id": "unreachable-reported",
       "title": "Unreachable targets are reported per frame (not hidden)",
-      "pass": true,
+      "pass": null,
+      "info": true,
       "details": "no unreachable frames"
     },
     {
@@ -216,12 +218,13 @@
     },
     {
       "id": "pose-stress",
-      "title": "Raised / crossed / salute / wind-up poses measured (info: folds are in the hand meshes; these clips are marked attention/needs-art)",
-      "pass": true,
+      "title": "Raised / crossed / salute / wind-up poses measured (fold-over % per pose; judged in the visual QA, not here)",
+      "pass": null,
+      "info": true,
       "details": {
-        "arms_raised": 8.82,
-        "arms_crossed_legs": 8.82,
-        "salute": 1.78,
+        "arms_raised": 0.75,
+        "arms_crossed_legs": 6.31,
+        "salute": 0.52,
         "slash_windup": 1.39
       }
     },
@@ -291,7 +294,7 @@
       "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
       "pass": true,
       "details": {
-        "zipKB": 4708,
+        "zipKB": 5495,
         "errors": 0,
         "painted": [
           "forearm_L.painted",
@@ -304,7 +307,7 @@
       "title": "Sprite-sheet frame equals the editor render of the same pose (stable registration + trim offsets; mean alpha diff of 255)",
       "pass": true,
       "details": {
-        "meanAlphaDiff": 1.058
+        "meanAlphaDiff": 1.093
       }
     },
     {
@@ -326,11 +329,11 @@
           "/runtime/gamboligy-character2d.js",
           "/validation/2d/_pkg/aureate_knight_2d.runtime.json",
           "/validation/2d/_pkg/atlas_0.png",
-          "/validation/2d/_pkg/atlas_1.png"
+          "/validation/2d/_pkg/atlas_1.png",
+          "/validation/2d/_pkg/atlas_2.png"
         ],
         "foreign": [],
         "events": [
-          "contact_detonator_2d 1.90s  button_up",
           "contact_detonator_2d 1.10s  button_down"
         ]
       }
@@ -376,13 +379,14 @@
     },
     {
       "id": "performance",
-      "title": "Performance measured (honest numbers, CPU-emulated WebGL here)",
-      "pass": true,
+      "title": "Performance measured (CPU-emulated WebGL in headless Chromium: not representative of a GPU device)",
+      "pass": null,
+      "info": true,
       "details": {
-        "evalMs": 0.05,
-        "editorFrameMs": 3.15,
-        "attachments": 130,
-        "vertices": 6512,
+        "evalMs": 0.035,
+        "editorFrameMs": 1.9,
+        "attachments": 206,
+        "vertices": 10472,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
       }
     },
@@ -582,16 +586,16 @@
     "bend_45": 0.17,
     "bend_90": 0.57,
     "bend_120": 0.63,
-    "arms_raised": 8.82,
-    "arms_crossed_legs": 8.82,
-    "salute": 1.78,
+    "arms_raised": 0.75,
+    "arms_crossed_legs": 6.31,
+    "salute": 0.52,
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.05,
-    "editorFrameMs": 3.15,
-    "attachments": 130,
-    "vertices": 6512,
+    "evalMs": 0.035,
+    "editorFrameMs": 1.9,
+    "attachments": 206,
+    "vertices": 10472,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
   }
 }

@@ -1,0 +1,1425 @@
+{
+ "project": "characters2d/aureate_knight/character.json",
+ "skin": "default",
+ "results": [
+  {
+   "name": "idle",
+   "status": {
+    "clip": "idle",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 0,
+    "excepted": 0,
+    "info": 1,
+    "visualReview": "approved",
+    "reviewNote": "reads correctly; starter (3D-captured) art except the painted helmet in the painted skin",
+    "reviewer": null
+   },
+   "summary": {},
+   "info": {
+    "order": 1
+   },
+   "frameFlags": 1,
+   "flags": [
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 15,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "15 overlapping pairs change depth at once (under_foot_L / under_leg_L, under_leg_L / under_leg_R, shin_L / under_leg_R, foot_L / under_leg_R…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 2.5
+    }
+   ],
+   "contacts": [],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0,
+       "to": 4
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.default",
+       "from": 0,
+       "to": 4
+      }
+     ],
+     "minHoldFrames": null
+    }
+   }
+  },
+  {
+   "name": "hover_sword_vigil",
+   "status": {
+    "clip": "hover_sword_vigil",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 0,
+    "excepted": 0,
+    "info": 3,
+    "visualReview": "approved",
+    "reviewNote": "both palms on the sword the whole loop (contact art 100%), hover forearm captures match 3D",
+    "reviewer": null
+   },
+   "summary": {},
+   "info": {
+    "foldover": 2,
+    "order": 1
+   },
+   "frameFlags": 303,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0,
+     "target": "under_arm_L.default",
+     "value": 2.43,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_L.default: 2.4% of the mesh folds over",
+     "from": 0,
+     "to": 5,
+     "frames": 151,
+     "severity": 1.22
+    },
+    {
+     "kind": "foldover",
+     "t": 0,
+     "target": "under_arm_R.default",
+     "value": 3.19,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 3.2% of the mesh folds over",
+     "from": 0,
+     "to": 5,
+     "frames": 151,
+     "severity": 1.59
+    },
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 37,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "37 overlapping pairs change depth at once (foot_L / shin_L, shin_L / under_leg_R, shin_L / under_foot_R, foot_R / shin_R…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 6.17
+    }
+   ],
+   "contacts": [
+    {
+     "contact": "support_L_hover",
+     "frames": 51,
+     "handOk": 51,
+     "propOk": 51,
+     "bothOk": 51,
+     "firstMiss": null,
+     "bothPct": 100
+    },
+    {
+     "contact": "grip_R (palm socket)",
+     "frames": 51,
+     "handOk": 51,
+     "propOk": 51,
+     "bothOk": 51,
+     "firstMiss": null,
+     "bothPct": 100
+    }
+   ],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.hover",
+       "from": 0,
+       "to": 5
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.hover",
+       "from": 0,
+       "to": 5
+      }
+     ],
+     "minHoldFrames": null
+    }
+   }
+  },
+  {
+   "name": "sword_2h_idle",
+   "status": {
+    "clip": "sword_2h_idle",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 0,
+    "excepted": 0,
+    "info": 3,
+    "visualReview": "approved",
+    "reviewNote": "guard pose: pose-specific pauldrons/vambraces, both grips on the hilt (contact art 100%)",
+    "reviewer": null
+   },
+   "summary": {},
+   "info": {
+    "foldover": 2,
+    "order": 1
+   },
+   "frameFlags": 123,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0,
+     "target": "under_arm_L.default",
+     "value": 3.65,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_L.default: 3.6% of the mesh folds over",
+     "from": 0,
+     "to": 2,
+     "frames": 61,
+     "severity": 1.82
+    },
+    {
+     "kind": "foldover",
+     "t": 0.5,
+     "target": "under_arm_R.default",
+     "value": 6.53,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 6.5% of the mesh folds over",
+     "from": 0,
+     "to": 2,
+     "frames": 61,
+     "severity": 3.27
+    },
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 30,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "30 overlapping pairs change depth at once (under_foot_L / under_leg_L, under_leg_L / under_leg_R, shin_L / under_leg_R, shin_R / under_leg_L…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 5
+    }
+   ],
+   "contacts": [
+    {
+     "contact": "support_L",
+     "frames": 21,
+     "handOk": 21,
+     "propOk": 21,
+     "bothOk": 21,
+     "firstMiss": null,
+     "bothPct": 100
+    },
+    {
+     "contact": "grip_R (palm socket)",
+     "frames": 21,
+     "handOk": 21,
+     "propOk": 21,
+     "bothOk": 21,
+     "firstMiss": null,
+     "bothPct": 100
+    }
+   ],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.grip_sword",
+       "from": 0,
+       "to": 2
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.grip_sword",
+       "from": 0,
+       "to": 2
+      }
+     ],
+     "minHoldFrames": null
+    }
+   }
+  },
+  {
+   "name": "sword_2h_slash",
+   "status": {
+    "clip": "sword_2h_slash",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "attention",
+    "autoFlags": 0,
+    "excepted": 4,
+    "info": 4,
+    "visualReview": "approved",
+    "reviewNote": "wind-up/strike/guard captures match 3D; depth swaps verified; blade very short at 1.77-1.83 s exactly as in 3D",
+    "reviewer": null
+   },
+   "summary": {},
+   "info": {
+    "foldover": 3,
+    "order": 1
+   },
+   "frameFlags": 110,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0.4,
+     "target": "under_arm_L.default",
+     "value": 10.94,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_L.default: 10.9% of the mesh folds over",
+     "from": 0,
+     "to": 0.9,
+     "frames": 28,
+     "severity": 5.47
+    },
+    {
+     "kind": "foldover",
+     "t": 0.0667,
+     "target": "under_arm_R.default",
+     "value": 6.53,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 6.5% of the mesh folds over",
+     "from": 0,
+     "to": 2,
+     "frames": 61,
+     "severity": 3.27
+    },
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 28,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "28 overlapping pairs change depth at once (under_foot_L / under_leg_L, under_leg_L / under_leg_R, shin_L / under_leg_R, shin_R / under_leg_L…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 4.67
+    },
+    {
+     "kind": "order",
+     "t": 0.4,
+     "target": "draw order",
+     "value": 66,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "66 overlapping pairs change depth at once (cuirass / under_arm_L, cuirass / under_arm_R, helmet / upperarm_R, upperarm_L / upperarm_R…)",
+     "exception": {
+      "reason": "hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)",
+      "author": null
+     },
+     "from": 0.4,
+     "to": 0.4,
+     "frames": 1,
+     "severity": 11
+    },
+    {
+     "kind": "order",
+     "t": 0.8667,
+     "target": "draw order",
+     "value": 39,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "39 overlapping pairs change depth at once (helmet / upperarm_L, index_R / thumb_L, middle_R / thumb_L, forearm_L / thumb_L…)",
+     "exception": {
+      "reason": "hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)",
+      "author": null
+     },
+     "from": 0.8667,
+     "to": 1,
+     "frames": 2,
+     "severity": 6.5
+    },
+    {
+     "kind": "foldover",
+     "t": 1.6667,
+     "target": "under_arm_L.default",
+     "value": 3.75,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_L.default: 3.7% of the mesh folds over",
+     "from": 1.6,
+     "to": 2,
+     "frames": 13,
+     "severity": 1.87
+    },
+    {
+     "kind": "foreshorten",
+     "t": 1.8,
+     "target": "prop_R (prop_R)",
+     "value": 0.363,
+     "threshold": 0.45,
+     "unit": "scale",
+     "message": "prop_R squashed to 36% while prop_R.Sword2H shows setup-view art",
+     "exception": {
+      "reason": "the blade points toward the camera in the follow-through; the 3D view is equally short (compare-slash.png 1.7 s)",
+      "author": null
+     },
+     "from": 1.7667,
+     "to": 1.8333,
+     "frames": 3,
+     "severity": 1.24
+    },
+    {
+     "kind": "order",
+     "t": 1.9,
+     "target": "draw order",
+     "value": 17,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "17 overlapping pairs change depth at once (helmet / upperarm_R, forearm_L / thumb_L, forearm_L / pinky_L, forearm_L / ring_L…)",
+     "exception": {
+      "reason": "return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)",
+      "author": null
+     },
+     "from": 1.9,
+     "to": 1.9,
+     "frames": 1,
+     "severity": 2.83
+    }
+   ],
+   "contacts": [
+    {
+     "contact": "support_L",
+     "frames": 21,
+     "handOk": 21,
+     "propOk": 21,
+     "bothOk": 21,
+     "firstMiss": null,
+     "bothPct": 100
+    },
+    {
+     "contact": "grip_R (palm socket)",
+     "frames": 21,
+     "handOk": 21,
+     "propOk": 21,
+     "bothOk": 21,
+     "firstMiss": null,
+     "bothPct": 100
+    }
+   ],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.grip_sword",
+       "from": 0,
+       "to": 2
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.grip_sword",
+       "from": 0,
+       "to": 2
+      }
+     ],
+     "minHoldFrames": null
+    }
+   }
+  },
+  {
+   "name": "knight_salute",
+   "status": {
+    "clip": "knight_salute",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "attention",
+    "autoFlags": 2,
+    "excepted": 4,
+    "info": 2,
+    "visualReview": "approved",
+    "reviewNote": "open palm → fist on chest → open palm tracks 3D; residual: vambrace briefly squashed/protruding around 0.37-0.50 s and 3.35-3.50 s (transition frames)",
+    "reviewer": null
+   },
+   "summary": {
+    "foreshorten": 2
+   },
+   "info": {
+    "order": 1,
+    "foldover": 1
+   },
+   "frameFlags": 103,
+   "flags": [
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 12,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "12 overlapping pairs change depth at once (under_foot_L / under_leg_L, under_leg_L / under_leg_R, shin_L / under_leg_R, foot_L / under_leg_R…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 2
+    },
+    {
+     "kind": "joint-gap",
+     "t": 0,
+     "target": "hand_R",
+     "value": 0.702,
+     "threshold": 0.92,
+     "unit": "coverage vs setup",
+     "message": "coverage around the hand_R joint drops to 70% of its setup coverage",
+     "exception": {
+      "reason": "arm swings out with the wrist seen edge-on: the narrower silhouette leaves part of the 10 px probe empty, but the cuff and open hand are joined (compare-salute-hand.png 0 s)",
+      "author": null
+     },
+     "from": 0,
+     "to": 0.2,
+     "frames": 3,
+     "severity": 3.73
+    },
+    {
+     "kind": "foreshorten",
+     "t": 0.3667,
+     "target": "forearm_R (forearm_R)",
+     "value": 0.4,
+     "threshold": 0.45,
+     "unit": "scale",
+     "message": "forearm_R squashed to 40% while forearm_R.default shows setup-view art",
+     "from": 0.3667,
+     "to": 0.4,
+     "frames": 2,
+     "severity": 1.13
+    },
+    {
+     "kind": "foldover",
+     "t": 0.8667,
+     "target": "under_arm_R.default",
+     "value": 6.51,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 6.5% of the mesh folds over",
+     "from": 0.4667,
+     "to": 3.4333,
+     "frames": 88,
+     "severity": 3.26
+    },
+    {
+     "kind": "order",
+     "t": 0.5667,
+     "target": "draw order",
+     "value": 14,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "14 overlapping pairs change depth at once (forearm_R / upperarm_R, thumb_R / upperarm_R, pinky_R / upperarm_R, hand_R / upperarm_R…)",
+     "exception": {
+      "reason": "raised arm moves in front of the chest; matches 3D (compare-order.png 0.533/0.567 s)",
+      "author": null
+     },
+     "from": 0.5667,
+     "to": 0.5667,
+     "frames": 1,
+     "severity": 2.33
+    },
+    {
+     "kind": "foreshorten",
+     "t": 3.4333,
+     "target": "forearm_R (forearm_R)",
+     "value": 0.4,
+     "threshold": 0.45,
+     "unit": "scale",
+     "message": "forearm_R squashed to 40% while forearm_R.default shows setup-view art",
+     "from": 3.4333,
+     "to": 3.5,
+     "frames": 3,
+     "severity": 1.13
+    },
+    {
+     "kind": "joint-gap",
+     "t": 4,
+     "target": "hand_R",
+     "value": 0.702,
+     "threshold": 0.92,
+     "unit": "coverage vs setup",
+     "message": "coverage around the hand_R joint drops to 70% of its setup coverage",
+     "exception": {
+      "reason": "same as the start of the clip on the way back (compare-salute-hand.png 3.8 s)",
+      "author": null
+     },
+     "from": 3.7,
+     "to": 4,
+     "frames": 4,
+     "severity": 3.73
+    },
+    {
+     "kind": "order",
+     "t": 3.9,
+     "target": "draw order",
+     "value": 8,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "8 overlapping pairs change depth at once (forearm_R / pinky_R, middle_R / pinky_R, pinky_R / ring_R, forearm_R / thumb_R…)",
+     "exception": {
+      "reason": "arm returns beside the body; matches 3D (compare-order.png 3.9 s)",
+      "author": null
+     },
+     "from": 3.9,
+     "to": 3.9,
+     "frames": 1,
+     "severity": 1.33
+    }
+   ],
+   "contacts": [],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0,
+       "to": 4
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.salute_open",
+       "from": 0,
+       "to": 0.567
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.salute",
+       "from": 0.6,
+       "to": 3.267
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.salute_open",
+       "from": 3.3,
+       "to": 4
+      }
+     ],
+     "minHoldFrames": 81
+    }
+   }
+  },
+  {
+   "name": "walk_in_place",
+   "status": {
+    "clip": "walk_in_place",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 2,
+    "excepted": 2,
+    "info": 5,
+    "visualReview": "approved",
+    "reviewNote": "regression clip: swing captures fix the crumpled hands; small pinky fold (2.1%) at 0.27-0.33 and 0.80-0.90 s",
+    "reviewer": null
+   },
+   "summary": {
+    "foldover": 2
+   },
+   "info": {
+    "foldover": 4,
+    "order": 1
+   },
+   "frameFlags": 36,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0,
+     "target": "under_foot_L.default",
+     "value": 12.44,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_foot_L.default: 12.4% of the mesh folds over",
+     "from": 0,
+     "to": 0.0333,
+     "frames": 2,
+     "severity": 6.22
+    },
+    {
+     "kind": "order",
+     "t": 0,
+     "target": "draw order",
+     "value": 56,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "56 overlapping pairs change depth at once (under_foot_R / under_leg_R, under_foot_L / under_foot_R, under_foot_R / under_leg_L, shin_L / under_foot_R…)",
+     "from": 0,
+     "to": 0,
+     "frames": 1,
+     "severity": 9.33
+    },
+    {
+     "kind": "foldover",
+     "t": 0.5,
+     "target": "under_arm_R.default",
+     "value": 3.26,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 3.3% of the mesh folds over",
+     "from": 0.2667,
+     "to": 0.8667,
+     "frames": 19,
+     "severity": 1.63
+    },
+    {
+     "kind": "foldover",
+     "t": 0.2667,
+     "target": "pinky_R.default",
+     "value": 2.09,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 2.1% of the mesh folds over",
+     "from": 0.2667,
+     "to": 0.3333,
+     "frames": 3,
+     "severity": 1.04
+    },
+    {
+     "kind": "foldover",
+     "t": 0.5667,
+     "target": "under_foot_R.default",
+     "value": 2.11,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_foot_R.default: 2.1% of the mesh folds over",
+     "from": 0.5667,
+     "to": 0.5667,
+     "frames": 1,
+     "severity": 1.06
+    },
+    {
+     "kind": "foldover",
+     "t": 0.8,
+     "target": "pinky_R.default",
+     "value": 2.09,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 2.1% of the mesh folds over",
+     "from": 0.8,
+     "to": 0.9,
+     "frames": 4,
+     "severity": 1.04
+    },
+    {
+     "kind": "order",
+     "t": 0.9333,
+     "target": "draw order",
+     "value": 13,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "13 overlapping pairs change depth at once (abdomen / forearm_L, belt / thigh_R, belt / forearm_L, thigh_R / under_leg_L…)",
+     "exception": {
+      "reason": "arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)",
+      "author": null
+     },
+     "from": 0.9333,
+     "to": 0.9333,
+     "frames": 1,
+     "severity": 2.17
+    },
+    {
+     "kind": "foldover",
+     "t": 1.0667,
+     "target": "under_foot_L.default",
+     "value": 12.44,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_foot_L.default: 12.4% of the mesh folds over",
+     "from": 1.0333,
+     "to": 1.1333,
+     "frames": 4,
+     "severity": 6.22
+    },
+    {
+     "kind": "order",
+     "t": 1.1,
+     "target": "draw order",
+     "value": 14,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "14 overlapping pairs change depth at once (under_foot_L / under_leg_R, shin_R / under_foot_L, foot_R / under_foot_L, thigh_R / under_leg_L…)",
+     "exception": {
+      "reason": "arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)",
+      "author": null
+     },
+     "from": 1.1,
+     "to": 1.1,
+     "frames": 1,
+     "severity": 2.33
+    }
+   ],
+   "contacts": [],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0,
+       "to": 0.367
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_L.walk_swing_L",
+       "from": 0.4,
+       "to": 0.733
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0.767,
+       "to": 1.133
+      }
+     ],
+     "minHoldFrames": 11
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.walk_swing_R",
+       "from": 0,
+       "to": 0.233
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.default",
+       "from": 0.267,
+       "to": 0.9
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.walk_swing_R",
+       "from": 0.933,
+       "to": 1.133
+      }
+     ],
+     "minHoldFrames": 20
+    }
+   }
+  },
+  {
+   "name": "finger_tests_2d",
+   "status": {
+    "clip": "finger_tests_2d",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 29,
+    "excepted": 0,
+    "info": 1,
+    "visualReview": "needs-work",
+    "reviewNote": "finger meshes fold 4-9% at the knuckles in deep per-finger curls (stress clip); full fists swap to captured fist art",
+    "reviewer": null
+   },
+   "summary": {
+    "foldover": 28,
+    "order": 1
+   },
+   "info": {
+    "order": 1
+   },
+   "frameFlags": 493,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0.7667,
+     "target": "pinky_R.default",
+     "value": 2.09,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 2.1% of the mesh folds over",
+     "from": 0.7667,
+     "to": 1.2,
+     "frames": 14,
+     "severity": 1.04
+    },
+    {
+     "kind": "foldover",
+     "t": 1.6,
+     "target": "index_L.default",
+     "value": 9.14,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_L.default: 9.1% of the mesh folds over",
+     "from": 1.2333,
+     "to": 1.7667,
+     "frames": 17,
+     "severity": 4.57
+    },
+    {
+     "kind": "foldover",
+     "t": 1.2667,
+     "target": "index_R.default",
+     "value": 3.18,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_R.default: 3.2% of the mesh folds over",
+     "from": 1.2667,
+     "to": 1.7667,
+     "frames": 16,
+     "severity": 1.59
+    },
+    {
+     "kind": "foldover",
+     "t": 1.9667,
+     "target": "middle_L.default",
+     "value": 4.94,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_L.default: 4.9% of the mesh folds over",
+     "from": 1.8333,
+     "to": 2.1667,
+     "frames": 11,
+     "severity": 2.47
+    },
+    {
+     "kind": "foldover",
+     "t": 1.9,
+     "target": "middle_R.default",
+     "value": 4.49,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_R.default: 4.5% of the mesh folds over",
+     "from": 1.9,
+     "to": 2.1,
+     "frames": 7,
+     "severity": 2.24
+    },
+    {
+     "kind": "foldover",
+     "t": 2,
+     "target": "hand_L.default",
+     "value": 3.35,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "hand_L.default: 3.4% of the mesh folds over",
+     "from": 1.9667,
+     "to": 2.0333,
+     "frames": 3,
+     "severity": 1.68
+    },
+    {
+     "kind": "foldover",
+     "t": 2,
+     "target": "hand_R.default",
+     "value": 2.13,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "hand_R.default: 2.1% of the mesh folds over",
+     "from": 2,
+     "to": 2,
+     "frames": 1,
+     "severity": 1.07
+    },
+    {
+     "kind": "order",
+     "t": 2,
+     "target": "draw order",
+     "value": 13,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "info": "clip start: its depth order replaces the setup order as the clip begins",
+     "message": "13 overlapping pairs change depth at once (index_R / middle_R, index_R / ring_R, index_R / pinky_R, hand_R / index_R…)",
+     "from": 2,
+     "to": 2,
+     "frames": 1,
+     "severity": 2.17
+    },
+    {
+     "kind": "foldover",
+     "t": 2.3667,
+     "target": "ring_L.default",
+     "value": 8.71,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_L.default: 8.7% of the mesh folds over",
+     "from": 2.2333,
+     "to": 2.5667,
+     "frames": 11,
+     "severity": 4.35
+    },
+    {
+     "kind": "foldover",
+     "t": 2.2667,
+     "target": "ring_R.default",
+     "value": 3.26,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_R.default: 3.3% of the mesh folds over",
+     "from": 2.2667,
+     "to": 2.5333,
+     "frames": 9,
+     "severity": 1.63
+    },
+    {
+     "kind": "foldover",
+     "t": 2.7333,
+     "target": "pinky_R.default",
+     "value": 8.36,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 8.4% of the mesh folds over",
+     "from": 2.5333,
+     "to": 3.0667,
+     "frames": 17,
+     "severity": 4.18
+    },
+    {
+     "kind": "foldover",
+     "t": 2.7667,
+     "target": "pinky_L.default",
+     "value": 6.56,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_L.default: 6.6% of the mesh folds over",
+     "from": 2.6667,
+     "to": 2.9333,
+     "frames": 9,
+     "severity": 3.28
+    },
+    {
+     "kind": "order",
+     "t": 2.8,
+     "target": "draw order",
+     "value": 13,
+     "threshold": 6,
+     "unit": "overlapping pairs swap",
+     "message": "13 overlapping pairs change depth at once (hand_R / pinky_R, hand_R / ring_R, hand_R / middle_R, hand_R / index_R…)",
+     "from": 2.8,
+     "to": 2.8,
+     "frames": 1,
+     "severity": 2.17
+    },
+    {
+     "kind": "foldover",
+     "t": 3.2,
+     "target": "thumb_L.default",
+     "value": 3.24,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "thumb_L.default: 3.2% of the mesh folds over",
+     "from": 3.2,
+     "to": 3.2333,
+     "frames": 2,
+     "severity": 1.62
+    },
+    {
+     "kind": "foldover",
+     "t": 3.7667,
+     "target": "pinky_R.default",
+     "value": 8.36,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 8.4% of the mesh folds over",
+     "from": 3.4,
+     "to": 4.8667,
+     "frames": 45,
+     "severity": 4.18
+    },
+    {
+     "kind": "foldover",
+     "t": 3.8,
+     "target": "ring_L.default",
+     "value": 6.97,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_L.default: 7.0% of the mesh folds over",
+     "from": 3.6,
+     "to": 4.8667,
+     "frames": 39,
+     "severity": 3.48
+    },
+    {
+     "kind": "foldover",
+     "t": 3.6333,
+     "target": "pinky_L.default",
+     "value": 4.38,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_L.default: 4.4% of the mesh folds over",
+     "from": 3.6,
+     "to": 4.8667,
+     "frames": 39,
+     "severity": 2.19
+    },
+    {
+     "kind": "foldover",
+     "t": 3.6333,
+     "target": "middle_L.default",
+     "value": 3.3,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_L.default: 3.3% of the mesh folds over",
+     "from": 3.6333,
+     "to": 4.8667,
+     "frames": 38,
+     "severity": 1.65
+    },
+    {
+     "kind": "foldover",
+     "t": 4.6,
+     "target": "index_L.default",
+     "value": 9.14,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_L.default: 9.1% of the mesh folds over",
+     "from": 3.6667,
+     "to": 4.8667,
+     "frames": 37,
+     "severity": 4.57
+    },
+    {
+     "kind": "foldover",
+     "t": 4.4667,
+     "target": "ring_R.default",
+     "value": 3.49,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_R.default: 3.5% of the mesh folds over",
+     "from": 3.6667,
+     "to": 4.8667,
+     "frames": 37,
+     "severity": 1.74
+    },
+    {
+     "kind": "foldover",
+     "t": 3.7,
+     "target": "index_R.default",
+     "value": 3.18,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_R.default: 3.2% of the mesh folds over",
+     "from": 3.7,
+     "to": 4.8667,
+     "frames": 36,
+     "severity": 1.59
+    },
+    {
+     "kind": "foldover",
+     "t": 3.7667,
+     "target": "middle_R.default",
+     "value": 4.49,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_R.default: 4.5% of the mesh folds over",
+     "from": 3.7667,
+     "to": 4.8667,
+     "frames": 34,
+     "severity": 2.24
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "pinky_R.default",
+     "value": 8.36,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 8.4% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.2333,
+     "frames": 14,
+     "severity": 4.18
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "index_L.default",
+     "value": 9.14,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_L.default: 9.1% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.0667,
+     "frames": 9,
+     "severity": 4.57
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "index_R.default",
+     "value": 3.18,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_R.default: 3.2% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.0333,
+     "frames": 8,
+     "severity": 1.59
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "middle_L.default",
+     "value": 3.3,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_L.default: 3.3% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.0667,
+     "frames": 9,
+     "severity": 1.65
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "middle_R.default",
+     "value": 4.49,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "middle_R.default: 4.5% of the mesh folds over",
+     "from": 5.8,
+     "to": 5.9333,
+     "frames": 5,
+     "severity": 2.24
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "ring_L.default",
+     "value": 6.97,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_L.default: 7.0% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.0667,
+     "frames": 9,
+     "severity": 3.48
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "ring_R.default",
+     "value": 3.49,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_R.default: 3.5% of the mesh folds over",
+     "from": 5.8,
+     "to": 6,
+     "frames": 7,
+     "severity": 1.74
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "pinky_L.default",
+     "value": 4.38,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_L.default: 4.4% of the mesh folds over",
+     "from": 5.8,
+     "to": 6.0333,
+     "frames": 8,
+     "severity": 2.19
+    }
+   ],
+   "contacts": [],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0,
+       "to": 4.867
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_L.fist",
+       "from": 4.9,
+       "to": 5.767
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 5.8,
+       "to": 7
+      }
+     ],
+     "minHoldFrames": 27
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.default",
+       "from": 0,
+       "to": 4.867
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.fist",
+       "from": 4.9,
+       "to": 5.767
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.default",
+       "from": 5.8,
+       "to": 7
+      }
+     ],
+     "minHoldFrames": 27
+    }
+   }
+  },
+  {
+   "name": "contact_detonator_2d",
+   "status": {
+    "clip": "contact_detonator_2d",
+    "math": "valid",
+    "missingArt": "complete-for-view",
+    "bridge": "ok",
+    "autoFlags": 1,
+    "excepted": 0,
+    "info": 1,
+    "visualReview": "approved",
+    "reviewNote": "thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb mesh folds 9% at its knuckle when bent",
+    "reviewer": null
+   },
+   "summary": {
+    "foldover": 1
+   },
+   "info": {
+    "foldover": 1
+   },
+   "frameFlags": 182,
+   "flags": [
+    {
+     "kind": "foldover",
+     "t": 0,
+     "target": "under_arm_R.default",
+     "value": 4.37,
+     "threshold": 2,
+     "unit": "% of area",
+     "info": "hidden underlap layer (drawn beneath the armour piece it backs)",
+     "message": "under_arm_R.default: 4.4% of the mesh folds over",
+     "from": 0,
+     "to": 3,
+     "frames": 91,
+     "severity": 2.19
+    },
+    {
+     "kind": "foldover",
+     "t": 1.1,
+     "target": "thumb_R.default",
+     "value": 9.45,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "thumb_R.default: 9.5% of the mesh folds over",
+     "from": 0,
+     "to": 3,
+     "frames": 91,
+     "severity": 4.73
+    }
+   ],
+   "contacts": [
+    {
+     "contact": "grip_R (palm socket)",
+     "frames": 31,
+     "handOk": 31,
+     "propOk": 31,
+     "bothOk": 31,
+     "firstMiss": null,
+     "bothPct": 100
+    },
+    {
+     "contact": "thumb_button_R",
+     "frames": 9,
+     "handOk": 9,
+     "propOk": 9,
+     "bothOk": 9,
+     "firstMiss": null,
+     "bothPct": 100
+    }
+   ],
+   "hands": {
+    "L": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_L.default",
+       "from": 0,
+       "to": 3
+      }
+     ],
+     "minHoldFrames": null
+    },
+    "R": {
+     "used": [
+      {
+       "set": null,
+       "palmAttachment": "hand_R.grip_detonator",
+       "from": 0,
+       "to": 3
+      }
+     ],
+     "minHoldFrames": null
+    }
+   }
+  }
+ ],
+ "errors": []
+}

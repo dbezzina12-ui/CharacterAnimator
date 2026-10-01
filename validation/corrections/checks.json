@@ -1,0 +1,184 @@
+{
+ "date": "2026-10-01T03:17:20.501Z",
+ "passed": 14,
+ "failed": 0,
+ "results": [
+  {
+   "id": "correction-authored",
+   "title": "Correction keys authored in the inspector (forearm_R +2 → +10 over 1.0–2.0 s) with smooth easing from the ease menu",
+   "pass": true,
+   "details": {
+    "key": {
+     "t": [
+      1,
+      2
+     ],
+     "v": [
+      2,
+      10
+     ],
+     "ease": [
+      "smooth",
+      "linear"
+     ]
+    },
+    "progressAt1_25": 0.1563,
+    "expectedSmooth": 0.15625,
+    "linearWouldBe": 0.25
+   }
+  },
+  {
+   "id": "bake-unchanged",
+   "title": "The baked source track is byte-identical after authoring corrections (corrections are a separate layer)",
+   "pass": true,
+   "details": {
+    "tracksEqual": true
+   }
+  },
+  {
+   "id": "correction-visible",
+   "title": "Corrected pose differs from the bake inside the keyed range",
+   "pass": true,
+   "details": {
+    "maxVertexDeltaPx": 26.22
+   }
+  },
+  {
+   "id": "correction-disable-undo",
+   "title": "Disable button restores the bake exactly; undo re-enables the same corrected pose",
+   "pass": true,
+   "details": {
+    "disabledVsBake": 0,
+    "undoneVsCorrected": 0
+   }
+  },
+  {
+   "id": "correction-save-reopen",
+   "title": "Saved ZIP reopened in a fresh page: same corrected pose, bake still unchanged, valid",
+   "pass": true,
+   "details": {
+    "maxDiff": 0,
+    "errors": 0
+   }
+  },
+  {
+   "id": "correction-runtime",
+   "title": "Standalone runtime (exported package only) shows the same corrected pose as the editor",
+   "pass": true,
+   "details": {
+    "maxDiffPx": 0
+   }
+  },
+  {
+   "id": "colour-runtime-vs-editor",
+   "title": "Runtime canvas (atlas pages) vs editor render, same pose and background: mean / >24-level pixel share (≥20% of the frame is character pixels)",
+   "pass": true,
+   "details": {
+    "size": [
+     300,
+     400
+    ],
+    "characterPixels": "29.2%",
+    "meanMaxChannelDiff": 0.003,
+    "pixelsOver24": "0%"
+   }
+  },
+  {
+   "id": "colour-sprite-vs-editor",
+   "title": "Sprite-sheet frame vs editor render: alpha and premultiplication-safe RGB (opaque pixels); transparent background",
+   "pass": true,
+   "details": {
+    "meanAlphaDiff": 0,
+    "meanRgbDiff": 0,
+    "opaquePx": 203864,
+    "transparentCorner": true
+   }
+  },
+  {
+   "id": "deterministic-seek",
+   "title": "Seeking to a time gives the identical pose and identical editor pixels regardless of prior playback/seeks",
+   "pass": true,
+   "details": {
+    "poseSame": true,
+    "pixelsSame": true,
+    "otherTimeDiffers": true,
+    "t": 1.7
+   }
+  },
+  {
+   "id": "rapid-mode-switch",
+   "title": "12 rapid 3D/2D + setup/animate switches: one 2D render loop, 2D mode active, no page errors",
+   "pass": true,
+   "details": {
+    "loops": 1,
+    "body": true,
+    "editorMode": "animate",
+    "pageErrors": 0
+   }
+  },
+  {
+   "id": "fit-view-button",
+   "title": "\"Fit view\" button re-frames the character (unique element id)",
+   "pass": true,
+   "details": {
+    "zoom": 0.8232153071290117,
+    "x": 0,
+    "ids": 1
+   }
+  },
+  {
+   "id": "hand-no-flicker",
+   "title": "No hand appearance (set or keyed palm art) is shown for fewer than 4 frames in hero/regression clips",
+   "pass": true,
+   "details": {
+    "minHoldFrames": 11,
+    "clips": {
+     "idle": {
+      "L": 1,
+      "R": 1
+     },
+     "hover_sword_vigil": {
+      "L": 1,
+      "R": 1
+     },
+     "sword_2h_idle": {
+      "L": 1,
+      "R": 1
+     },
+     "sword_2h_slash": {
+      "L": 1,
+      "R": 1
+     },
+     "knight_salute": {
+      "L": 1,
+      "R": 3
+     },
+     "walk_in_place": {
+      "L": 3,
+      "R": 3
+     },
+     "contact_detonator_2d": {
+      "L": 1,
+      "R": 1
+     }
+    }
+   }
+  },
+  {
+   "id": "hand-wrist-continuity",
+   "title": "Every hand-set palm has art at the wrist joint (≤6 px), so set swaps never open a cuff gap",
+   "pass": true,
+   "details": {
+    "sets": 27,
+    "worst": 3.98,
+    "failing": []
+   }
+  },
+  {
+   "id": "no-errors",
+   "title": "No page errors in editor, fresh page or runtime",
+   "pass": true,
+   "details": []
+  }
+ ]
+}

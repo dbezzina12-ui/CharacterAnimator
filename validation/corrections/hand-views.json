@@ -1,0 +1,312 @@
+{
+ "clips": {
+  "idle": {
+   "L": {
+    "appearances": [
+     "hand_L.default 0-4"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.default 0-4"
+    ],
+    "minHoldFrames": null
+   }
+  },
+  "hover_sword_vigil": {
+   "L": {
+    "appearances": [
+     "hand_L.hover 0-5"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.hover 0-5"
+    ],
+    "minHoldFrames": null
+   }
+  },
+  "sword_2h_idle": {
+   "L": {
+    "appearances": [
+     "hand_L.grip_sword 0-2"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.grip_sword 0-2"
+    ],
+    "minHoldFrames": null
+   }
+  },
+  "sword_2h_slash": {
+   "L": {
+    "appearances": [
+     "hand_L.grip_sword 0-2"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.grip_sword 0-2"
+    ],
+    "minHoldFrames": null
+   }
+  },
+  "knight_salute": {
+   "L": {
+    "appearances": [
+     "hand_L.default 0-4"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.salute_open 0-0.567",
+     "hand_R.salute 0.6-3.267",
+     "hand_R.salute_open 3.3-4"
+    ],
+    "minHoldFrames": 81
+   }
+  },
+  "walk_in_place": {
+   "L": {
+    "appearances": [
+     "hand_L.default 0-0.367",
+     "hand_L.walk_swing_L 0.4-0.733",
+     "hand_L.default 0.767-1.133"
+    ],
+    "minHoldFrames": 11
+   },
+   "R": {
+    "appearances": [
+     "hand_R.walk_swing_R 0-0.233",
+     "hand_R.default 0.267-0.9",
+     "hand_R.walk_swing_R 0.933-1.133"
+    ],
+    "minHoldFrames": 20
+   }
+  },
+  "contact_detonator_2d": {
+   "L": {
+    "appearances": [
+     "hand_L.default 0-3"
+    ],
+    "minHoldFrames": null
+   },
+   "R": {
+    "appearances": [
+     "hand_R.grip_detonator 0-3"
+    ],
+    "minHoldFrames": null
+   }
+  }
+ },
+ "wrist": {
+  "L": [
+   {
+    "set": "open_back",
+    "attachment": "hand_L.default",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "relaxed_back",
+    "attachment": "hand_L.default",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "fist_back",
+    "attachment": "hand_L.fist",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "open_palm",
+    "attachment": "hand_L.open_turned",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "relaxed_palm",
+    "attachment": "hand_L.relaxed_turned",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "fist_palm",
+    "attachment": "hand_L.fist_turned",
+    "wristGapPx": 0.33,
+    "ok": true
+   },
+   {
+    "set": "hover",
+    "attachment": "hand_L.hover",
+    "wristGapPx": 3.15,
+    "ok": true
+   },
+   {
+    "set": "grip_sword",
+    "attachment": "hand_L.grip_sword",
+    "wristGapPx": 0.19,
+    "ok": true
+   },
+   {
+    "set": "grip_pistol_2h",
+    "attachment": "hand_L.grip_pistol_2h",
+    "wristGapPx": 0.2,
+    "ok": true
+   },
+   {
+    "set": "grip_rifle",
+    "attachment": "hand_L.grip_rifle",
+    "wristGapPx": 0.08,
+    "ok": true
+   },
+   {
+    "set": "walk_swing_L",
+    "attachment": "hand_L.walk_swing_L",
+    "wristGapPx": 0.25,
+    "ok": true
+   }
+  ],
+  "R": [
+   {
+    "set": "open_palm",
+    "attachment": "hand_R.default",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "relaxed_palm",
+    "attachment": "hand_R.default",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "fist_palm",
+    "attachment": "hand_R.fist",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "open_back",
+    "attachment": "hand_R.open_turned",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "relaxed_back",
+    "attachment": "hand_R.relaxed_turned",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "fist_back",
+    "attachment": "hand_R.fist_turned",
+    "wristGapPx": 0.25,
+    "ok": true
+   },
+   {
+    "set": "hover",
+    "attachment": "hand_R.hover",
+    "wristGapPx": 3.98,
+    "ok": true
+   },
+   {
+    "set": "grip_sword",
+    "attachment": "hand_R.grip_sword",
+    "wristGapPx": 0.06,
+    "ok": true
+   },
+   {
+    "set": "grip_staff",
+    "attachment": "hand_R.grip_staff",
+    "wristGapPx": 2.4,
+    "ok": true
+   },
+   {
+    "set": "grip_pistol",
+    "attachment": "hand_R.grip_pistol",
+    "wristGapPx": 0.18,
+    "ok": true
+   },
+   {
+    "set": "grip_pistol_2h",
+    "attachment": "hand_R.grip_pistol_2h",
+    "wristGapPx": 0.3,
+    "ok": true
+   },
+   {
+    "set": "grip_rifle",
+    "attachment": "hand_R.grip_rifle",
+    "wristGapPx": 0.21,
+    "ok": true
+   },
+   {
+    "set": "grip_detonator",
+    "attachment": "hand_R.grip_detonator",
+    "wristGapPx": 0.24,
+    "ok": true
+   },
+   {
+    "set": "salute",
+    "attachment": "hand_R.salute",
+    "wristGapPx": 0.17,
+    "ok": true
+   },
+   {
+    "set": "salute_open",
+    "attachment": "hand_R.salute_open",
+    "wristGapPx": 0.04,
+    "ok": true
+   },
+   {
+    "set": "walk_swing_R",
+    "attachment": "hand_R.walk_swing_R",
+    "wristGapPx": 0.24,
+    "ok": true
+   }
+  ]
+ },
+ "missing": {
+  "default": []
+ },
+ "sets": {
+  "L": [
+   "open_back (back/open)",
+   "relaxed_back (back/relaxed)",
+   "fist_back (back/fist)",
+   "open_palm (palm/open)",
+   "relaxed_palm (palm/relaxed)",
+   "fist_palm (palm/fist)",
+   "hover (side/grip)",
+   "grip_sword (back/grip)",
+   "grip_pistol_2h (back/grip)",
+   "grip_rifle (palm/grip)",
+   "walk_swing_L (back/grip)"
+  ],
+  "R": [
+   "open_palm (palm/open)",
+   "relaxed_palm (palm/relaxed)",
+   "fist_palm (palm/fist)",
+   "open_back (back/open)",
+   "relaxed_back (back/relaxed)",
+   "fist_back (back/fist)",
+   "hover (side/grip)",
+   "grip_sword (palm/grip)",
+   "grip_staff (side/grip)",
+   "grip_pistol (palm/grip)",
+   "grip_pistol_2h (palm/grip)",
+   "grip_rifle (palm/grip)",
+   "grip_detonator (side/grip)",
+   "salute (back/grip)",
+   "salute_open (back/grip)",
+   "walk_swing_R (palm/grip)"
+  ]
+ }
+}
