@@ -99,11 +99,11 @@ export async function offscreenRenderer(project, store) {
 }
 
 /** Render a pose into ImageData covering project rect [x0,y0,x1,y1] at `scale` output px per project px. */
-export function renderPose(r, rig, pose, rect, scale) {
+export function renderPose(r, rig, pose, rect, scale, { only = null, background = null } = {}) {
   const [x0, y0, x1, y1] = rect, W = Math.max(1, Math.round((x1 - x0) * scale)), H = Math.max(1, Math.round((y1 - y0) * scale));
   r.canvas.width = W; r.canvas.height = H;
-  r.background = null;
-  r.draw(rig, pose, { dpr: 1, view: { x: x0 + W / scale / 2, y: y0 + H / scale / 2, zoom: scale } });
+  r.background = background;
+  r.draw(rig, pose, { dpr: 1, only, view: { x: x0 + W / scale / 2, y: y0 + H / scale / 2, zoom: scale } });
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(r.canvas, 0, 0);
   return g.getImageData(0, 0, W, H);

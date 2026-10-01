@@ -98,7 +98,8 @@ export class Renderer2D {
 
   /**
    * Draw one evaluated pose. opts: { clear=true, dpr, only:Set(slotIds), dim:Set(slotIds) (drawn faded),
-   *   flat: [r,g,b,a] silhouette colour, skip:Set(slotIds), viewport:[x,y,w,h] device px, view:{x,y,zoom} }
+   *   flat: [r,g,b,a] silhouette colour, skip:Set(slotIds), viewport:[x,y,w,h] device px, view:{x,y,zoom},
+   *   alpha: overall opacity (overlays such as a starter-art ghost under painted art) }
    * Returns the draw list with world-space vertices (reused by hit testing).
    */
   draw(rig, pose, opts = {}) {
@@ -120,7 +121,7 @@ export class Renderer2D {
       const pos = rig.skinAttachment(d.attachment, pose, new Float32Array(att.vertices.length));
       drawn.push({ ...d, pos, tris: att.triangles });
       const c = opts.flat || d.color;
-      const a = (opts.dim && opts.dim.has(d.slot) ? 0.25 : 1) * c[3];
+      const a = (opts.dim && opts.dim.has(d.slot) ? 0.25 : 1) * c[3] * (opts.alpha ?? 1);
       gl.uniform4f(this.loc.color, c[0] * a, c[1] * a, c[2] * a, a);
       gl.uniform1f(this.loc.flat, opts.flat ? 1 : 0);
       switch (d.blend) {

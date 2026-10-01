@@ -7,6 +7,8 @@ import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayer
 import { validateProject, computeInverseBinds } from './schema.js';
 import { gridMesh, addVertex, deleteVertex, smoothWeights, normalizeWeights, paintWeights } from './mesh.js';
 import { exportRuntimePackage, exportFramePNG, exportSpriteSheets, download, poseBounds } from './exporters.js';
+import { readFitSource, planFit, installFit, resetFit, snapToJoints, slotAnchors, imageToWorld, worldToImage, templateOf, FIT_SCHEMA } from './fitting.js';
+import { jointCoverage, paintTemplatePack } from './paintpack.js';
 
 const FINGERS = ['thumb', 'index', 'middle', 'ring', 'pinky'];
 const HAND_PRESETS = {
@@ -28,7 +30,7 @@ body.mode2d #side>details,body.mode2d #side>.knight-only{display:none}
 body.mode2d #main>.viewport-label,body.mode2d #legend{display:none}
 #stage2d canvas{position:absolute;inset:0;width:100%;height:100%}
 #stage2d .badge{position:absolute;left:10px;top:10px;max-width:calc(100% - 150px);padding:4px 10px;border-radius:12px;font:600 11px system-ui;letter-spacing:1px;pointer-events:none}
-#stage2d .badge.setup{background:#7a4b12;color:#ffe2b0}#stage2d .badge.animate{background:#1f5a3a;color:#c8f5dc}
+#stage2d .badge.setup{background:#7a4b12;color:#ffe2b0}#stage2d .badge.fitting{background:#5a2a7a;color:#f0d8ff}#stage2d .badge.animate{background:#1f5a3a;color:#c8f5dc}
 #stage2d .hud{position:absolute;right:10px;bottom:10px;background:#000a;padding:4px 8px;border-radius:4px;font:11px ui-monospace,monospace;pointer-events:none;white-space:pre;max-width:60%;overflow:hidden;text-overflow:ellipsis}
 #stage2d .zoom{position:absolute;right:10px;top:10px;display:flex;gap:4px}
 body.mode2d.compare-inset #main>canvas{position:absolute;left:10px;bottom:10px;width:30%!important;height:34%!important;border:1px solid #cfb078;border-radius:4px;z-index:3;pointer-events:none}
@@ -259,19 +261,27 @@ class Editor2D {
     } else if (this.preview.pose) o.override = this.preview.pose;
     return o;
   }
-  evaluate() {
-    if (this.mode === 'setup' || !this.clip) return this.rig.evaluate(null, 0, this.evalOpts());
-    return this.rig.evaluate(this.clip, this.player.time, this.evalOpts());
+  evaluate(rig = this.fit?.rig || this.rig) {
+    if (this.mode === 'setup' || !this.clip) return rig.evaluate(null, 0, this.evalOpts());
+    return rig.evaluate(this.clip.name, this.player.time, this.evalOpts());
   }
 
   frame(dt) {
     if (!this.project) return;
     if (this.playing && this.mode === 'animate') this.player.update(dt * this.speed());
-    this.pose = this.evaluate();
     this.renderer.fit();
     const dpr = window.devicePixelRatio || 1;
     const only = this.isolate || null;
-    this.drawn = this.renderer.draw(this.rig, this.pose, { dpr, only, skip: this.hidden.size ? this.hidden : null });
+    if (this.fit?.rig) {                              // fitting preview: starter ghost under the proposed painted skin
+      const F = this.fit, skip = this.hidden.size ? this.hidden : null;
+      if (F.ghost > 0) this.renderer.draw(this.rig, this.evaluate(this.rig), { dpr, only, skip, alpha: F.ghost });
+      else this.renderer.clear();
+      this.pose = this.evaluate(F.rig);
+      this.drawn = F.painted > 0 ? this.renderer.draw(F.rig, this.pose, { dpr, only, skip, alpha: F.painted, clear: false }) : [];
+    } else {
+      this.pose = this.evaluate();
+      this.drawn = this.renderer.draw(this.rig, this.pose, { dpr, only, skip: this.hidden.size ? this.hidden : null });
+    }
     this.drawReference(dpr);
     this.drawOverlay(dpr);
     this.syncTimeUI();
@@ -310,7 +320,8 @@ class Editor2D {
     const c = this.ovCanvas, w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     const g = this.ov; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h); g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const rig = this.rig, W = rig.world, P = (x, y) => this.w2s(x, y);
+    const rig = this.fit?.rig || this.rig, W = rig.world, P = (x, y) => this.w2s(x, y);
+    if (!this.pose) return;
     // mesh of the selected attachment (deformed)
     const d = this.drawn?.find((x) => x.attachment === this.sel.attachment);
     if (d && (this.overlay.mesh || this.tool === 'mesh' || this.tool === 'weights' || this.overlay.weights)) {
@@ -336,7 +347,7 @@ class Editor2D {
       }
     }
     // bones
-    if (this.overlay.bones || this.tool !== 'select') {
+    if ((this.overlay.bones || this.tool !== 'select') && (!this.fit || this.fit.bones)) {
       for (let i = 0; i < rig.bones.length; i++) {
         const b = rig.bones[i]; if (b.kind === 'helper') continue;
         const m = W[i], [x0, y0] = P(m[4], m[5]), tip = affApply(m, b.length || 8, 0), [x1, y1] = P(tip[0], tip[1]);
@@ -373,6 +384,7 @@ class Editor2D {
         g.fillStyle = g.strokeStyle; g.font = '11px system-ui'; g.fillText(`${ct.id} ${ct.error.toFixed(2)}px${ct.reachable ? '' : ' UNREACHABLE'}`, x + 9, y + 4);
       }
     }
+    if (this.fit?.rig) this.drawFitHandles(g);
     if (this.brushAt && this.tool === 'weights') {
       g.strokeStyle = '#fff8'; g.beginPath(); g.arc(this.brushAt[0], this.brushAt[1], this.brush.radius, 0, 7); g.stroke();
     }
@@ -380,7 +392,9 @@ class Editor2D {
     const badge = $(this.stage, '.badge');
     const layerName = this.clip?.source?.type === 'native2d' ? 'clip tracks' : 'corrections layer';
     badge.className = 'badge ' + this.mode;
-    badge.textContent = this.mode === 'setup' ? 'SETUP · editing the bind pose' : `ANIMATE · keys → ${layerName} of ${this.clip?.name ?? '—'}`;
+    badge.textContent = this.fit ? `FITTING · ${this.fit.session.layers.filter((l) => l.include).length} layer(s) → skin "${this.fit.session.skin}" · nothing committed yet` :
+      this.mode === 'setup' ? 'SETUP · editing the bind pose' : `ANIMATE · keys → ${layerName} of ${this.clip?.name ?? '—'}`;
+    if (this.fit) badge.className = 'badge fitting';
     const ct = (this.pose.contacts || []).filter((x) => x.mix > 0).map((x) => `${x.id}: ${x.error.toFixed(2)}px`).join('  ');
     $(this.stage, '.hud').textContent = `${this.clip?.name ?? ''} ${this.player?.time.toFixed(3)}s  zoom ${this.renderer.view.zoom.toFixed(2)}\n` +
       `${this.sel.bone ? 'bone ' + this.sel.bone : ''}${this.sel.slot ? '  slot ' + this.sel.slot + ' [' + (this.sel.attachment || '') + ']' : ''}${ct ? '\n' + ct : ''}` +
@@ -490,6 +504,7 @@ class Editor2D {
     const [wx, wy] = this.s2w(e);
     this.drag = { x: e.clientX, y: e.clientY, wx, wy, button: e.button, moved: false };
     if (e.button === 1 || e.button === 2 || e.altKey) { this.drag.pan = { ...this.renderer.view }; return; }
+    if (this.fit) { this.fitDown(e, wx, wy); return; }
     const t = this.tool;
     if (t === 'select') {
       const b = this.overlay.bones ? this.pickBone(e) : null;
@@ -538,6 +553,7 @@ class Editor2D {
     const [wx, wy] = this.s2w(e);
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 3) d.moved = true;
     if (d.pan) { if (!d.moved) return; const z = this.renderer.view.zoom; this.renderer.view.x = d.pan.x - (e.clientX - d.x) / z; this.renderer.view.y = d.pan.y + (e.clientY - d.y) / z; return; }
+    if (this.fit && d.fit) { this.fitMove(e, wx, wy); return; }
     const t = this.tool, id = this.sel.bone;
     if ((t === 'rotate' || t === 'move' || t === 'ik') && this.pending) {
       const i = this.rig.boneIndex.get(id);
@@ -563,6 +579,7 @@ class Editor2D {
   onUp(e) {
     const d = this.drag; this.drag = null;
     if (!d) return;
+    if (this.fit && d.fit) { this.refreshFit(); return; }
     if (this.pending) this.end();
     void e;
   }
@@ -651,6 +668,12 @@ class Editor2D {
   <div class="grid2" style="margin-top:6px"><select id="p2Skin" title="Skin"></select><select id="p2View" disabled title="Art view"><option>front34 view</option></select></div>
   <div class="row mode"><button id="p2Setup">Setup</button><button id="p2Animate" class="on">Animate</button><button id="p2Undo" title="Ctrl+Z">Undo</button><button id="p2Redo" title="Ctrl+Shift+Z">Redo</button></div>
   <div class="small" id="p2History"></div>
+</div>
+<div class="sec" id="p2FitSec"><h3>Fit artwork <span class="small">(painted PNG layers → skin)</span></h3>
+  <label class="small">Painted layers: PNGs + layers.json, or a .zip <input type="file" id="p2FitOpen" accept=".png,.json,.zip" multiple></label>
+  <label class="small">Re-fit re-painted PNGs with the saved template <input type="file" id="p2FitTemplate" accept=".png,.zip" multiple></label>
+  <div class="row"><input id="p2FitSkin" value="painted" style="flex:1" title="skin that receives the painted pieces"><button id="p2PaintPack" title="Per-piece canvases, separate guide layers, layers.json, clean preview">Paint-template pack</button></div>
+  <div id="p2Fit"></div>
 </div>
 <div class="sec"><h3>Animation</h3>
   <select id="p2Clip"></select>
@@ -749,6 +772,9 @@ class Editor2D {
     on('p2Sheets', 'click', () => this.exportSheets([this.clip.name]));
     on('p2SheetsAll', 'click', () => this.exportSheets(null));
     this.bindLayersDnD();
+    on('p2FitOpen', 'change', async (e) => { const m = new Map(); for (const f of e.target.files) m.set(f.name, new Uint8Array(await f.arrayBuffer())); e.target.value = ''; try { await this.startFit(m); } catch (err) { $(p, '#p2Report').textContent = `fitting: ${err.message}`; } });
+    on('p2FitTemplate', 'change', async (e) => { const m = new Map(); for (const f of e.target.files) m.set(f.name, new Uint8Array(await f.arrayBuffer())); e.target.value = ''; try { await this.startFit(m, { useTemplate: true }); } catch (err) { $(p, '#p2Report').textContent = `fitting: ${err.message}`; } });
+    on('p2PaintPack', 'click', async () => { const r = await this.paintPack(); download(r.zip, `${this.project.characterId}.paint-template.zip`, 'application/zip'); });
   }
 
   syncRefInputs() {
@@ -1119,6 +1145,138 @@ class Editor2D {
     $(this.panel, '#p2Report').textContent = `sprite sheets: ${manifest.sheets.length} sheet(s), ${Object.keys(manifest.clips).length} clip(s), ${(zip.length / 1024).toFixed(0)} KB`;
   }
 
+  // ---------------------------------------------------------------- fitting -------
+  /** Open painted layers into a fitting session (nothing in the project changes until Accept). */
+  async startFit(files, { useTemplate = false, skin = null } = {}) {
+    if (this.fit) this.cancelFit();
+    const skinId = skin || $(this.panel, '#p2FitSkin').value.trim() || 'painted';
+    const tpl = useTemplate ? (this.project.fitting?.templates?.[skinId] || this.project.fitting?.templates?.[this.project.fitting?.last]) : null;
+    if (useTemplate && !tpl) throw new Error('this project has no saved fitting template yet');
+    const source = await readFitSource(files, tpl);
+    if (!source.layers.length) throw new Error(`no readable layers${source.problems.length ? ': ' + source.problems.join('; ') : ''}`);
+    const session = planFit(this.project, source, { template: tpl, skin: skinId });
+    this.fit = { session, sel: 0, ghost: 0.35, painted: 1, bones: true, coverage: null };
+    this.wasMode = this.mode; this.setMode('setup');
+    await this.refreshFit();
+    this.renderFitPanel();
+    return session;
+  }
+  /** Rebuild the preview project from the live project + the session (live project untouched). */
+  /** Queued: every caller gets a promise for a preview that includes its change. */
+  refreshFit() { this._fitChain = (this._fitChain || Promise.resolve()).then(() => this.refreshFitNow()).catch((e) => { $(this.panel, '#p2Report').textContent = `fitting preview: ${e.message}`; }); return this._fitChain; }
+  async refreshFitNow() {
+    const F = this.fit; if (!F) return;
+    try {
+      const { project: P, installed } = await installFit(this.project, F.session, this.store);
+      F.preview = P; F.installed = installed;
+      F.rig = new Rig(P); F.rig.setSkin(F.session.skin);
+      for (const [id, im] of Object.entries(P.images)) if (!this.renderer.textures.has(id) && this.store.has(im.path)) { const img = new Image(); img.src = this.store.url(im.path); await img.decode(); this.renderer.setTexture(id, img); }
+      this.renderer.invalidate();
+    } finally { /* next queued refresh runs */ }
+  }
+  /** Commit the whole session as ONE undoable step; the painted skin becomes active. */
+  async acceptFit() {
+    const F = this.fit; if (!F) return;
+    await this.refreshFit();
+    const P = F.preview, targets = [...this.allTargets(), [this.project, 'fitting']];
+    await this.transact(`fit artwork → skin ${F.session.skin}`, targets, () => { for (const k of ['attachments', 'images', 'slots', 'bones', 'skins', 'fitting']) this.project[k] = structuredClone(P[k]); });
+    this.fit = null; this.rig.setSkin(F.session.skin);
+    $(this.panel, '#p2Skin').innerHTML = (this.project.skins || []).map((x) => `<option ${x.id === F.session.skin ? 'selected' : ''}>${esc(x.id)}</option>`).join('');
+    this.setMode(this.wasMode || 'animate'); this.renderFitPanel(); this.refreshPanel();
+    return F.installed;
+  }
+  cancelFit() { this.fit = null; this.renderer.invalidate(); this.setMode(this.wasMode || 'animate'); this.renderFitPanel(); }
+  fitLayer() { return this.fit?.session.layers[this.fit.sel]; }
+  fitAnchors(L) { return L?.slot ? slotAnchors(this.fit.preview || this.project, new Rig(this.project), L.slot) : null; }
+  updateFitLayer(fn, { refresh = true } = {}) { const L = this.fitLayer(); if (!L) return; fn(L); if (refresh) this.refreshFit(); this.renderFitPanel(); }
+
+  drawFitHandles(g) {
+    const L = this.fitLayer(); if (!L) return;
+    const P = (x, y) => this.w2s(x, y), an = this.fitAnchors(L);
+    // the layer's canvas rectangle
+    g.strokeStyle = '#d8a6ff'; g.setLineDash([5, 4]); g.lineWidth = 1.2; g.beginPath();
+    [[0, 0], [L.w, 0], [L.w, L.h], [0, L.h]].forEach(([ix, iy], k) => { const [x, y] = P(...imageToWorld(L, ix, iy)); k ? g.lineTo(x, y) : g.moveTo(x, y); }); g.closePath(); g.stroke(); g.setLineDash([]);
+    const pv = P(...imageToWorld(L, ...L.fit.pivot)); g.strokeStyle = '#ffd400'; g.beginPath(); g.moveTo(pv[0] - 7, pv[1]); g.lineTo(pv[0] + 7, pv[1]); g.moveTo(pv[0], pv[1] - 7); g.lineTo(pv[0], pv[1] + 7); g.stroke();
+    if (!an || !L.anchors) return;
+    g.font = '11px system-ui';
+    ['A', 'B'].forEach((k, i) => {
+      const j = P(...an[i].world), a = P(...imageToWorld(L, ...L.anchors[k]));
+      g.strokeStyle = '#00e5ff'; g.lineWidth = 2; g.beginPath(); g.arc(j[0], j[1], 6, 0, 7); g.stroke();
+      g.fillStyle = '#00e5ff'; g.fillText(`rig ${an[i].name}`, j[0] + 8, j[1] - 8);
+      g.strokeStyle = '#ff7a2f'; g.beginPath(); g.arc(a[0], a[1], 8, 0, 7); g.stroke(); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(j[0], j[1]); g.stroke();
+      g.fillStyle = '#ff7a2f'; g.fillText(`art ${an[i].name}`, a[0] + 10, a[1] + 14);
+    });
+  }
+  fitDown(e, wx, wy) {
+    const F = this.fit, L = this.fitLayer(), r = this.ovCanvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    if (L?.anchors) for (const k of ['A', 'B']) { const [x, y] = this.w2s(...imageToWorld(L, ...L.anchors[k])); if (Math.hypot(x - mx, y - my) < 10) { this.drag.fit = { anchor: k }; return; } }
+    const hit = this.pickSlot(wx, wy), att = hit?.attachment;
+    const idx = att ? F.session.layers.findIndex((l) => att === `${l.target}@${F.session.skin}`) : -1;
+    if (idx >= 0) F.sel = idx;
+    const cur = this.fitLayer(); if (!cur) return;
+    this.drag.fit = { move: true, start: { ...cur.fit }, rotate: e.shiftKey, a0: Math.atan2(wy - cur.fit.y, wx - cur.fit.x) };
+    this.renderFitPanel();
+  }
+  fitMove(e, wx, wy) {
+    const d = this.drag, L = this.fitLayer(); if (!L) return;
+    if (d.fit.anchor) { L.anchors[d.fit.anchor] = worldToImage(L, wx, wy).map((v) => +v.toFixed(1)); this.renderFitPanel(); return; }
+    if (d.fit.rotate) L.fit = { ...d.fit.start, rotation: d.fit.start.rotation + (Math.atan2(wy - d.fit.start.y, wx - d.fit.start.x) - d.fit.a0) * 180 / Math.PI };
+    else L.fit = { ...d.fit.start, x: d.fit.start.x + wx - d.wx, y: d.fit.start.y + wy - d.wy };
+    if (!this.fitThrottle) { this.fitThrottle = true; requestAnimationFrame(() => { this.fitThrottle = false; this.refreshFit(); }); }
+    this.renderFitPanel();
+  }
+
+  renderFitPanel() {
+    const box = $(this.panel, '#p2Fit'), F = this.fit;
+    if (!F) { box.innerHTML = this.project?.skins?.some((s) => s.id !== 'default') ? `<div class="small">skins: ${this.project.skins.map((s) => `${esc(s.id)}${s.status ? ` (${Object.values(s.status).filter((v) => v === 'finished').length} finished, ${Object.values(s.status).filter((v) => v === 'provisional').length} provisional)` : ''}`).join(' · ')}</div>` : ''; return; }
+    const S = F.session, L = this.fitLayer(), atts = Object.keys(this.project.attachments).filter((id) => !id.includes('@'));
+    const an = L && this.fitAnchors(L), badge = (st) => st === 'ok' ? '<span class="status-ok">●</span>' : st === 'ambiguous' ? '<span class="status-attention">◆ ambiguous</span>' : st === 'duplicate' ? '<span class="status-attention">◆ duplicate target</span>' : '<span class="status-needs-art">▲ unmapped</span>';
+    box.innerHTML = `${S.problems.length ? `<div class="status-needs-art small">${S.problems.map(esc).join('<br>')}</div>` : ''}
+      <div class="layers" style="max-height:170px">${S.layers.map((l, i) => `<div class="layer ${i === F.sel ? 'sel' : ''}" data-fl="${i}"><input type="checkbox" data-fi="${i}" ${l.include ? 'checked' : ''}><span class="n">${esc(l.file)}</span><span class="a">${badge(l.slot ? l.mapping.status : 'unresolved')} ${esc(l.target || '—')}</span></div>`).join('')}</div>
+      ${L ? `<div class="small" style="margin-top:6px"><b>${esc(L.file)}</b> ${L.w}×${L.h}px${L.mapping.candidates?.length > 1 ? ` · suggestions: ${L.mapping.candidates.slice(0, 3).map((c) => `${esc(c.target)} (${c.score})`).join(', ')}` : ''}</div>
+      <label class="small">paints <select id="p2FTarget"><option value="">(choose attachment)</option>${atts.map((id) => `<option ${id === L.target ? 'selected' : ''}>${esc(id)}</option>`).join('')}</select></label>
+      <div class="grid2"><label class="small">mode <select id="p2FMode"><option value="replace" ${L.mode === 'replace' ? 'selected' : ''}>replace texture (same displayed size)</option><option value="proportion" ${L.mode === 'proportion' ? 'selected' : ''}>change proportions (rig follows art)</option></select></label>
+      <label class="small">mesh <select id="p2FMesh">${['auto', 'rigid', 'weighted'].map((m) => `<option ${m === L.mesh ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
+      <div class="grid3">${['x', 'y', 'rotation', 'scale'].map((k) => `<label class="small">${k} <input type="number" data-ff="${k}" value="${(+L.fit[k]).toFixed(k === 'scale' ? 4 : 2)}" step="${k === 'scale' ? 0.005 : k === 'rotation' ? 0.5 : 0.5}"></label>`).join('')}
+      <label class="small">pivot x <input type="number" data-fp="0" value="${L.fit.pivot[0].toFixed(1)}" step="1"></label><label class="small">pivot y <input type="number" data-fp="1" value="${L.fit.pivot[1].toFixed(1)}" step="1"></label>
+      <label class="small"><input type="checkbox" id="p2FMirror" ${L.fit.mirror ? 'checked' : ''}> mirror (L/R)</label></div>
+      <div class="small">${an ? `joint anchors: <span style="color:#00e5ff">rig</span> vs <span style="color:#ff7a2f">art</span> — ${esc(an[0].name)} → ${esc(an[1].name)}. Drag the orange art anchors onto the painted joints, then snap.` : 'no joint anchors for this slot'}</div>
+      <div class="row"><button id="p2FSnap">Snap to joints</button><button id="p2FReset">Reset registration</button><select id="p2FStatus">${['finished', 'provisional'].map((x) => `<option ${x === (L.status || 'finished') ? 'selected' : ''}>${x}</option>`).join('')}</select></div>` : ''}
+      <div class="grid2"><label class="small">starter ghost <input type="range" id="p2FGhost" min="0" max="1" step="0.05" value="${F.ghost}"></label><label class="small">painted <input type="range" id="p2FPaint" min="0" max="1" step="0.05" value="${F.painted}"></label></div>
+      <label class="small"><input type="checkbox" id="p2FBones" ${F.bones ? 'checked' : ''}> source rig overlay</label>
+      <div class="row"><select id="p2FClip">${['(setup pose)', 'idle', 'hover_sword_vigil', 'sword_2h_idle', 'sword_2h_slash', 'knight_salute', 'walk_in_place'].filter((c) => c === '(setup pose)' || this.rig.clips.has(c)).map((c) => `<option ${this.mode === 'animate' && this.clip?.name === c ? 'selected' : ''}>${c}</option>`).join('')}</select><button id="p2FPlay">${this.playing ? 'Pause' : 'Play'}</button></div>
+      <div class="row"><button id="p2FCover">Check joint coverage</button><button id="p2FSaveTpl">Download template</button></div>
+      <div class="report" id="p2FCoverOut">${F.coverage ? F.coverage.map((c) => `${c.flagged ? '⚠' : '✓'} ${c.joint}: ${c.gapPct}% open at ${c.worstAngle}° (limit ${c.thresholdPct}%)${c.flagged ? ' — ' + c.hint : ''}`).join('\n') : ''}</div>
+      <div class="row"><button id="p2FAccept" class="on">Accept (one undo step)</button><button id="p2FCancel">Cancel</button></div>`;
+    const q = (sel) => box.querySelector(sel);
+    box.querySelectorAll('[data-fl]').forEach((row) => row.onclick = (e) => { if (e.target.dataset.fi) return; F.sel = +row.dataset.fl; this.renderFitPanel(); });
+    box.querySelectorAll('[data-fi]').forEach((c) => c.onchange = () => { S.layers[+c.dataset.fi].include = c.checked; this.refreshFit(); });
+    if (L) {
+      q('#p2FTarget').onchange = (e) => this.updateFitLayer((l) => { l.target = e.target.value || null; l.slot = l.target ? this.project.attachments[l.target].slot : null; l.mapping = { ...l.mapping, status: l.target ? 'ok' : 'unresolved' }; l.include = !!l.target; if (l.target) resetFit(this.project, new Rig(this.project), l, S.registration); });
+      q('#p2FMode').onchange = (e) => this.updateFitLayer((l) => { l.mode = e.target.value; });
+      q('#p2FMesh').onchange = (e) => this.updateFitLayer((l) => { l.mesh = e.target.value; });
+      box.querySelectorAll('[data-ff]').forEach((i) => i.onchange = () => this.updateFitLayer((l) => { l.fit = { ...l.fit, [i.dataset.ff]: +i.value }; }));
+      box.querySelectorAll('[data-fp]').forEach((i) => i.onchange = () => this.updateFitLayer((l) => { const k = +i.dataset.fp, np = l.fit.pivot.slice(); const w0 = imageToWorld(l, 0, 0); np[k] = +i.value; l.fit = { ...l.fit, pivot: np }; const w1 = imageToWorld(l, 0, 0); l.fit.x += w0[0] - w1[0]; l.fit.y += w0[1] - w1[1]; }));
+      q('#p2FMirror').onchange = (e) => this.updateFitLayer((l) => { l.fit = { ...l.fit, mirror: e.target.checked }; });
+      q('#p2FSnap').onclick = () => this.updateFitLayer((l) => { const a = this.fitAnchors(l); if (a && l.anchors) snapToJoints(l, a); });
+      q('#p2FReset').onclick = () => this.updateFitLayer((l) => resetFit(this.project, new Rig(this.project), l, S.registration));
+      q('#p2FStatus').onchange = (e) => this.updateFitLayer((l) => { l.status = e.target.value; });
+    }
+    q('#p2FGhost').oninput = (e) => { F.ghost = +e.target.value; };
+    q('#p2FPaint').oninput = (e) => { F.painted = +e.target.value; };
+    q('#p2FBones').onchange = (e) => { F.bones = e.target.checked; };
+    q('#p2FClip').onchange = (e) => { const c = e.target.value; if (c === '(setup pose)') this.setMode('setup'); else { this.mode = 'animate'; this.selectClip(c); } };
+    q('#p2FPlay').onclick = () => { if (this.mode === 'setup') { this.mode = 'animate'; this.selectClip(q('#p2FClip').value === '(setup pose)' ? 'idle' : q('#p2FClip').value); } this.togglePlay(); this.renderFitPanel(); };
+    q('#p2FCover').onclick = async () => { q('#p2FCoverOut').textContent = 'measuring…'; await this.refreshFit(); F.coverage = await jointCoverage(F.preview, this.store, { skin: S.skin }); this.renderFitPanel(); };
+    q('#p2FSaveTpl').onclick = () => download(new TextEncoder().encode(JSON.stringify(templateOf(this.project, S), null, 1)), `${this.project.characterId}.${S.skin}.fit-template.json`, 'application/json');
+    q('#p2FAccept').onclick = () => this.acceptFit();
+    q('#p2FCancel').onclick = () => this.cancelFit();
+  }
+  async paintPack(skin = $(this.panel, '#p2FitSkin').value.trim() || 'painted') {
+    const coverage = await jointCoverage(this.project, this.store, { skin });
+    return paintTemplatePack(this.project, this.store, { skin, coverage });
+  }
+
   api() {
     const ed = this;
     return {
@@ -1131,6 +1289,9 @@ class Editor2D {
       paintWeights: (att, bone, ix, iy, r, s, mode = 'add') => { ed.sel.attachment = att; ed.sel.bone = bone; const a = ed.project.attachments[att]; ed.record(`paint weights ${bone}`, [[() => ed.project.attachments, att]], () => { const m = { vertices: a.vertices, triangles: a.triangles, weights: a.weights }; paintWeights(m, bone, ix, iy, r, s, mode); a.weights = m.weights; }, att); ed.rebuild(att); },
       setHand: (s, v) => ed.setHand(s, v), swapHandArt: (s, n) => ed.swapHandArt(s, n), validate: () => validateProject(ed.project, { images: new Set(ed.store.paths()) }),
       history: () => ed.undoStack.map((h) => h.label),
+      startFit: (files, o) => ed.startFit(files, o), refreshFit: () => ed.refreshFit(), acceptFit: () => ed.acceptFit(), cancelFit: () => ed.cancelFit(),
+      get fit() { return ed.fit; }, fitSelect: (i) => { ed.fit.sel = i; ed.renderFitPanel(); }, fitUpdate: (fn) => ed.updateFitLayer(fn), snapLayer: (i) => { const l = ed.fit.session.layers[i]; snapToJoints(l, ed.fitAnchors(l)); return ed.refreshFit(); },
+      setSkin: (id) => { const r = ed.rig.setSkin(id); $(ed.panel, '#p2Skin').value = r; return r; }, paintPack: (skin) => ed.paintPack(skin), coverage: (skin) => jointCoverage(ed.project, ed.store, { skin }),
     };
   }
 }

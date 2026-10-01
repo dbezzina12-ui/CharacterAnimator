@@ -81,4 +81,4 @@ export async function readZip(bytes) {
   }
   return out;
 }
-export const textOf = (bytes) => dec.decode(bytes);
+export const textOf = (bytes) => (typeof bytes === "string" ? bytes : dec.decode(bytes));

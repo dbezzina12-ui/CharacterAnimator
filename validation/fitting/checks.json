@@ -1,0 +1,163 @@
+{
+  "checks": {
+    "packRoundTrip": true,
+    "footprintsPreserved": true,
+    "acceptIsOneUndo": true,
+    "starterSkinKept": true,
+    "markersFollowPaintedProp": true,
+    "suggestions": true,
+    "misalignmentCorrected": true,
+    "resolution2xKeepsFootprint": true,
+    "bendPreview": true,
+    "saveReopenFresh": true,
+    "templateRefitWithoutLayersJson": true,
+    "dwarfProportionFit": true,
+    "noPageErrors": true
+  },
+  "details": {
+    "pack": {
+      "pieces": 130,
+      "missingBefore": 130,
+      "layers": 8,
+      "allMapped": true
+    },
+    "footprint": {
+      "helmet.default": {
+        "bboxIoU": 0.9853,
+        "silhouetteIoU": 0.9493
+      },
+      "cuirass.default": 1,
+      "upperarm_L.default": 1,
+      "forearm_L.default": 1,
+      "hand_R.default": 1,
+      "under_arm_R.default": 1,
+      "mantle.default": 1,
+      "prop_R.Sword2H": 0.9967
+    },
+    "accept": {
+      "oneUndoStep": true,
+      "skinPieces": 8,
+      "starterKept": true,
+      "statusFinished": 8,
+      "templateSaved": true
+    },
+    "markers": {
+      "driftPx": 0,
+      "contacts": [
+        0
+      ]
+    },
+    "undo": {
+      "skinGone": true,
+      "attachmentsRestored": true,
+      "redoBack": true
+    },
+    "suggestions": {
+      "Right Forearm.png": "ok:forearm_R.default",
+      "greave_left.png": "ok:shin_L.default",
+      "shin.png": "duplicate(ambiguous):shin_L.default",
+      "tail.png": "unresolved:-"
+    },
+    "misaligned": {
+      "introducedPx": 28,
+      "afterSnapPx": 0,
+      "afterSnapDeg": 0
+    },
+    "resolution2x": {
+      "footprintIoU": 1
+    },
+    "bendPreview": {
+      "forearmMoves": true
+    },
+    "coverage": [
+      {
+        "joint": "neck",
+        "gapPct": 0.1,
+        "flagged": false
+      },
+      {
+        "joint": "shoulder_L",
+        "gapPct": 10.6,
+        "flagged": true
+      },
+      {
+        "joint": "shoulder_R",
+        "gapPct": 7.6,
+        "flagged": true
+      },
+      {
+        "joint": "elbow_L",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "elbow_R",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "wrist_L",
+        "gapPct": 8.8,
+        "flagged": true
+      },
+      {
+        "joint": "wrist_R",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "hip_L",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "hip_R",
+        "gapPct": 2.5,
+        "flagged": false
+      },
+      {
+        "joint": "knee_L",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "knee_R",
+        "gapPct": 0,
+        "flagged": false
+      },
+      {
+        "joint": "ankle_L",
+        "gapPct": 9,
+        "flagged": true
+      },
+      {
+        "joint": "ankle_R",
+        "gapPct": 7.4,
+        "flagged": true
+      }
+    ],
+    "reopen": {
+      "errors": [],
+      "skins": [
+        "default",
+        "painted"
+      ],
+      "painted": 10,
+      "template": true,
+      "helmetIsPainted": true
+    },
+    "template": {
+      "layersInTemplate": 10,
+      "mapped": [
+        "helmet.default.png→helmet.default"
+      ],
+      "sameFit": true
+    }
+  },
+  "dwarf": {
+    "scaleKept": true,
+    "elbowMovedPx": 30,
+    "valid": true
+  },
+  "errors": []
+}
