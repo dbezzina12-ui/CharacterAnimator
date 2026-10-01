@@ -21,6 +21,9 @@ function finish(project) {
   project.poses = [];
   addNativeDemos(project);
   computeInverseBinds(project);
+  // the human visual review and QA exceptions survive rebuilds: kept beside the project in visual-qa.json
+  const vq = path.join(out, 'visual-qa.json');
+  if (fs.existsSync(vq)) project.visualQA = JSON.parse(fs.readFileSync(vq, 'utf8'));
   for (const r of fitContactMarkers(project)) console.log(`contact ${r.constraint} on ${r.clip}: marker error ${r.maxMarkerErrorPx} px → ${r.engaged ? 'engaged' : 'off (follows the 3D bake)'}`);
   const imgs = new Set(); const walk = (d, pre = '') => { for (const f of fs.readdirSync(path.join(out, d))) { const r = path.join(d, f); if (fs.statSync(path.join(out, r)).isDirectory()) walk(r); else imgs.add(r.split(path.sep).join('/')); } };
   walk('.');

@@ -77,8 +77,20 @@ export const KNIGHT = {
     { name: 'grip_detonator', clip: 'press_detonator', t: 0.9, sides: ['R'], clips: ['press_detonator'], groups: ['hand', 'index', 'middle', 'ring', 'pinky'] },
     // salute: fist on the chest with the right arm raised toward the camera — hand, pauldron and vambrace as
     // seen in that pose, keyed only while the arm is up
-    { name: 'salute', clip: 'knight_salute', t: 1.6, sides: ['R'], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [0.6, 3.3] },
-    { name: 'salute_raise', clip: 'knight_salute', t: 0.45, sides: ['R'], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [[0.3, 0.6], [3.3, 3.6]] },
+    // guard and slash: upper arms point forward, so the pauldrons/vambraces need the pose-specific view
+    { name: 'guard', clip: 'sword_2h_idle', t: 0, sides: [], groups: [], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R'], clips: ['sword_2h_idle', 'sword_2h_slash'],
+      clipRanges: { sword_2h_slash: [[0, 0.15], [1.55, 2]] } },
+    { name: 'windup', clip: 'sword_2h_slash', t: 0.5, sides: [], groups: [], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R'], clips: ['sword_2h_slash'], range: [0.15, 0.75] },
+    { name: 'strike', clip: 'sword_2h_slash', t: 1.1, sides: [], groups: [], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R'], clips: ['sword_2h_slash'], range: [0.75, 1.55] },
+    { name: 'salute', clip: 'knight_salute', t: 1.6, sides: ['R'], clips: ['knight_salute'], range: [0.6, 3.3] },
+    // the raised pauldron/vambrace read correctly earlier than the fist: the hand stays open until ~0.6 s
+    { name: 'salute_arm', clip: 'knight_salute', t: 1.6, sides: [], groups: [], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [0.42, 3.42] },
+    // the open hand as the arm swings out and back (palm toward the camera, wrist turned): the setup hand mesh
+    // would fold over here
+    { name: 'salute_open', clip: 'knight_salute', t: 0.15, sides: ['R'], clips: ['knight_salute'], range: [[0, 0.6], [3.3, 4]] },
+    // walk: the swinging hands turn palm-back at the ends of the swing; the setup hand mesh folds there
+    { name: 'walk_swing_L', clip: 'walk_in_place', t: 0.57, sides: ['L'], clips: ['walk_in_place'], range: [0.38, 0.76] },
+    { name: 'walk_swing_R', clip: 'walk_in_place', t: 0.03, sides: ['R'], clips: ['walk_in_place'], range: [[0, 0.24], [0.92, 2]] },
     { name: 'fist', curl: 0.95, sides: ['L', 'R'] },
     { name: 'relaxed', curl: 0.3, sides: ['L', 'R'] },
     // the other side of each hand (turned 180° about its length axis); set names come from the measured view

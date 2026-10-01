@@ -508,7 +508,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
           const id = await addAttachment({ slot: sl.id, name: cap.name, bone: hb, layer, frame,
             source: { kind: 'render3d', character: spec.source3d, pose: cap.clip ? `${cap.clip} @ ${cap.t}s` : `bind + finger curl ${cap.curl}`,
               note: 'Pose-specific hand art rendered from the 3D model; rigid on the hand bone.' } });
-          for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.range || null });
+          for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.clipRanges?.[c] || cap.range || null });
         }
       }
       // pose-specific armour pieces (e.g. a raised pauldron, a forearm pointing at the camera): rigid on
@@ -519,7 +519,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         const layer = renderLayer(select(sl), sl); if (!layer) continue;
         const id = await addAttachment({ slot: sl.id, name: cap.name, bone: sl.bone, layer, frame: affCompose(bs.pos[0], bs.pos[1], bs.rot, bs.sx, bs.sy),
           source: { kind: 'render3d', character: spec.source3d, pose: `${cap.clip} @ ${cap.t}s`, note: 'Pose-specific armour art rendered from the 3D model at this pose; rigid on its bone.' } });
-        for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.range || null });
+        for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.clipRanges?.[c] || cap.range || null });
       }
       if (cap.propMarker && viewer.state.clipProp) {
         const pm = viewer.state.clipProp.matrixWorld, sock = ch.sockets[cap.propMarker.socket];
@@ -593,6 +593,8 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
   rig = new Rig(project);
   if (spec.debug) { const v = occ.votes(ch.root); log('setup order: ' + setupOrder.join(' ')); log('coverage: ' + JSON.stringify([...occ.lastCoverage])); log('votes: ' + JSON.stringify([...v].filter(([k]) => /cuirass|upperarm_R/.test(k)))); }
 
+  const inRange = (r, t) => !r || (Array.isArray(r[0]) ? r : [r]).some(([a, b]) => t >= a - 1e-6 && t <= b + 1e-6);
+  const capturedAt = (clip, slot, t) => captureKeys.some((c) => c.clip === clip && c.slot === slot && inRange(c.range, t));
   const supportAcc = {};                 // prop -> 3D contact of the left-hand socket in prop space
   for (const name of clipList) {
     const clip = ch.clip(name), meta = clipMeta(name) || {};
@@ -631,7 +633,8 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         const q = new THREE.Quaternion(), fwd = new THREE.Vector3(0, 0, 1);
         const yawOf = (b, bind) => { b.getWorldQuaternion(q); const f = fwd.clone().applyQuaternion(q.multiply(bind.clone().invert())); return Math.abs(Math.atan2(f.x, f.z) * 180 / Math.PI); };
         yawMax = Math.max(yawMax, yawOf(ch.bones.chest, chestBind)); headYawMax = Math.max(headYawMax, yawOf(ch.bones.head, headBind));
-        defs.forEach((d, i) => { if (d.foreshorten && (d.kind !== "prop" || propId)) minRatio[d.id] = Math.min(minRatio[d.id] ?? 9, sm[i].r1 / d.r1bind); });
+        // squash only matters while the bone shows setup-view art (pose-specific captures are drawn for the pose)
+        defs.forEach((d, i) => { if (d.foreshorten && (d.kind !== "prop" || propId) && !capturedAt(name, d.id, times[fi])) minRatio[d.id] = Math.min(minRatio[d.id] ?? 9, sm[i].r1 / d.r1bind); });
         for (const s of ['L', 'R']) {
           const f = -axisOf(ch.sockets[`socket_hand_${s}_prop`].matrixWorld, '+z').dot(cam.f);
           if (Math.abs(f) > 0.3 && Math.sign(f) !== Math.sign(bindFacing[s])) flips[s] = true;
@@ -649,6 +652,13 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     // single-frame draw-order blips (A → B → A) are removed: an order must hold for at least 2 frames
     const okey = (o) => o.join(',');
     for (let i = 1; i < orders.length - 1; i++) if (okey(orders[i]) !== okey(orders[i - 1]) && okey(orders[i + 1]) === okey(orders[i - 1])) orders[i] = orders[i - 1];
+    // minimum hold: a depth order shown for fewer than 3 frames (pieces flip-flopping while they cross) keeps the
+    // previous order instead; the last run of the clip is kept so the final pose is drawn correctly
+    for (let changed = true; changed;) {
+      changed = false;
+      const runs = []; orders.forEach((o, i) => { if (!runs.length || okey(o) !== okey(orders[runs[runs.length - 1]])) runs.push(i); });
+      for (let r = 1; r < runs.length - 1; r++) if (runs[r + 1] - runs[r] < 3) { for (let i = runs[r]; i < runs[r + 1]; i++) orders[i] = orders[runs[r] - 1]; changed = true; break; }
+    }
     // ---- tracks
     const tracks = { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] };
     defs.forEach((d, i) => {
@@ -690,7 +700,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       const t = [0], v = [def];
       for (const [a, b, att] of iv) {
         if (Math.abs(t[t.length - 1] - a) < 1e-6) v[v.length - 1] = att; else { t.push(a); v.push(att); }
-        t.push(b); v.push(def);
+        if (b < dur - 1e-6) { t.push(b); v.push(def); }     // an interval reaching the clip end holds to the last frame
       }
       for (let i = t.length - 1; i > 0; i--) if (Math.abs(t[i] - t[i - 1]) < 1e-6) { t.splice(i - 1, 1); v.splice(i - 1, 1); }
       tracks.slots[slot] = { attachment: { t: t.map((x) => +x.toFixed(4)), v } };
@@ -711,7 +721,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     const captured = new Set(captureKeys.filter((c) => c.clip === name && /^(hand|thumb|index|middle|ring|pinky)_/.test(c.slot)).map((c) => c.slot.split('_').pop()));
     if (yawMax > 30) notes.add(`torso turns up to ${yawMax.toFixed(0)}° from the art view: the front-three-quarter body art is shown rotated in-plane; a side/turned view skin would be needed for fidelity`);
     if (headYawMax > 35) notes.add(`head turns up to ${headYawMax.toFixed(0)}°: needs a turned-head view for accuracy`);
-    for (const [b, r] of Object.entries(minRatio)) if (r < 0.45) notes.add(`${b} foreshortens to ${(r * 100).toFixed(0)}% of its length (points at/away from the camera): art is squashed along the bone`);
+    for (const [b, r] of Object.entries(minRatio)) if (r < 0.45) notes.add(`${b} foreshortens to ${(r * 100).toFixed(0)}% of its length (points at/away from the camera) while it shows setup-view art: art is squashed along the bone`);
     // hand view sets suggested from the source signal (grip captures keyed above stay authoritative)
     tracks.handSets = {};
     const tmpClip = { name, duration: dur, source: { handSignal } };

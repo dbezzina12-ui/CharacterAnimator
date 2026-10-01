@@ -6388,7 +6388,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_L: missing hand art fist_palm, relaxed_palm, open_palm (fell back to the back-of-hand set)"]
+    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera) while it shows setup-view art: art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera) while it shows setup-view art: art is squashed along the bone","hand_L: missing hand art fist_palm, relaxed_palm, open_palm (fell back to the back-of-hand set)"]
    }
   },
   {
@@ -9328,36 +9328,14 @@
      }
     },
     "drawOrder": {
-     "t": [0,0.0333,0.1333,0.1667,0.2333,0.2667,0.3,0.3667,0.6667,0.7,0.7333,0.7667,0.8,0.8333,0.9,0.9667,1.2333,1.2667,1.4667,1.5,1.5333,1.6333,1.6667,1.7333,1.7667,1.8,1.8333,1.8667,1.9],
+     "t": [0,0.0333,0.3667,0.9667,1.2667,1.5333,1.9],
      "v": [
       ["under_foot_L","under_foot_R","under_torso","under_arm_R","under_leg_R","under_leg_L","head","under_arm_L","hand_R","pinky_L","hand_L","thumb_L","ring_L","middle_L","index_L","thumb_R","pinky_R","ring_R","middle_R","index_R","prop_R"],
       ["under_foot_L","under_foot_R","under_torso","under_arm_R","under_leg_R","under_leg_L","head","under_arm_L","hand_R","hand_L","thumb_L","pinky_L","ring_L","middle_L","index_L","thumb_R","pinky_R","ring_R","middle_R","index_R","prop_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_arm_R","under_leg_R","under_leg_L","head","under_arm_L","hand_R","thumb_L","hand_L","pinky_L","ring_L","middle_L","index_L","thumb_R","pinky_R","ring_R","middle_R","index_R","prop_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_arm_R","under_leg_R","under_leg_L","head","under_arm_L","hand_R","thumb_L","pinky_R","hand_L","pinky_L","ring_L","middle_L","index_L","thumb_R","ring_R","middle_R","index_R","prop_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_arm_R","under_leg_R","under_leg_L","head","under_arm_L","hand_R","thumb_L","pinky_R","ring_R","middle_R","index_R","prop_R","middle_L","ring_L","hand_L","pinky_L","index_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","under_arm_L","thumb_L","under_arm_R","pinky_R","index_R","hand_R","middle_R","prop_R","ring_R","index_L","middle_L","ring_L","pinky_L","hand_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","under_arm_L","thumb_L","under_arm_R","index_R","hand_R","middle_R","pinky_R","prop_R","ring_R","index_L","middle_L","ring_L","pinky_L","hand_L","thumb_R"],
       ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","under_arm_L","thumb_L","hand_R","under_arm_R","index_R","middle_R","pinky_R","prop_R","ring_R","index_L","middle_L","ring_L","pinky_L","hand_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","under_arm_L","thumb_L","under_arm_R","index_R","pinky_L","ring_L","middle_L","hand_R","middle_R","pinky_R","ring_R","prop_R","index_L","hand_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","under_arm_L","thumb_L","under_arm_R","pinky_L","ring_L","middle_L","index_R","hand_R","middle_R","pinky_R","ring_R","prop_R","index_L","hand_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","ring_L","thumb_L","pinky_L","middle_L","pinky_R","index_L","under_arm_R","middle_R","index_R","ring_R","under_arm_L","hand_R","thumb_R","prop_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","pinky_R","under_arm_R","index_R","ring_R","middle_R","hand_R","ring_L","pinky_L","middle_L","index_L","prop_R","under_arm_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","under_arm_R","index_R","pinky_L","under_arm_L","pinky_R","ring_R","middle_R","hand_R","ring_L","middle_L","prop_R","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","under_arm_R","index_R","under_arm_L","pinky_L","pinky_R","ring_R","middle_R","hand_R","ring_L","middle_L","prop_R","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","under_arm_L","pinky_L","pinky_R","ring_R","middle_R","hand_R","under_arm_R","ring_L","middle_L","prop_R","index_L","thumb_R","hand_L"],
       ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","pinky_L","hand_R","under_arm_R","index_L","under_arm_L","pinky_R","ring_R","middle_R","ring_L","middle_L","prop_R","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","pinky_L","hand_R","under_arm_R","index_L","pinky_R","under_arm_L","ring_R","middle_R","ring_L","middle_L","prop_R","thumb_R","hand_L"],
       ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","pinky_L","index_L","pinky_R","hand_R","under_arm_R","under_arm_L","ring_R","middle_R","ring_L","middle_L","prop_R","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","pinky_L","index_L","hand_R","under_arm_R","under_arm_L","pinky_R","ring_R","middle_R","ring_L","middle_L","prop_R","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","pinky_L","hand_R","under_arm_R","under_arm_L","pinky_R","ring_R","middle_R","ring_L","middle_L","prop_R","index_L","thumb_R","hand_L"],
       ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","hand_R","under_arm_R","under_arm_L","pinky_L","pinky_R","ring_R","middle_R","ring_L","middle_L","prop_R","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","under_arm_R","hand_R","under_arm_L","pinky_L","pinky_R","ring_R","middle_R","ring_L","prop_R","middle_L","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","index_R","under_arm_R","hand_R","under_arm_L","pinky_R","ring_R","middle_R","prop_R","pinky_L","ring_L","middle_L","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","under_torso","under_leg_R","under_leg_L","head","thumb_L","under_arm_R","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","pinky_L","ring_L","middle_L","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","thumb_L","under_torso","under_leg_R","under_leg_L","head","under_arm_R","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","pinky_L","ring_L","middle_L","index_L","thumb_R","hand_L"],
-      ["under_foot_L","under_foot_R","thumb_L","under_torso","under_leg_R","under_leg_L","head","under_arm_R","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","pinky_L","ring_L","middle_L","hand_L","index_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_torso","thumb_L","under_leg_R","under_leg_L","head","under_arm_R","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","hand_L","pinky_L","ring_L","middle_L","index_L","thumb_R"],
-      ["under_foot_L","under_foot_R","under_arm_R","under_torso","thumb_L","under_leg_R","under_leg_L","head","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","hand_L","pinky_L","ring_L","middle_L","index_L","thumb_R"],
       ["under_foot_L","under_foot_R","under_torso","under_arm_R","thumb_L","under_leg_R","under_leg_L","head","hand_R","under_arm_L","pinky_R","ring_R","middle_R","index_R","prop_R","hand_L","pinky_L","ring_L","middle_L","index_L","thumb_R"]
      ]
     },
@@ -9400,7 +9378,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["29 draw-order changes (limbs cross in front of/behind each other)"]
+    "notes": ["7 draw-order changes (limbs cross in front of/behind each other)"]
    }
   },
   {
@@ -10114,12 +10092,10 @@
     },
     "slots": {},
     "drawOrder": {
-     "t": [0,0.0667,0.4333,0.5667,0.6333,0.9333,1.1333],
+     "t": [0,0.0667,0.4333,0.9333,1.1333],
      "v": [
       ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_leg_L","under_foot_L","pinky_L","hand_L","thumb_L","ring_L","middle_L","index_L","index_R"],
       ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_foot_L","under_leg_L","pinky_L","hand_L","thumb_L","ring_L","middle_L","index_L","index_R"],
-      ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_foot_L","under_leg_L","hand_L","pinky_L","thumb_L","ring_L","middle_L","index_L","index_R"],
-      ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_leg_R","under_foot_R","under_foot_L","under_leg_L","hand_L","pinky_L","thumb_L","ring_L","middle_L","index_L","index_R"],
       ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_foot_L","under_leg_L","hand_L","pinky_L","thumb_L","ring_L","middle_L","index_L","index_R"],
       ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_foot_L","under_leg_L","pinky_L","hand_L","thumb_L","ring_L","middle_L","index_L","index_R"],
       ["under_arm_R","under_torso","head","under_arm_L","prop_R","pinky_R","hand_R","ring_R","middle_R","thumb_R","under_foot_R","under_leg_R","under_leg_L","under_foot_L","pinky_L","hand_L","thumb_L","ring_L","middle_L","index_L","index_R"]
@@ -10145,8 +10121,8 @@
     "events": []
    },
    "status": {
-    "level": "attention",
-    "notes": ["7 draw-order changes (limbs cross in front of/behind each other)"]
+    "level": "ok",
+    "notes": []
    }
   },
   {
@@ -10734,7 +10710,7 @@
    },
    "status": {
     "level": "attention",
-    "notes": ["forearm_R foreshortens to 16% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 11% of its length (points at/away from the camera): art is squashed along the bone"]
+    "notes": ["forearm_R foreshortens to 16% of its length (points at/away from the camera) while it shows setup-view art: art is squashed along the bone","hand_R foreshortens to 11% of its length (points at/away from the camera) while it shows setup-view art: art is squashed along the bone"]
    }
   },
   {

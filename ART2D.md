@@ -8,6 +8,8 @@ flattened screenshot of the 3D model: every slot is its own PNG with its own mes
 The Aureate Knight is the first demo. Its **starter skin is rendered from the 3D model** (labelled as
 such in the project) to prove the system end to end. It is not the hand-painted concept art. Replace any
 image (or import a layered painting) and the new art keeps the binding, clips and constraints.
+The painted knight (`deliverables/painted-knight/`, see its README) adds a separate `painted` skin; today
+only its helmet is painted — every other piece is listed in `ART-REQUESTS.txt`.
 
 ## Run
 
@@ -28,6 +30,13 @@ node scripts/check-2d.mjs                            # acceptance checks → val
 node tests/art2d-core.test.mjs                       # unit tests of the 2D core
 node scripts/compare-2d.mjs out.png hover_sword_vigil:0,idle:1   # 3D | 2D side by side at the same time
 node scripts/sheet-2d.mjs "clips=idle,walk_in_place&n=6" out.png # 2D contact sheet
+node scripts/qa-2d.mjs [--clips=a,b] [--all]           # visual QA: contact sheets + flags → validation/qa/QA-REPORT.md
+node scripts/check-2d-corrections.mjs                # corrections / hand views / colour / determinism → validation/corrections/
+node scripts/check-2d-fitting.mjs                    # fitting workflow regression → validation/fitting/
+node scripts/check-2d-replace.mjs                    # art replacement edge cases (same size, 2x, mirrored, weighted, failed)
+node scripts/check-2d-workflow.mjs                   # real-UI regression from the upgrade kit (artwork undo, loops)
+node scripts/build-painted-knight.mjs                # painted-skin deliverable → deliverables/painted-knight/
+node scripts/record-player-videos.mjs                # WebM clips recorded from the offline single-file player
 ```
 
 ## File map
@@ -160,6 +169,58 @@ arms. The starter skin shows this: every layer (and the `under_*` layers) was re
 the parts the 3D model hides. Keep a few pixels of bleed (the importer extends edge colour into
 transparent pixels to avoid dark fringes).
 
+### Fitting painted art (guided, whole character)
+
+2D mode → **Fit artwork** section. Choose PNG layers (+ optional `layers.json`, a ZIP, or nothing but PNGs once a fit
+template exists). Each layer gets a slot suggestion from its name (`ok` / `ambiguous` with candidates /
+`unresolved`, never guessed; duplicates are flagged) and an explicit mapping you can change. The art is
+previewed on the skeleton; per layer adjust position / rotation / scale / pivot / mirror, place the two
+**joint anchors** on the painting (e.g. elbow and wrist) and **Snap** them onto the rig joints.
+*Replace* keeps the rig and matches the painted length; *Proportion* keeps the art and moves the next
+joint (variants such as the dwarf). Rigid or weighted (weights transferred barycentrically from the old
+mesh). Overlays, a clip preview (idle/hover/guard/slash/salute/walk) and *Check joint coverage* run before accepting. **Accept (one undo step)** installs everything into a
+separate skin (default `painted`) as **one undo step**; **Cancel** leaves the project untouched. The fit
+is stored in the project (`fitting.templates[skin]`) so re-painted PNGs re-fit later without the
+import folder. The starter skin is never overwritten and stays selectable (skin menu).
+
+**Paint-template pack** (button in the Fit artwork section): `pieces/<attachment>/current.png` plus separate guide
+layers (`guide-silhouette`, `guide-joints` with pivot/joint/marker IDs, `guide-underlap`), `layers.json`
+with canvas coordinates, `preview-clean.png`, `preview-joints.png` and `manifest.json` (exact canvas size,
+pivot, joints, markers, mesh type, finished/missing per piece, joint-coverage bend test).
+
+## Hand view sets
+
+`project.handViews[side].sets` are authored appearances (palm / back × open / relaxed / fist / grip): one set
+swaps the palm and its five finger layers together, keyed per clip in `handSets` tracks. The bake records
+the 3D palm facing and finger curl at 10 Hz (`clip.source.handSignal`) and **suggests** sets with a
+documented rule (symmetric ±0.3 hysteresis on palm facing, open < 0.25 ≤ relaxed < 0.65 ≤ fist with a
+±0.05 band, ≥ 4-frame hold, loops end on their start set) — `viewer/js/art2d/handviews.js`. Suggestions
+are keys you can override in the Hands panel; missing variants fall back to the back-of-hand set and are
+**reported**, never invented. Grip/pose captures (sword, hover, salute, walk swing…) stay authoritative.
+Checks: no appearance shorter than 4 frames, every set's palm has art at the wrist (≤ 6 px).
+
+## Corrections layer
+
+Bridged clips keep their bake (`tracks`) untouched; edits go to `corrections` and override it. Per key
+easing (linear / smooth / in / out / step; angles unwrap so 350° → 10° turns 20°), disable/enable a bone or
+deform correction without deleting it (undoable), onion skin (± N frames every K), and a **Deform** tool
+that keys per-vertex offsets in bind space (keys are remapped when the mesh's vertices change). The same
+corrected pose is used by the editor, saved projects, the runtime and sprite exports
+(`scripts/check-2d-corrections.mjs` proves each, including colour equality of runtime and sprite output).
+
+## Visual QA
+
+**Visual QA** section (*Analyse this clip*, *Contact sheet*) / `node scripts/qa-2d.mjs`: whole-clip contact sheets (start, end, steps, events, key changes,
+worst flags; *Go* jumps to the time) and heuristic flags — mesh fold-over (% of area), foreshortened setup
+art, overlapping pieces that swap depth and swap back within 3 frames or swap en masse, contact error,
+joint gaps (10 px probe at the joint vs setup), hand-art flicker. Consecutive frames collapse into one
+ranged flag with the worst value; findings that are invisible by construction (hidden `under_*` layers,
+the clip's first order against the setup order) are `info`, not counted. Flags are heuristics: an
+intentional one is excepted **with a reason** (`visualQA.exceptions`), and the per-clip visual review
+(`visualQA.review`: approved / needs-work + note) is a human decision kept separate from mathematical
+validity and missing art. For the knight both live in `characters2d/aureate_knight/visual-qa.json` and
+survive rebuilds. Coordinates being finite is never treated as the pose looking right.
+
 ## Hands, props, contacts
 
 * Finger chains stay 3-bone per finger on both sides; 2D-only `<finger>_tip_<side>` bones mark the pads.
@@ -207,6 +268,6 @@ runtime = editor pose, sprite frame = editor render, the dwarf variant, narrow v
   attachments/skins. Nothing here claims arbitrary 360° motion from one drawing; clips that need other
   views are marked `needs-art`.
 * PSD import is not supported (use PNG layers + `layers.json`).
-* Free-form deformation keys are supported by the runtime (`deform`), but the editor has no
-  per-vertex animation tool yet; the starter uses them for cape flutter only.
+* Deformation keys: authored with the Deform tool in the corrections layer (bind-space offsets); the
+  starter bake uses them only for cape flutter.
 * Performance numbers in the report come from headless CPU-emulated WebGL (SwiftShader); a GPU is faster.

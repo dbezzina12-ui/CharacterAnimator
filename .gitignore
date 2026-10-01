@@ -8,3 +8,7 @@ dist-knight/
 exports/
 validation/workflow/frames/
 validation/workflow/runtime/
+validation/workflow/*.zip
+validation/workflow/Painted-Knight-2D-Demo.html
+validation/fitting/*.zip
+validation/corrections/*.zip

@@ -6,10 +6,11 @@ import { Renderer2D, hitTest } from './render2d.js';
 import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell, replacementSamples } from './project-io.js';
 import { validateProject, computeInverseBinds } from './schema.js';
 import { gridMesh, addVertex, deleteVertex, smoothWeights, normalizeWeights, paintWeights } from './mesh.js';
-import { exportRuntimePackage, exportFramePNG, exportSpriteSheets, download, poseBounds } from './exporters.js';
+import { exportRuntimePackage, exportFramePNG, exportSpriteSheets, download, poseBounds, offscreenRenderer } from './exporters.js';
 import { readFitSource, planFit, installFit, resetFit, snapToJoints, slotAnchors, imageToWorld, worldToImage, templateOf, FIT_SCHEMA } from './fitting.js';
 import { jointCoverage, paintTemplatePack } from './paintpack.js';
 import { suggestHandSets, missingHandArt, setsUsed } from './handviews.js';
+import { analyzeClip, sheetTimes, contactSheet, clipStatus } from './visualqa.js';
 
 const FINGERS = ['thumb', 'index', 'middle', 'ring', 'pinky'];
 const HAND_PRESETS = {
@@ -163,6 +164,8 @@ class Editor2D {
     const first = project.clips.find((c) => c.name === 'hover_sword_vigil') || project.clips[0];
     if (first) this.selectClip(first.name);
     $(this.panel, '#p2Skin').innerHTML = (project.skins || [{ id: 'default' }]).map((s) => `<option>${esc(s.id)}</option>`).join('');
+    // a project may name the skin it opens in (e.g. the painted skin); the starter skin stays selectable
+    if (project.defaultSkin && (project.skins || []).some((s) => s.id === project.defaultSkin)) $(this.panel, '#p2Skin').value = this.rig.setSkin(project.defaultSkin);
     this.showReport(report, from);
     this.refreshPanel();
     this.fitView(false);
@@ -734,7 +737,7 @@ class Editor2D {
   <label class="small">Painted layers: PNGs + layers.json, or a .zip <input type="file" id="p2FitOpen" accept=".png,.json,.zip" multiple></label>
   <label class="small">Re-fit re-painted PNGs with the saved template <input type="file" id="p2FitTemplate" accept=".png,.zip" multiple></label>
   <div class="row"><input id="p2FitSkin" value="painted" style="flex:1" title="skin that receives the painted pieces"><button id="p2PaintPack" title="Per-piece canvases, separate guide layers, layers.json, clean preview">Paint-template pack</button></div>
-  <div id="p2Fit"></div>
+  <div id="p2FitPanel"></div>
 </div>
 <div class="sec"><h3>Animation</h3>
   <select id="p2Clip"></select>
@@ -775,6 +778,12 @@ class Editor2D {
   <div id="p2Poses"></div>
   <div class="row"><button id="p2Reset">Reset to setup pose</button></div>
 </div>
+<div class="sec"><h3>Visual QA <span class="small">(heuristics, not verdicts)</span></h3>
+  <div class="row"><button id="p2QaRun">Analyse this clip</button><button id="p2QaSheet">Contact sheet</button></div>
+  <div class="grid2"><select id="p2QaReview"><option value="unreviewed">review: unreviewed</option><option value="approved">review: approved</option><option value="needs-work">review: needs work</option></select><input id="p2QaNote" placeholder="review note"></div>
+  <div id="p2QaStatus" class="small"></div>
+  <div id="p2QaFlags" class="report" style="max-height:200px"></div>
+</div>
 <div class="sec"><h3>Overlays & compare</h3>
   <div class="grid2">${['bones', 'mesh', 'weights', 'pivots', 'markers', 'contacts', 'alphaPick'].map((k) => `<label><input type="checkbox" data-ov="${k}" ${this.overlay[k] ? 'checked' : ''}> ${k === 'alphaPick' ? 'pixel picking' : k}</label>`).join('')}</div>
   <label>3D compare <select id="p2Compare"><option value="off">off</option><option value="inset">inset (same time)</option><option value="overlay">overlay 45%</option></select></label>
@@ -808,6 +817,10 @@ class Editor2D {
     p.querySelectorAll('[data-ov]').forEach((c) => c.addEventListener('change', (e) => { this.overlay[e.target.dataset.ov] = e.target.checked; }));
     on('p2Compare', 'change', (e) => this.setCompare(e.target.value));
     on('p2KeyDel', 'click', () => this.deleteBoneKey());
+    on('p2QaRun', 'click', () => this.runQA());
+    on('p2QaSheet', 'click', async () => { const png = await this.qaSheet(); download(png, `${this.project.characterId}_${this.clip?.name}_sheet.png`, 'image/png'); });
+    on('p2QaReview', 'change', (e) => this.setReview(e.target.value, $(p, '#p2QaNote').value));
+    on('p2QaNote', 'change', (e) => this.setReview($(p, '#p2QaReview').value, e.target.value));
     on('p2Onion', 'change', (e) => { this.onion.on = e.target.checked; });
     on('p2OnionN', 'change', (e) => { this.onion.n = +e.target.value || 2; });
     on('p2OnionStep', 'change', (e) => { this.onion.step = +e.target.value || 3; });
@@ -925,9 +938,9 @@ class Editor2D {
     box.innerHTML = html || 'Click a bone or a layer.';
     box.querySelectorAll('[data-bs]').forEach((i) => i.onchange = () => { this.record(`setup ${b.id}.${i.dataset.bs}`, [[this.project, 'bones']], () => { b.setup[i.dataset.bs] = +i.value; }); this.rebuild(); });
     box.querySelectorAll('[data-bk]').forEach((i) => i.onchange = () => {
-      const f = i.dataset.bk;
+      const f = i.dataset.bk, tr = this.editLayer()?.bones?.[b.id];
       if (f === 'rotate') { const cur = this.layerValue(tr?.rotate, 'v'); this.keyBone(b.id, 'rotate', () => ({ v: +(cur + wrapDeg(+i.value - cur)).toFixed(3) })); }
-      else { const tr = this.editLayer()?.bones?.[b.id]; const x = f === 'x' ? +i.value : this.layerValue(tr?.translate, 'x'), y = f === 'y' ? +i.value : this.layerValue(tr?.translate, 'y'); this.keyBone(b.id, 'translate', () => ({ x, y })); }
+      else { const x = f === 'x' ? +i.value : this.layerValue(tr?.translate, 'x'), y = f === 'y' ? +i.value : this.layerValue(tr?.translate, 'y'); this.keyBone(b.id, 'translate', () => ({ x, y })); }
     });
     const sa = box.querySelector('[data-sa]'); if (sa) sa.onchange = () => this.setSlotAttachment(s.id, sa.value || null);
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment];
@@ -1178,6 +1191,49 @@ class Editor2D {
     });
     this.rebuild(); this.refreshPanel();
   }
+  // ---- visual QA
+  async runQA(clipName = this.clip?.name) {
+    if (!clipName) return null;
+    const box = $(this.panel, '#p2QaFlags'); box.textContent = 'analysing…';
+    this.qaRenderer ||= await offscreenRenderer(this.project, this.store);
+    for (const [id, im] of Object.entries(this.project.images)) if (!this.qaRenderer.textures.has(id) && this.store.has(im.path)) { const img = new Image(); img.src = this.store.url(im.path); await img.decode(); this.qaRenderer.setTexture(id, img); }
+    const a = await analyzeClip(this.project, clipName, { skin: this.rig.skinId, renderer: this.qaRenderer });
+    this.qa = a; this.renderQA(); return a;
+  }
+  renderQA() {
+    const a = this.qa, box = $(this.panel, '#p2QaFlags'); if (!a) return;
+    const st = clipStatus(this.project, a.clip, a, { skin: this.rig.skinId });
+    $(this.panel, '#p2QaStatus').innerHTML = `math: <b>${st.math}</b> · art: <b>${st.missingArt}</b> (bridge ${esc(st.bridge)}) · auto-flags: <b>${st.autoFlags}</b>${st.excepted ? ` (+${st.excepted} excepted)` : ''}${st.info ? ` · info ${st.info}` : ''} · review: <b>${esc(st.visualReview)}</b>`;
+    $(this.panel, '#p2QaReview').value = st.visualReview; $(this.panel, '#p2QaNote').value = st.reviewNote;
+    // ranged flags (consecutive frames collapsed): open ones by severity, then excepted, then info
+    const rank = (f) => (f.info ? 2 : f.exception ? 1 : 0);
+    const list = this.qaList = [...a.flags].sort((x, y) => rank(x) - rank(y) || y.severity - x.severity).slice(0, 40);
+    const when = (f) => (f.to > f.from ? `${f.from.toFixed(2)}–${f.to.toFixed(2)}s (worst ${f.t.toFixed(2)})` : `${f.t.toFixed(2)}s`);
+    box.innerHTML = list.length ? list.map((f, i) => `<div>${f.info ? 'ℹ' : f.exception ? '✓' : '⚠'} ${when(f)} <b>${esc(f.kind)}</b> ${esc(f.target)} = ${f.value} ${esc(f.unit)} (limit ${f.threshold})${f.exception ? ` — exception: ${esc(f.exception.reason)}` : ''}${f.info ? ` — ${esc(f.info)}` : ''} <button data-qgo="${i}">Go</button>${f.exception || f.info ? '' : `<button data-qex="${i}">Except…</button>`}</div>`).join('') : 'no flags';
+    box.querySelectorAll('[data-qgo]').forEach((b) => b.onclick = () => this.gotoFlag(list[+b.dataset.qgo]));
+    box.querySelectorAll('[data-qex]').forEach((b) => b.onclick = () => { const f = list[+b.dataset.qex], reason = prompt(`Why is this ${f.kind} on ${f.target} intentional?`); if (reason) this.addException(a.clip, f, reason); });
+  }
+  gotoFlag(f) {
+    if (this.clip?.name !== this.qa.clip) this.selectClip(this.qa.clip);
+    this.setMode('animate'); this.player.pause(); this.playing = false; this.player.seek(f.t);
+    const tgt = String(f.target).split(' ')[0];
+    if (this.project.attachments[tgt]) this.selectSlot(this.project.attachments[tgt].slot, tgt); else if (this.rig.boneIndex.has(tgt)) this.selectBone(tgt); else if (this.rig.slotIndex.has(tgt)) this.selectSlot(tgt, null);
+    this.refreshPanel();
+  }
+  addException(clip, f, reason, { from = f.from ?? f.t, to = f.to ?? f.t } = {}) {
+    this.record(`QA exception ${f.kind} ${f.target}`, [[this.project, 'visualQA']], () => { const q = this.project.visualQA ||= {}; (q.exceptions ||= []).push({ clip, kind: f.kind, target: f.target, from, to, reason, date: new Date().toISOString().slice(0, 10) }); });
+    for (const x of this.qa?.flags || []) if (x.kind === f.kind && x.target === f.target && (x.from ?? x.t) >= from - 1e-6 && (x.to ?? x.t) <= to + 1e-6) x.exception = { reason };
+    this.renderQA();
+  }
+  setReview(status, note) {
+    const clip = this.qa?.clip || this.clip?.name; if (!clip) return;
+    this.record(`review ${clip}: ${status}`, [[this.project, 'visualQA']], () => { const q = this.project.visualQA ||= {}; (q.review ||= {})[clip] = { status, note, date: new Date().toISOString().slice(0, 10) }; });
+    this.renderQA();
+  }
+  async qaSheet(clipName = this.clip?.name) {
+    const a = this.qa?.clip === clipName ? this.qa : await this.runQA(clipName);
+    return contactSheet(this.project, this.store, clipName, sheetTimes(this.project, clipName, a), { skin: this.rig.skinId, renderer: this.qaRenderer });
+  }
   deleteBoneKey() {
     const clip = this.clip, id = this.sel.bone; if (!clip || !id) return;
     this.record(`delete key ${id}`, [[this.clipRef(clip), this.editKey()]], () => { const tr = this.editLayer(clip).bones[id]; if (tr) for (const f of ['rotate', 'translate', 'scale']) if (tr[f]) deleteKey(tr[f], this.keyTime()); });
@@ -1372,7 +1428,7 @@ class Editor2D {
   }
 
   renderFitPanel() {
-    const box = $(this.panel, '#p2Fit'), F = this.fit;
+    const box = $(this.panel, "#p2FitPanel"), F = this.fit;
     if (!F) { box.innerHTML = this.project?.skins?.some((s) => s.id !== 'default') ? `<div class="small">skins: ${this.project.skins.map((s) => `${esc(s.id)}${s.status ? ` (${Object.values(s.status).filter((v) => v === 'finished').length} finished, ${Object.values(s.status).filter((v) => v === 'provisional').length} provisional)` : ''}`).join(' · ')}</div>` : ''; return; }
     const S = F.session, L = this.fitLayer(), atts = Object.keys(this.project.attachments).filter((id) => !id.includes('@'));
     const an = L && this.fitAnchors(L), badge = (st) => st === 'ok' ? '<span class="status-ok">●</span>' : st === 'ambiguous' ? '<span class="status-attention">◆ ambiguous</span>' : st === 'duplicate' ? '<span class="status-attention">◆ duplicate target</span>' : '<span class="status-needs-art">▲ unmapped</span>';
@@ -1436,6 +1492,7 @@ class Editor2D {
       history: () => ed.undoStack.map((h) => h.label),
       startFit: (files, o) => ed.startFit(files, o), refreshFit: () => ed.refreshFit(), acceptFit: () => ed.acceptFit(), cancelFit: () => ed.cancelFit(),
       get fit() { return ed.fit; }, fitSelect: (i) => { ed.fit.sel = i; ed.renderFitPanel(); }, fitUpdate: (fn) => ed.updateFitLayer(fn), snapLayer: (i) => { const l = ed.fit.session.layers[i]; snapToJoints(l, ed.fitAnchors(l)); return ed.refreshFit(); },
+      runQA: (c) => ed.runQA(c), qaSheet: (c) => ed.qaSheet(c), addException: (clip, f, reason, o) => ed.addException(clip, f, reason, o), setReview: (st, note) => ed.setReview(st, note),
       setEase: (e) => ed.setCorrectionEase(e), toggleCorrection: (k) => ed.toggleCorrection(k), setOnion: (o) => Object.assign(ed.onion, o),
       deformDrag: (att, fromW, toW, radiusPx = 40) => { ed.sel.attachment = att; ed.tool = 'deform'; ed.frame(0); const sp = ed.w2s(...fromW), r = ed.ovCanvas.getBoundingClientRect(); ed.brush.radius = radiusPx;
         ed.drag = { x: r.left + sp[0], y: r.top + sp[1], wx: fromW[0], wy: fromW[1], moved: true }; ed.deformDown({ clientX: r.left + sp[0], clientY: r.top + sp[1] }, ...fromW); ed.deformMove(...toW); ed.end(); ed.drag = null; ed.tool = 'select'; },

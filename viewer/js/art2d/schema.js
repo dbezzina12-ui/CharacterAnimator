@@ -99,6 +99,7 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
     if (!slots.has(sl)) E(`hand set ${side}/${name}: slot ${sl} does not exist`);
     if (a && !p.attachments[a]) E(`hand set ${side}/${name}: attachment ${a} is missing`);
   }
+  if (p.defaultSkin !== undefined && !(p.skins || []).some((sk) => sk.id === p.defaultSkin)) E(`defaultSkin "${p.defaultSkin}" is not a skin of this project`);
   for (const sk of p.skins || []) for (const [a, b] of Object.entries(sk.replace || {})) {
     if (!p.attachments[a]) E(`skin ${sk.id}: replaces unknown attachment ${a}`);
     if (!p.attachments[b]) E(`skin ${sk.id}: replacement attachment ${b} is missing`);
@@ -135,7 +136,7 @@ export function computeInverseBinds(project) {
  */
 export function runtimeSubset(project, { atlas = null } = {}) {
   const keep = ['characterId', 'displayName', 'axes', 'referenceHeightPx', 'pixelsPerMeter', 'artView', 'bones', 'slots',
-    'attachments', 'images', 'skins', 'hands', 'handViews', 'constraints', 'props', 'clips', 'sockets'];
+    'attachments', 'images', 'skins', 'defaultSkin', 'hands', 'handViews', 'constraints', 'props', 'clips', 'sockets'];
   const out = { schema: RUNTIME_SCHEMA, generatedFrom: SCHEMA };
   for (const k of keep) if (project[k] !== undefined) out[k] = JSON.parse(JSON.stringify(project[k]));
   out.clips = out.clips.map((c) => ({ name: c.name, duration: c.duration, loop: !!c.loop, fps: c.fps, meta: c.meta, tracks: c.tracks, corrections: c.corrections, status: c.status }));

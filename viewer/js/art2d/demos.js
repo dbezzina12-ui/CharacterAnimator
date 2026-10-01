@@ -59,6 +59,9 @@ export function addNativeDemos(project) {
     holdPose(rig, 'press_detonator', 0.9, c.tracks, (id) => /^thumb_0[23]_R$/.test(id));
     c.tracks.slots.prop_R = { attachment: { t: [0], v: ['prop_R.Detonator'] } };
     for (const g of ['hand', 'index', 'middle', 'ring', 'pinky']) { const a = att(`${g}_R.grip_detonator`); if (a) c.tracks.slots[`${g}_R`] = { attachment: { t: [0], v: [a] } }; }
+    // the thumb presses the button on top of the remote: draw it in front of the prop so it stays visible
+    const setup = project.slots.map((s) => s.id);
+    if (setup.includes('thumb_R') && setup.includes('prop_R')) { const o = setup.filter((x) => x !== 'thumb_R'); o.splice(o.indexOf('prop_R') + 1, 0, 'thumb_R'); c.tracks.drawOrder = { t: [0], v: [o] }; }
     c.tracks.constraints.thumb_button_R = { t: [0, 0.9, 1.1, 1.9, 2.3, 3], v: [0, 0, 1, 1, 0, 0] };
     c.tracks.events = [{ t: 1.1, name: 'button_down' }, { t: 1.9, name: 'button_up' }];
     project.clips.push(c);

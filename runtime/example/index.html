@@ -41,6 +41,8 @@ const ch = await Character2D.load(pkgUrl, { canvas: $('c'), background: [0.07, 0
 window.character = ch;
 $('clip').innerHTML = ch.clips.map((c) => `<option>${c.name}</option>`).join('');
 $('skin').innerHTML = ch.skins.map((s) => `<option>${s}</option>`).join('');
+const skin0 = q.get('skin') || ch.pkg.defaultSkin;
+if (skin0 && ch.skins.includes(skin0)) $('skin').value = ch.setSkin(skin0);
 $('prop').innerHTML = ['<option value="">(clip decides)</option>', '<option value="none">none</option>', ...ch.propsFor('prop_R').map((p) => `<option>${p}</option>`)].join('');
 const start = (name) => { ch.play(name, { loop: $('loop').checked }); $('seek').max = ch.player.duration; };
 $('clip').value = q.get('clip') || (ch.clips.find((c) => c.name === 'hover_sword_vigil') ? 'hover_sword_vigil' : ch.clips[0].name);
