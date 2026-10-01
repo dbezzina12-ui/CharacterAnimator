@@ -65,11 +65,13 @@
    },
    "R": {
     "appearances": [
-     "hand_R.salute_open 0-0.567",
+     "hand_R.salute_open 0-0.3",
+     "hand_R.salute_mid 0.333-0.567",
      "hand_R.salute 0.6-3.267",
-     "hand_R.salute_open 3.3-4"
+     "hand_R.salute_mid 3.3-3.5",
+     "hand_R.salute_open 3.533-4"
     ],
-    "minHoldFrames": 81
+    "minHoldFrames": 7
    }
   },
   "walk_in_place": {
@@ -146,31 +148,31 @@
    {
     "set": "hover",
     "attachment": "hand_L.hover",
-    "wristGapPx": 3.15,
+    "wristGapPx": 3.08,
     "ok": true
    },
    {
     "set": "grip_sword",
     "attachment": "hand_L.grip_sword",
-    "wristGapPx": 0.19,
+    "wristGapPx": 0.17,
     "ok": true
    },
    {
     "set": "grip_pistol_2h",
     "attachment": "hand_L.grip_pistol_2h",
-    "wristGapPx": 0.2,
+    "wristGapPx": 0.18,
     "ok": true
    },
    {
     "set": "grip_rifle",
     "attachment": "hand_L.grip_rifle",
-    "wristGapPx": 0.08,
+    "wristGapPx": 0.07,
     "ok": true
    },
    {
     "set": "walk_swing_L",
     "attachment": "hand_L.walk_swing_L",
-    "wristGapPx": 0.25,
+    "wristGapPx": 0.24,
     "ok": true
    }
   ],
@@ -214,7 +216,7 @@
    {
     "set": "hover",
     "attachment": "hand_R.hover",
-    "wristGapPx": 3.98,
+    "wristGapPx": 3.55,
     "ok": true
    },
    {
@@ -226,31 +228,31 @@
    {
     "set": "grip_staff",
     "attachment": "hand_R.grip_staff",
-    "wristGapPx": 2.4,
+    "wristGapPx": 2.5,
     "ok": true
    },
    {
     "set": "grip_pistol",
     "attachment": "hand_R.grip_pistol",
-    "wristGapPx": 0.18,
+    "wristGapPx": 0.26,
     "ok": true
    },
    {
     "set": "grip_pistol_2h",
     "attachment": "hand_R.grip_pistol_2h",
-    "wristGapPx": 0.3,
+    "wristGapPx": 0.24,
     "ok": true
    },
    {
     "set": "grip_rifle",
     "attachment": "hand_R.grip_rifle",
-    "wristGapPx": 0.21,
+    "wristGapPx": 0.18,
     "ok": true
    },
    {
     "set": "grip_detonator",
     "attachment": "hand_R.grip_detonator",
-    "wristGapPx": 0.24,
+    "wristGapPx": 0.25,
     "ok": true
    },
    {
@@ -260,15 +262,21 @@
     "ok": true
    },
    {
+    "set": "salute_mid",
+    "attachment": "hand_R.salute_mid",
+    "wristGapPx": 0.23,
+    "ok": true
+   },
+   {
     "set": "salute_open",
     "attachment": "hand_R.salute_open",
-    "wristGapPx": 0.04,
+    "wristGapPx": 0.03,
     "ok": true
    },
    {
     "set": "walk_swing_R",
     "attachment": "hand_R.walk_swing_R",
-    "wristGapPx": 0.24,
+    "wristGapPx": 4.03,
     "ok": true
    }
   ]
@@ -305,6 +313,7 @@
    "grip_rifle (palm/grip)",
    "grip_detonator (side/grip)",
    "salute (back/grip)",
+   "salute_mid (back/grip)",
    "salute_open (back/grip)",
    "walk_swing_R (palm/grip)"
   ]

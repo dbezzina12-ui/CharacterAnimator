@@ -1,5 +1,5 @@
 {
- "date": "2026-10-01T14:36:03.988Z",
+ "date": "2026-10-01T16:59:22.801Z",
  "passed": 14,
  "failed": 0,
  "results": [
@@ -40,7 +40,7 @@
    "title": "Corrected pose differs from the bake inside the keyed range",
    "pass": true,
    "details": {
-    "maxVertexDeltaPx": 26.22
+    "maxVertexDeltaPx": 26.23
    }
   },
   {
@@ -78,8 +78,8 @@
      300,
      400
     ],
-    "characterPixels": "29.2%",
-    "meanMaxChannelDiff": 0.003,
+    "characterPixels": "29.3%",
+    "meanMaxChannelDiff": 0.005,
     "pixelsOver24": "0%"
    }
   },
@@ -90,7 +90,7 @@
    "details": {
     "meanAlphaDiff": 0,
     "meanRgbDiff": 0,
-    "opaquePx": 203864,
+    "opaquePx": 203950,
     "transparentCorner": true
    }
   },
@@ -131,7 +131,7 @@
    "title": "No hand appearance (set or keyed palm art) is shown for fewer than 4 frames in hero/regression clips",
    "pass": true,
    "details": {
-    "minHoldFrames": 11,
+    "minHoldFrames": 7,
     "clips": {
      "idle": {
       "L": 1,
@@ -151,7 +151,7 @@
      },
      "knight_salute": {
       "L": 1,
-      "R": 3
+      "R": 5
      },
      "walk_in_place": {
       "L": 3,
@@ -169,8 +169,8 @@
    "title": "Every hand-set palm has art at the wrist joint (≤6 px), so set swaps never open a cuff gap",
    "pass": true,
    "details": {
-    "sets": 27,
-    "worst": 3.98,
+    "sets": 28,
+    "worst": 4.03,
     "failing": []
    }
   },

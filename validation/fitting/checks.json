@@ -1,5 +1,7 @@
 {
   "checks": {
+    "jointCracksStarter": true,
+    "jointCracksDetected": true,
     "packRoundTrip": true,
     "footprintsPreserved": true,
     "acceptIsOneUndo": true,
@@ -16,8 +18,8 @@
   },
   "details": {
     "pack": {
-      "pieces": 206,
-      "missingBefore": 206,
+      "pieces": 213,
+      "missingBefore": 213,
       "layers": 8,
       "allMapped": true
     },
@@ -77,13 +79,13 @@
       },
       {
         "joint": "shoulder_L",
-        "gapPct": 10.6,
-        "flagged": true
+        "gapPct": 0.2,
+        "flagged": false
       },
       {
         "joint": "shoulder_R",
-        "gapPct": 7.6,
-        "flagged": true
+        "gapPct": 1,
+        "flagged": false
       },
       {
         "joint": "elbow_L",
@@ -97,8 +99,8 @@
       },
       {
         "joint": "wrist_L",
-        "gapPct": 8.8,
-        "flagged": true
+        "gapPct": 0.8,
+        "flagged": false
       },
       {
         "joint": "wrist_R",
@@ -112,7 +114,7 @@
       },
       {
         "joint": "hip_R",
-        "gapPct": 2.5,
+        "gapPct": 0.1,
         "flagged": false
       },
       {
@@ -127,13 +129,13 @@
       },
       {
         "joint": "ankle_L",
-        "gapPct": 9,
-        "flagged": true
+        "gapPct": 1.2,
+        "flagged": false
       },
       {
         "joint": "ankle_R",
-        "gapPct": 7.4,
-        "flagged": true
+        "gapPct": 1.4,
+        "flagged": false
       }
     ],
     "reopen": {

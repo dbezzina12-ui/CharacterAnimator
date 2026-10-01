@@ -83,11 +83,15 @@ export const KNIGHT = {
     { name: 'windup', clip: 'sword_2h_slash', t: 0.5, sides: [], groups: [], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R'], clips: ['sword_2h_slash'], range: [0.15, 0.75] },
     { name: 'strike', clip: 'sword_2h_slash', t: 1.1, sides: [], groups: [], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R'], clips: ['sword_2h_slash'], range: [0.75, 1.55] },
     { name: 'salute', clip: 'knight_salute', t: 1.6, sides: ['R'], clips: ['knight_salute'], range: [0.6, 3.3] },
-    // the raised pauldron/vambrace read correctly earlier than the fist: the hand stays open until ~0.6 s
-    { name: 'salute_arm', clip: 'knight_salute', t: 1.6, sides: [], groups: [], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [0.42, 3.42] },
+    // the raised pauldron reads correctly from 0.42 s; the vambrace only once the forearm is upright (0.55 s)
+    { name: 'salute_arm', clip: 'knight_salute', t: 1.6, sides: [], groups: [], limbs: ['upperarm_R'], clips: ['knight_salute'], range: [0.42, 3.42] },
+    { name: 'salute_farm', clip: 'knight_salute', t: 1.6, sides: [], groups: [], limbs: ['forearm_R'], clips: ['knight_salute'], range: [0.55, 3.3] },
+    // mid-raise: the forearm points at the camera — only the cuff ring shows under the open hand (as in 3D)
+    { name: 'salute_mid', clip: 'knight_salute', t: 0.45, sides: ['R'], clips: ['knight_salute'], range: [[0.33, 0.6], [3.3, 3.53]] },
+    { name: 'salute_mid_arm', clip: 'knight_salute', t: 0.45, sides: [], groups: [], limbs: ['forearm_R'], clips: ['knight_salute'], range: [[0.33, 0.55], [3.3, 3.53]] },
     // the open hand as the arm swings out and back (palm toward the camera, wrist turned): the setup hand mesh
     // would fold over here
-    { name: 'salute_open', clip: 'knight_salute', t: 0.15, sides: ['R'], clips: ['knight_salute'], range: [[0, 0.6], [3.3, 4]] },
+    { name: 'salute_open', clip: 'knight_salute', t: 0.15, sides: ['R'], clips: ['knight_salute'], range: [[0, 0.33], [3.53, 4]] },
     // walk: the swinging hands turn palm-back at the ends of the swing; the setup hand mesh folds there
     { name: 'walk_swing_L', clip: 'walk_in_place', t: 0.57, sides: ['L'], clips: ['walk_in_place'], range: [0.38, 0.76] },
     { name: 'walk_swing_R', clip: 'walk_in_place', t: 0.03, sides: ['R'], clips: ['walk_in_place'], range: [[0, 0.24], [0.92, 2]] },

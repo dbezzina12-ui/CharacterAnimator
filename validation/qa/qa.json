@@ -116,15 +116,15 @@
      "kind": "order",
      "t": 0,
      "target": "draw order",
-     "value": 37,
+     "value": 35,
      "threshold": 6,
      "unit": "overlapping pairs swap",
      "info": "clip start: its depth order replaces the setup order as the clip begins",
-     "message": "37 overlapping pairs change depth at once (foot_L / shin_L, shin_L / under_leg_R, shin_L / under_foot_R, foot_R / shin_R…)",
+     "message": "35 overlapping pairs change depth at once (foot_L / shin_L, shin_L / under_leg_R, shin_L / under_foot_R, foot_R / shin_R…)",
      "from": 0,
      "to": 0,
      "frames": 1,
-     "severity": 6.17
+     "severity": 5.83
     }
    ],
    "contacts": [
@@ -300,7 +300,7 @@
     "foldover": 3,
     "order": 1
    },
-   "frameFlags": 110,
+   "frameFlags": 109,
    "flags": [
     {
      "kind": "foldover",
@@ -365,18 +365,18 @@
      "kind": "order",
      "t": 0.8667,
      "target": "draw order",
-     "value": 39,
+     "value": 42,
      "threshold": 6,
      "unit": "overlapping pairs swap",
-     "message": "39 overlapping pairs change depth at once (helmet / upperarm_L, index_R / thumb_L, middle_R / thumb_L, forearm_L / thumb_L…)",
+     "message": "42 overlapping pairs change depth at once (helmet / upperarm_L, middle_R / thumb_L, forearm_L / thumb_L, forearm_R / thumb_L…)",
      "exception": {
       "reason": "hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)",
       "author": null
      },
      "from": 0.8667,
-     "to": 1,
-     "frames": 2,
-     "severity": 6.5
+     "to": 0.8667,
+     "frames": 1,
+     "severity": 7
     },
     {
      "kind": "foldover",
@@ -413,10 +413,10 @@
      "kind": "order",
      "t": 1.9,
      "target": "draw order",
-     "value": 17,
+     "value": 16,
      "threshold": 6,
      "unit": "overlapping pairs swap",
-     "message": "17 overlapping pairs change depth at once (helmet / upperarm_R, forearm_L / thumb_L, forearm_L / pinky_L, forearm_L / ring_L…)",
+     "message": "16 overlapping pairs change depth at once (helmet / upperarm_R, forearm_L / thumb_L, forearm_L / pinky_L, forearm_L / ring_L…)",
      "exception": {
       "reason": "return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)",
       "author": null
@@ -424,7 +424,7 @@
      "from": 1.9,
      "to": 1.9,
      "frames": 1,
-     "severity": 2.83
+     "severity": 2.67
     }
    ],
    "contacts": [
@@ -479,21 +479,19 @@
     "math": "valid",
     "missingArt": "complete-for-view",
     "bridge": "attention",
-    "autoFlags": 2,
+    "autoFlags": 0,
     "excepted": 4,
     "info": 2,
     "visualReview": "approved",
-    "reviewNote": "open palm → fist on chest → open palm tracks 3D; residual: vambrace briefly squashed/protruding around 0.37-0.50 s and 3.35-3.50 s (transition frames)",
+    "reviewNote": "open palm → fist on chest → open palm tracks 3D. Mid-raise (0.33-0.6 s, 3.3-3.53 s) uses a forearm-toward-camera capture (cuff ring under the open hand, as in 3D); pose captures no longer stretch with foreshortening. Residual: the hand at ~0.43 s reads slightly more closed than in 3D.",
     "reviewer": null
    },
-   "summary": {
-    "foreshorten": 2
-   },
+   "summary": {},
    "info": {
     "order": 1,
     "foldover": 1
    },
-   "frameFlags": 103,
+   "frameFlags": 98,
    "flags": [
     {
      "kind": "order",
@@ -527,19 +525,6 @@
      "severity": 3.73
     },
     {
-     "kind": "foreshorten",
-     "t": 0.3667,
-     "target": "forearm_R (forearm_R)",
-     "value": 0.4,
-     "threshold": 0.45,
-     "unit": "scale",
-     "message": "forearm_R squashed to 40% while forearm_R.default shows setup-view art",
-     "from": 0.3667,
-     "to": 0.4,
-     "frames": 2,
-     "severity": 1.13
-    },
-    {
      "kind": "foldover",
      "t": 0.8667,
      "target": "under_arm_R.default",
@@ -571,21 +556,8 @@
      "severity": 2.33
     },
     {
-     "kind": "foreshorten",
-     "t": 3.4333,
-     "target": "forearm_R (forearm_R)",
-     "value": 0.4,
-     "threshold": 0.45,
-     "unit": "scale",
-     "message": "forearm_R squashed to 40% while forearm_R.default shows setup-view art",
-     "from": 3.4333,
-     "to": 3.5,
-     "frames": 3,
-     "severity": 1.13
-    },
-    {
      "kind": "joint-gap",
-     "t": 4,
+     "t": 3.9,
      "target": "hand_R",
      "value": 0.702,
      "threshold": 0.92,
@@ -637,6 +609,12 @@
        "set": null,
        "palmAttachment": "hand_R.salute_open",
        "from": 0,
+       "to": 0.3
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.salute_mid",
+       "from": 0.333,
        "to": 0.567
       },
       {
@@ -647,12 +625,18 @@
       },
       {
        "set": null,
-       "palmAttachment": "hand_R.salute_open",
+       "palmAttachment": "hand_R.salute_mid",
        "from": 3.3,
+       "to": 3.5
+      },
+      {
+       "set": null,
+       "palmAttachment": "hand_R.salute_open",
+       "from": 3.533,
        "to": 4
       }
      ],
-     "minHoldFrames": 81
+     "minHoldFrames": 7
     }
    }
   },
@@ -663,21 +647,19 @@
     "math": "valid",
     "missingArt": "complete-for-view",
     "bridge": "ok",
-    "autoFlags": 2,
+    "autoFlags": 0,
     "excepted": 2,
     "info": 5,
     "visualReview": "approved",
-    "reviewNote": "regression clip: swing captures fix the crumpled hands; small pinky fold (2.1%) at 0.27-0.33 and 0.80-0.90 s",
+    "reviewNote": "regression clip: swing captures fix the crumpled hands; no open flags",
     "reviewer": null
    },
-   "summary": {
-    "foldover": 2
-   },
+   "summary": {},
    "info": {
     "foldover": 4,
     "order": 1
    },
-   "frameFlags": 36,
+   "frameFlags": 29,
    "flags": [
     {
      "kind": "foldover",
@@ -697,15 +679,15 @@
      "kind": "order",
      "t": 0,
      "target": "draw order",
-     "value": 56,
+     "value": 54,
      "threshold": 6,
      "unit": "overlapping pairs swap",
      "info": "clip start: its depth order replaces the setup order as the clip begins",
-     "message": "56 overlapping pairs change depth at once (under_foot_R / under_leg_R, under_foot_L / under_foot_R, under_foot_R / under_leg_L, shin_L / under_foot_R…)",
+     "message": "54 overlapping pairs change depth at once (under_foot_R / under_leg_R, under_foot_L / under_foot_R, under_foot_R / under_leg_L, shin_L / under_foot_R…)",
      "from": 0,
      "to": 0,
      "frames": 1,
-     "severity": 9.33
+     "severity": 9
     },
     {
      "kind": "foldover",
@@ -723,19 +705,6 @@
     },
     {
      "kind": "foldover",
-     "t": 0.2667,
-     "target": "pinky_R.default",
-     "value": 2.09,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 2.1% of the mesh folds over",
-     "from": 0.2667,
-     "to": 0.3333,
-     "frames": 3,
-     "severity": 1.04
-    },
-    {
-     "kind": "foldover",
      "t": 0.5667,
      "target": "under_foot_R.default",
      "value": 2.11,
@@ -747,19 +716,6 @@
      "to": 0.5667,
      "frames": 1,
      "severity": 1.06
-    },
-    {
-     "kind": "foldover",
-     "t": 0.8,
-     "target": "pinky_R.default",
-     "value": 2.09,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 2.1% of the mesh folds over",
-     "from": 0.8,
-     "to": 0.9,
-     "frames": 4,
-     "severity": 1.04
     },
     {
      "kind": "order",
@@ -867,112 +823,33 @@
     "math": "valid",
     "missingArt": "complete-for-view",
     "bridge": "ok",
-    "autoFlags": 29,
-    "excepted": 0,
+    "autoFlags": 12,
+    "excepted": 1,
     "info": 1,
     "visualReview": "needs-work",
-    "reviewNote": "finger meshes fold 4-9% at the knuckles in deep per-finger curls (stress clip); full fists swap to captured fist art",
+    "reviewNote": "curls now shorten toward the palm with denser finger meshes and wider knuckle blends: worst fold 3.3% (pinky, deepest curl) down from 9.1%; flags remain above the 2% threshold at full curls",
     "reviewer": null
    },
    "summary": {
-    "foldover": 28,
-    "order": 1
+    "foldover": 12
    },
    "info": {
     "order": 1
    },
-   "frameFlags": 493,
+   "frameFlags": 62,
    "flags": [
-    {
-     "kind": "foldover",
-     "t": 0.7667,
-     "target": "pinky_R.default",
-     "value": 2.09,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 2.1% of the mesh folds over",
-     "from": 0.7667,
-     "to": 1.2,
-     "frames": 14,
-     "severity": 1.04
-    },
     {
      "kind": "foldover",
      "t": 1.6,
      "target": "index_L.default",
-     "value": 9.14,
+     "value": 2.1,
      "threshold": 2,
      "unit": "% of area",
-     "message": "index_L.default: 9.1% of the mesh folds over",
-     "from": 1.2333,
-     "to": 1.7667,
-     "frames": 17,
-     "severity": 4.57
-    },
-    {
-     "kind": "foldover",
-     "t": 1.2667,
-     "target": "index_R.default",
-     "value": 3.18,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "index_R.default: 3.2% of the mesh folds over",
-     "from": 1.2667,
-     "to": 1.7667,
-     "frames": 16,
-     "severity": 1.59
-    },
-    {
-     "kind": "foldover",
-     "t": 1.9667,
-     "target": "middle_L.default",
-     "value": 4.94,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "middle_L.default: 4.9% of the mesh folds over",
-     "from": 1.8333,
-     "to": 2.1667,
-     "frames": 11,
-     "severity": 2.47
-    },
-    {
-     "kind": "foldover",
-     "t": 1.9,
-     "target": "middle_R.default",
-     "value": 4.49,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "middle_R.default: 4.5% of the mesh folds over",
-     "from": 1.9,
-     "to": 2.1,
-     "frames": 7,
-     "severity": 2.24
-    },
-    {
-     "kind": "foldover",
-     "t": 2,
-     "target": "hand_L.default",
-     "value": 3.35,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "hand_L.default: 3.4% of the mesh folds over",
-     "from": 1.9667,
-     "to": 2.0333,
-     "frames": 3,
-     "severity": 1.68
-    },
-    {
-     "kind": "foldover",
-     "t": 2,
-     "target": "hand_R.default",
-     "value": 2.13,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "hand_R.default: 2.1% of the mesh folds over",
-     "from": 2,
-     "to": 2,
+     "message": "index_L.default: 2.1% of the mesh folds over",
+     "from": 1.6,
+     "to": 1.6,
      "frames": 1,
-     "severity": 1.07
+     "severity": 1.05
     },
     {
      "kind": "order",
@@ -990,55 +867,42 @@
     },
     {
      "kind": "foldover",
-     "t": 2.3667,
-     "target": "ring_L.default",
-     "value": 8.71,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "ring_L.default: 8.7% of the mesh folds over",
-     "from": 2.2333,
-     "to": 2.5667,
-     "frames": 11,
-     "severity": 4.35
-    },
-    {
-     "kind": "foldover",
-     "t": 2.2667,
+     "t": 2.4,
      "target": "ring_R.default",
-     "value": 3.26,
+     "value": 2,
      "threshold": 2,
      "unit": "% of area",
-     "message": "ring_R.default: 3.3% of the mesh folds over",
-     "from": 2.2667,
-     "to": 2.5333,
-     "frames": 9,
-     "severity": 1.63
+     "message": "ring_R.default: 2.0% of the mesh folds over",
+     "from": 2.4,
+     "to": 2.4,
+     "frames": 1,
+     "severity": 1
     },
     {
      "kind": "foldover",
-     "t": 2.7333,
-     "target": "pinky_R.default",
-     "value": 8.36,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 8.4% of the mesh folds over",
-     "from": 2.5333,
-     "to": 3.0667,
-     "frames": 17,
-     "severity": 4.18
-    },
-    {
-     "kind": "foldover",
-     "t": 2.7667,
+     "t": 2.8,
      "target": "pinky_L.default",
-     "value": 6.56,
+     "value": 2.5,
      "threshold": 2,
      "unit": "% of area",
-     "message": "pinky_L.default: 6.6% of the mesh folds over",
-     "from": 2.6667,
-     "to": 2.9333,
-     "frames": 9,
-     "severity": 3.28
+     "message": "pinky_L.default: 2.5% of the mesh folds over",
+     "from": 2.8,
+     "to": 2.8,
+     "frames": 1,
+     "severity": 1.25
+    },
+    {
+     "kind": "foldover",
+     "t": 2.8,
+     "target": "pinky_R.default",
+     "value": 3.3,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 3.3% of the mesh folds over",
+     "from": 2.8,
+     "to": 2.8,
+     "frames": 1,
+     "severity": 1.65
     },
     {
      "kind": "order",
@@ -1048,6 +912,10 @@
      "threshold": 6,
      "unit": "overlapping pairs swap",
      "message": "13 overlapping pairs change depth at once (hand_R / pinky_R, hand_R / ring_R, hand_R / middle_R, hand_R / index_R…)",
+     "exception": {
+      "reason": "authored demo: the clip keys the right fingers behind the palm at 2.0 s and back at 2.8 s (finger_tests_2d shows keyed layer order)",
+      "author": null
+     },
      "from": 2.8,
      "to": 2.8,
      "frames": 1,
@@ -1055,224 +923,107 @@
     },
     {
      "kind": "foldover",
-     "t": 3.2,
-     "target": "thumb_L.default",
-     "value": 3.24,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "thumb_L.default: 3.2% of the mesh folds over",
-     "from": 3.2,
-     "to": 3.2333,
-     "frames": 2,
-     "severity": 1.62
-    },
-    {
-     "kind": "foldover",
-     "t": 3.7667,
+     "t": 4.4,
      "target": "pinky_R.default",
-     "value": 8.36,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 8.4% of the mesh folds over",
-     "from": 3.4,
-     "to": 4.8667,
-     "frames": 45,
-     "severity": 4.18
-    },
-    {
-     "kind": "foldover",
-     "t": 3.8,
-     "target": "ring_L.default",
-     "value": 6.97,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "ring_L.default: 7.0% of the mesh folds over",
-     "from": 3.6,
-     "to": 4.8667,
-     "frames": 39,
-     "severity": 3.48
-    },
-    {
-     "kind": "foldover",
-     "t": 3.6333,
-     "target": "pinky_L.default",
-     "value": 4.38,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_L.default: 4.4% of the mesh folds over",
-     "from": 3.6,
-     "to": 4.8667,
-     "frames": 39,
-     "severity": 2.19
-    },
-    {
-     "kind": "foldover",
-     "t": 3.6333,
-     "target": "middle_L.default",
      "value": 3.3,
      "threshold": 2,
      "unit": "% of area",
-     "message": "middle_L.default: 3.3% of the mesh folds over",
-     "from": 3.6333,
+     "message": "pinky_R.default: 3.3% of the mesh folds over",
+     "from": 4.2333,
      "to": 4.8667,
-     "frames": 38,
+     "frames": 20,
      "severity": 1.65
+    },
+    {
+     "kind": "foldover",
+     "t": 4.5,
+     "target": "ring_R.default",
+     "value": 2,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "ring_R.default: 2.0% of the mesh folds over",
+     "from": 4.5,
+     "to": 4.8667,
+     "frames": 12,
+     "severity": 1
+    },
+    {
+     "kind": "foldover",
+     "t": 4.5333,
+     "target": "index_L.default",
+     "value": 2.1,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "index_L.default: 2.1% of the mesh folds over",
+     "from": 4.5333,
+     "to": 4.8667,
+     "frames": 11,
+     "severity": 1.05
     },
     {
      "kind": "foldover",
      "t": 4.6,
-     "target": "index_L.default",
-     "value": 9.14,
+     "target": "pinky_L.default",
+     "value": 2.5,
      "threshold": 2,
      "unit": "% of area",
-     "message": "index_L.default: 9.1% of the mesh folds over",
-     "from": 3.6667,
+     "message": "pinky_L.default: 2.5% of the mesh folds over",
+     "from": 4.6,
      "to": 4.8667,
-     "frames": 37,
-     "severity": 4.57
-    },
-    {
-     "kind": "foldover",
-     "t": 4.4667,
-     "target": "ring_R.default",
-     "value": 3.49,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "ring_R.default: 3.5% of the mesh folds over",
-     "from": 3.6667,
-     "to": 4.8667,
-     "frames": 37,
-     "severity": 1.74
-    },
-    {
-     "kind": "foldover",
-     "t": 3.7,
-     "target": "index_R.default",
-     "value": 3.18,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "index_R.default: 3.2% of the mesh folds over",
-     "from": 3.7,
-     "to": 4.8667,
-     "frames": 36,
-     "severity": 1.59
-    },
-    {
-     "kind": "foldover",
-     "t": 3.7667,
-     "target": "middle_R.default",
-     "value": 4.49,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "middle_R.default: 4.5% of the mesh folds over",
-     "from": 3.7667,
-     "to": 4.8667,
-     "frames": 34,
-     "severity": 2.24
-    },
-    {
-     "kind": "foldover",
-     "t": 5.8,
-     "target": "pinky_R.default",
-     "value": 8.36,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "pinky_R.default: 8.4% of the mesh folds over",
-     "from": 5.8,
-     "to": 6.2333,
-     "frames": 14,
-     "severity": 4.18
+     "frames": 9,
+     "severity": 1.25
     },
     {
      "kind": "foldover",
      "t": 5.8,
      "target": "index_L.default",
-     "value": 9.14,
+     "value": 2.1,
      "threshold": 2,
      "unit": "% of area",
-     "message": "index_L.default: 9.1% of the mesh folds over",
+     "message": "index_L.default: 2.1% of the mesh folds over",
      "from": 5.8,
-     "to": 6.0667,
-     "frames": 9,
-     "severity": 4.57
-    },
-    {
-     "kind": "foldover",
-     "t": 5.8,
-     "target": "index_R.default",
-     "value": 3.18,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "index_R.default: 3.2% of the mesh folds over",
-     "from": 5.8,
-     "to": 6.0333,
-     "frames": 8,
-     "severity": 1.59
-    },
-    {
-     "kind": "foldover",
-     "t": 5.8,
-     "target": "middle_L.default",
-     "value": 3.3,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "middle_L.default: 3.3% of the mesh folds over",
-     "from": 5.8,
-     "to": 6.0667,
-     "frames": 9,
-     "severity": 1.65
-    },
-    {
-     "kind": "foldover",
-     "t": 5.8,
-     "target": "middle_R.default",
-     "value": 4.49,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "middle_R.default: 4.5% of the mesh folds over",
-     "from": 5.8,
-     "to": 5.9333,
-     "frames": 5,
-     "severity": 2.24
-    },
-    {
-     "kind": "foldover",
-     "t": 5.8,
-     "target": "ring_L.default",
-     "value": 6.97,
-     "threshold": 2,
-     "unit": "% of area",
-     "message": "ring_L.default: 7.0% of the mesh folds over",
-     "from": 5.8,
-     "to": 6.0667,
-     "frames": 9,
-     "severity": 3.48
+     "to": 5.8,
+     "frames": 1,
+     "severity": 1.05
     },
     {
      "kind": "foldover",
      "t": 5.8,
      "target": "ring_R.default",
-     "value": 3.49,
+     "value": 2,
      "threshold": 2,
      "unit": "% of area",
-     "message": "ring_R.default: 3.5% of the mesh folds over",
+     "message": "ring_R.default: 2.0% of the mesh folds over",
      "from": 5.8,
-     "to": 6,
-     "frames": 7,
-     "severity": 1.74
+     "to": 5.8,
+     "frames": 1,
+     "severity": 1
     },
     {
      "kind": "foldover",
      "t": 5.8,
      "target": "pinky_L.default",
-     "value": 4.38,
+     "value": 2.5,
      "threshold": 2,
      "unit": "% of area",
-     "message": "pinky_L.default: 4.4% of the mesh folds over",
+     "message": "pinky_L.default: 2.5% of the mesh folds over",
      "from": 5.8,
-     "to": 6.0333,
-     "frames": 8,
-     "severity": 2.19
+     "to": 5.8,
+     "frames": 1,
+     "severity": 1.25
+    },
+    {
+     "kind": "foldover",
+     "t": 5.8,
+     "target": "pinky_R.default",
+     "value": 3.3,
+     "threshold": 2,
+     "unit": "% of area",
+     "message": "pinky_R.default: 3.3% of the mesh folds over",
+     "from": 5.8,
+     "to": 5.8,
+     "frames": 1,
+     "severity": 1.65
     }
    ],
    "contacts": [],
@@ -1336,7 +1087,7 @@
     "excepted": 0,
     "info": 1,
     "visualReview": "approved",
-    "reviewNote": "thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb mesh folds 9% at its knuckle when bent",
+    "reviewNote": "thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb fold 2.85% at the knuckle while bent (was 9.45%)",
     "reviewer": null
    },
    "summary": {
@@ -1345,7 +1096,7 @@
    "info": {
     "foldover": 1
    },
-   "frameFlags": 182,
+   "frameFlags": 120,
    "flags": [
     {
      "kind": "foldover",
@@ -1365,14 +1116,14 @@
      "kind": "foldover",
      "t": 1.1,
      "target": "thumb_R.default",
-     "value": 9.45,
+     "value": 2.85,
      "threshold": 2,
      "unit": "% of area",
-     "message": "thumb_R.default: 9.5% of the mesh folds over",
-     "from": 0,
-     "to": 3,
-     "frames": 91,
-     "severity": 4.73
+     "message": "thumb_R.default: 2.9% of the mesh folds over",
+     "from": 1.0667,
+     "to": 2,
+     "frames": 29,
+     "severity": 1.43
     }
    ],
    "contacts": [

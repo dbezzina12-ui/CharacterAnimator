@@ -1,23 +1,128 @@
 {
  "note": "Human visual review of the starter-skin knight (2026-10-01), kept beside the project and merged by scripts/build-2d-knight.mjs. Evidence: validation/qa/<clip>.png (contact sheets) and validation/qa/compare-*.png (3D vs 2D at the same times). Exceptions are only recorded where those images were checked.",
  "exceptions": [
-  { "clip": "knight_salute", "kind": "joint-gap", "target": "hand_R", "from": 0, "to": 0.25, "reason": "arm swings out with the wrist seen edge-on: the narrower silhouette leaves part of the 10 px probe empty, but the cuff and open hand are joined (compare-salute-hand.png 0 s)", "date": "2026-10-01" },
-  { "clip": "knight_salute", "kind": "joint-gap", "target": "hand_R", "from": 3.65, "to": 4, "reason": "same as the start of the clip on the way back (compare-salute-hand.png 3.8 s)", "date": "2026-10-01" },
-  { "clip": "sword_2h_slash", "kind": "order", "target": "draw order", "from": 0.35, "to": 1.0, "reason": "hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)", "date": "2026-10-01" },
-  { "clip": "sword_2h_slash", "kind": "order", "target": "draw order", "from": 1.85, "to": 1.95, "reason": "return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)", "date": "2026-10-01" },
-  { "clip": "sword_2h_slash", "kind": "foreshorten", "target": "prop_R (prop_R)", "from": 1.75, "to": 1.85, "reason": "the blade points toward the camera in the follow-through; the 3D view is equally short (compare-slash.png 1.7 s)", "date": "2026-10-01" },
-  { "clip": "knight_salute", "kind": "order", "target": "draw order", "from": 0.55, "to": 0.6, "reason": "raised arm moves in front of the chest; matches 3D (compare-order.png 0.533/0.567 s)", "date": "2026-10-01" },
-  { "clip": "knight_salute", "kind": "order", "target": "draw order", "from": 3.85, "to": 3.95, "reason": "arm returns beside the body; matches 3D (compare-order.png 3.9 s)", "date": "2026-10-01" },
-  { "clip": "walk_in_place", "kind": "order", "target": "draw order", "from": 0.9, "to": 1.12, "reason": "arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)", "date": "2026-10-01" }
+  {
+   "clip": "knight_salute",
+   "kind": "joint-gap",
+   "target": "hand_R",
+   "from": 0,
+   "to": 0.25,
+   "reason": "arm swings out with the wrist seen edge-on: the narrower silhouette leaves part of the 10 px probe empty, but the cuff and open hand are joined (compare-salute-hand.png 0 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "knight_salute",
+   "kind": "joint-gap",
+   "target": "hand_R",
+   "from": 3.65,
+   "to": 4,
+   "reason": "same as the start of the clip on the way back (compare-salute-hand.png 3.8 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "sword_2h_slash",
+   "kind": "order",
+   "target": "draw order",
+   "from": 0.35,
+   "to": 1,
+   "reason": "hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "sword_2h_slash",
+   "kind": "order",
+   "target": "draw order",
+   "from": 1.85,
+   "to": 1.95,
+   "reason": "return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "sword_2h_slash",
+   "kind": "foreshorten",
+   "target": "prop_R (prop_R)",
+   "from": 1.75,
+   "to": 1.85,
+   "reason": "the blade points toward the camera in the follow-through; the 3D view is equally short (compare-slash.png 1.7 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "knight_salute",
+   "kind": "order",
+   "target": "draw order",
+   "from": 0.55,
+   "to": 0.6,
+   "reason": "raised arm moves in front of the chest; matches 3D (compare-order.png 0.533/0.567 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "knight_salute",
+   "kind": "order",
+   "target": "draw order",
+   "from": 3.85,
+   "to": 3.95,
+   "reason": "arm returns beside the body; matches 3D (compare-order.png 3.9 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "walk_in_place",
+   "kind": "order",
+   "target": "draw order",
+   "from": 0.9,
+   "to": 1.12,
+   "reason": "arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)",
+   "date": "2026-10-01"
+  },
+  {
+   "clip": "finger_tests_2d",
+   "kind": "order",
+   "target": "draw order",
+   "from": 2.75,
+   "to": 2.85,
+   "reason": "authored demo: the clip keys the right fingers behind the palm at 2.0 s and back at 2.8 s (finger_tests_2d shows keyed layer order)",
+   "date": "2026-10-01"
+  }
  ],
  "review": {
-  "idle": { "status": "approved", "note": "reads correctly; starter (3D-captured) art except the painted helmet in the painted skin", "date": "2026-10-01" },
-  "hover_sword_vigil": { "status": "approved", "note": "both palms on the sword the whole loop (contact art 100%), hover forearm captures match 3D", "date": "2026-10-01" },
-  "sword_2h_idle": { "status": "approved", "note": "guard pose: pose-specific pauldrons/vambraces, both grips on the hilt (contact art 100%)", "date": "2026-10-01" },
-  "sword_2h_slash": { "status": "approved", "note": "wind-up/strike/guard captures match 3D; depth swaps verified; blade very short at 1.77-1.83 s exactly as in 3D", "date": "2026-10-01" },
-  "knight_salute": { "status": "approved", "note": "open palm → fist on chest → open palm tracks 3D; residual: vambrace briefly squashed/protruding around 0.37-0.50 s and 3.35-3.50 s (transition frames)", "date": "2026-10-01" },
-  "walk_in_place": { "status": "approved", "note": "regression clip: swing captures fix the crumpled hands; small pinky fold (2.1%) at 0.27-0.33 and 0.80-0.90 s", "date": "2026-10-01" },
-  "finger_tests_2d": { "status": "needs-work", "note": "finger meshes fold 4-9% at the knuckles in deep per-finger curls (stress clip); full fists swap to captured fist art", "date": "2026-10-01" },
-  "contact_detonator_2d": { "status": "approved", "note": "thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb mesh folds 9% at its knuckle when bent", "date": "2026-10-01" }
+  "idle": {
+   "status": "approved",
+   "note": "reads correctly; starter (3D-captured) art except the painted helmet in the painted skin",
+   "date": "2026-10-01"
+  },
+  "hover_sword_vigil": {
+   "status": "approved",
+   "note": "both palms on the sword the whole loop (contact art 100%), hover forearm captures match 3D",
+   "date": "2026-10-01"
+  },
+  "sword_2h_idle": {
+   "status": "approved",
+   "note": "guard pose: pose-specific pauldrons/vambraces, both grips on the hilt (contact art 100%)",
+   "date": "2026-10-01"
+  },
+  "sword_2h_slash": {
+   "status": "approved",
+   "note": "wind-up/strike/guard captures match 3D; depth swaps verified; blade very short at 1.77-1.83 s exactly as in 3D",
+   "date": "2026-10-01"
+  },
+  "knight_salute": {
+   "status": "approved",
+   "note": "open palm → fist on chest → open palm tracks 3D. Mid-raise (0.33-0.6 s, 3.3-3.53 s) uses a forearm-toward-camera capture (cuff ring under the open hand, as in 3D); pose captures no longer stretch with foreshortening. Residual: the hand at ~0.43 s reads slightly more closed than in 3D.",
+   "date": "2026-10-01"
+  },
+  "walk_in_place": {
+   "status": "approved",
+   "note": "regression clip: swing captures fix the crumpled hands; no open flags",
+   "date": "2026-10-01"
+  },
+  "finger_tests_2d": {
+   "status": "needs-work",
+   "note": "curls now shorten toward the palm with denser finger meshes and wider knuckle blends: worst fold 3.3% (pinky, deepest curl) down from 9.1%; flags remain above the 2% threshold at full curls",
+   "date": "2026-10-01"
+  },
+  "contact_detonator_2d": {
+   "status": "approved",
+   "note": "thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb fold 2.85% at the knuckle while bent (was 9.45%)",
+   "date": "2026-10-01"
+  }
  }
 }

@@ -9,10 +9,10 @@ visual review column is a human decision recorded in the project (`visualQA.revi
 | hover_sword_vigil | valid | complete-for-view | 0 | support_L_hover 100%<br>grip_R (palm socket) 100% | L: 1 (static), R: 1 (static) | approved: both palms on the sword the whole loop (contact art 100%), hover forearm captures match 3D |
 | sword_2h_idle | valid | complete-for-view | 0 | support_L 100%<br>grip_R (palm socket) 100% | L: 1 (static), R: 1 (static) | approved: guard pose: pose-specific pauldrons/vambraces, both grips on the hilt (contact art 100%) |
 | sword_2h_slash | valid | complete-for-view | 0 | support_L 100%<br>grip_R (palm socket) 100% | L: 1 (static), R: 1 (static) | approved: wind-up/strike/guard captures match 3D; depth swaps verified; blade very short at 1.77-1.83 s exactly as in 3D |
-| knight_salute | valid | complete-for-view | 2 (foreshorten 2) | — | L: 1 (static), R: 3 (81 fr) | approved: open palm → fist on chest → open palm tracks 3D; residual: vambrace briefly squashed/protruding around 0.37-0.50 s and 3.35-3.50 s (transition frames) |
-| walk_in_place | valid | complete-for-view | 2 (foldover 2) | — | L: 3 (11 fr), R: 3 (20 fr) | approved: regression clip: swing captures fix the crumpled hands; small pinky fold (2.1%) at 0.27-0.33 and 0.80-0.90 s |
-| finger_tests_2d | valid | complete-for-view | 29 (foldover 28, order 1) | — | L: 3 (27 fr), R: 3 (27 fr) | needs-work: finger meshes fold 4-9% at the knuckles in deep per-finger curls (stress clip); full fists swap to captured fist art |
-| contact_detonator_2d | valid | complete-for-view | 1 (foldover 1) | grip_R (palm socket) 100%<br>thumb_button_R 100% | L: 1 (static), R: 1 (static) | approved: thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb mesh folds 9% at its knuckle when bent |
+| knight_salute | valid | complete-for-view | 0 | — | L: 1 (static), R: 5 (7 fr) | approved: open palm → fist on chest → open palm tracks 3D. Mid-raise (0.33-0.6 s, 3.3-3.53 s) uses a forearm-toward-camera capture (cuff ring under the open hand, as in 3D); pose captures no longer stretch with foreshortening. Residual: the hand at ~0.43 s reads slightly more closed than in 3D. |
+| walk_in_place | valid | complete-for-view | 0 | — | L: 3 (11 fr), R: 3 (20 fr) | approved: regression clip: swing captures fix the crumpled hands; no open flags |
+| finger_tests_2d | valid | complete-for-view | 12 (foldover 12) | — | L: 3 (27 fr), R: 3 (27 fr) | needs-work: curls now shorten toward the palm with denser finger meshes and wider knuckle blends: worst fold 3.3% (pinky, deepest curl) down from 9.1%; flags remain above the 2% threshold at full curls |
+| contact_detonator_2d | valid | complete-for-view | 1 (foldover 1) | grip_R (palm socket) 100%<br>thumb_button_R 100% | L: 1 (static), R: 1 (static) | approved: thumb drawn in front of the remote and visibly presses the button (contact art 100%); thumb fold 2.85% at the knuckle while bent (was 9.45%) |
 
 ## Flags per clip
 
@@ -24,7 +24,7 @@ Ranged: consecutive frames of one finding are one line (from–to, frame count, 
 
 ### hover_sword_vigil
 
-- ℹ 0.00 s · order · draw order = 37 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
+- ℹ 0.00 s · order · draw order = 35 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
 - ℹ 0.00–5.00 s (151 samples, worst 0.00 s) · foldover · under_arm_R.default = 3.19 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 - ℹ 0.00–5.00 s (151 samples, worst 0.00 s) · foldover · under_arm_L.default = 2.43 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 
@@ -37,8 +37,8 @@ Ranged: consecutive frames of one finding are one line (from–to, frame count, 
 ### sword_2h_slash
 
 - ✓ 0.40 s · order · draw order = 66 overlapping pairs swap (threshold 6) — exception: hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)
-- ✓ 0.87–1.00 s (2 samples, worst 0.87 s) · order · draw order = 39 overlapping pairs swap (threshold 6) — exception: hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)
-- ✓ 1.90 s · order · draw order = 17 overlapping pairs swap (threshold 6) — exception: return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)
+- ✓ 0.87 s · order · draw order = 42 overlapping pairs swap (threshold 6) — exception: hands/guard/forearms change depth together as the grip rotates through the wind-up and strike; layering matches the 3D render (compare-slash-order.png 0.367/0.4/0.867/0.9 s)
+- ✓ 1.90 s · order · draw order = 16 overlapping pairs swap (threshold 6) — exception: return to guard; layering matches the 3D render (compare-order.png 1.867/1.9 s)
 - ✓ 1.77–1.83 s (3 samples, worst 1.80 s) · foreshorten · prop_R (prop_R) = 0.363 scale (threshold 0.45) — exception: the blade points toward the camera in the follow-through; the 3D view is equally short (compare-slash.png 1.7 s)
 - ℹ 0.00–0.90 s (28 samples, worst 0.40 s) · foldover · under_arm_L.default = 10.94 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 - ℹ 0.00 s · order · draw order = 28 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
@@ -47,10 +47,8 @@ Ranged: consecutive frames of one finding are one line (from–to, frame count, 
 
 ### knight_salute
 
-- ⚠ 0.37–0.40 s (2 samples, worst 0.37 s) · foreshorten · forearm_R (forearm_R) = 0.4 scale (threshold 0.45)
-- ⚠ 3.43–3.50 s (3 samples, worst 3.43 s) · foreshorten · forearm_R (forearm_R) = 0.4 scale (threshold 0.45)
 - ✓ 0.00–0.20 s (3 samples, worst 0.00 s) · joint-gap · hand_R = 0.702 coverage vs setup (threshold 0.92) — exception: arm swings out with the wrist seen edge-on: the narrower silhouette leaves part of the 10 px probe empty, but the cuff and open hand are joined (compare-salute-hand.png 0 s)
-- ✓ 3.70–4.00 s (4 samples, worst 4.00 s) · joint-gap · hand_R = 0.702 coverage vs setup (threshold 0.92) — exception: same as the start of the clip on the way back (compare-salute-hand.png 3.8 s)
+- ✓ 3.70–4.00 s (4 samples, worst 3.90 s) · joint-gap · hand_R = 0.702 coverage vs setup (threshold 0.92) — exception: same as the start of the clip on the way back (compare-salute-hand.png 3.8 s)
 - ✓ 0.57 s · order · draw order = 14 overlapping pairs swap (threshold 6) — exception: raised arm moves in front of the chest; matches 3D (compare-order.png 0.533/0.567 s)
 - ✓ 3.90 s · order · draw order = 8 overlapping pairs swap (threshold 6) — exception: arm returns beside the body; matches 3D (compare-order.png 3.9 s)
 - ℹ 0.47–3.43 s (88 samples, worst 0.87 s) · foldover · under_arm_R.default = 6.51 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
@@ -58,11 +56,9 @@ Ranged: consecutive frames of one finding are one line (from–to, frame count, 
 
 ### walk_in_place
 
-- ⚠ 0.27–0.33 s (3 samples, worst 0.27 s) · foldover · pinky_R.default = 2.09 % of area (threshold 2)
-- ⚠ 0.80–0.90 s (4 samples, worst 0.80 s) · foldover · pinky_R.default = 2.09 % of area (threshold 2)
 - ✓ 1.10 s · order · draw order = 14 overlapping pairs swap (threshold 6) — exception: arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)
 - ✓ 0.93 s · order · draw order = 13 overlapping pairs swap (threshold 6) — exception: arm/tabard swing crossing; matches 3D (compare-order.png 0.9/0.933/1.1 s)
-- ℹ 0.00 s · order · draw order = 56 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
+- ℹ 0.00 s · order · draw order = 54 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
 - ℹ 0.00–0.03 s (2 samples, worst 0.00 s) · foldover · under_foot_L.default = 12.44 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 - ℹ 1.03–1.13 s (4 samples, worst 1.07 s) · foldover · under_foot_L.default = 12.44 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 - ℹ 0.27–0.87 s (19 samples, worst 0.50 s) · foldover · under_arm_R.default = 3.26 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
@@ -70,35 +66,23 @@ Ranged: consecutive frames of one finding are one line (from–to, frame count, 
 
 ### finger_tests_2d
 
-- ⚠ 1.23–1.77 s (17 samples, worst 1.60 s) · foldover · index_L.default = 9.14 % of area (threshold 2)
-- ⚠ 3.67–4.87 s (37 samples, worst 4.60 s) · foldover · index_L.default = 9.14 % of area (threshold 2)
-- ⚠ 5.80–6.07 s (9 samples, worst 5.80 s) · foldover · index_L.default = 9.14 % of area (threshold 2)
-- ⚠ 2.23–2.57 s (11 samples, worst 2.37 s) · foldover · ring_L.default = 8.71 % of area (threshold 2)
-- ⚠ 2.53–3.07 s (17 samples, worst 2.73 s) · foldover · pinky_R.default = 8.36 % of area (threshold 2)
-- ⚠ 3.40–4.87 s (45 samples, worst 3.77 s) · foldover · pinky_R.default = 8.36 % of area (threshold 2)
-- ⚠ 5.80–6.23 s (14 samples, worst 5.80 s) · foldover · pinky_R.default = 8.36 % of area (threshold 2)
-- ⚠ 3.60–4.87 s (39 samples, worst 3.80 s) · foldover · ring_L.default = 6.97 % of area (threshold 2)
-- ⚠ 5.80–6.07 s (9 samples, worst 5.80 s) · foldover · ring_L.default = 6.97 % of area (threshold 2)
-- ⚠ 2.67–2.93 s (9 samples, worst 2.77 s) · foldover · pinky_L.default = 6.56 % of area (threshold 2)
-- ⚠ 1.83–2.17 s (11 samples, worst 1.97 s) · foldover · middle_L.default = 4.94 % of area (threshold 2)
-- ⚠ 1.90–2.10 s (7 samples, worst 1.90 s) · foldover · middle_R.default = 4.49 % of area (threshold 2)
-- ⚠ 3.77–4.87 s (34 samples, worst 3.77 s) · foldover · middle_R.default = 4.49 % of area (threshold 2)
-- ⚠ 5.80–5.93 s (5 samples, worst 5.80 s) · foldover · middle_R.default = 4.49 % of area (threshold 2)
-- ⚠ 3.60–4.87 s (39 samples, worst 3.63 s) · foldover · pinky_L.default = 4.38 % of area (threshold 2)
-- ⚠ 5.80–6.03 s (8 samples, worst 5.80 s) · foldover · pinky_L.default = 4.38 % of area (threshold 2)
-- ⚠ 2.80 s · order · draw order = 13 overlapping pairs swap (threshold 6)
-- ⚠ 3.67–4.87 s (37 samples, worst 4.47 s) · foldover · ring_R.default = 3.49 % of area (threshold 2)
-- ⚠ 5.80–6.00 s (7 samples, worst 5.80 s) · foldover · ring_R.default = 3.49 % of area (threshold 2)
-- ⚠ 1.97–2.03 s (3 samples, worst 2.00 s) · foldover · hand_L.default = 3.35 % of area (threshold 2)
-- ⚠ 3.63–4.87 s (38 samples, worst 3.63 s) · foldover · middle_L.default = 3.3 % of area (threshold 2)
-- ⚠ 5.80–6.07 s (9 samples, worst 5.80 s) · foldover · middle_L.default = 3.3 % of area (threshold 2)
-- ⚠ 2.27–2.53 s (9 samples, worst 2.27 s) · foldover · ring_R.default = 3.26 % of area (threshold 2)
-- ⚠ 3.20–3.23 s (2 samples, worst 3.20 s) · foldover · thumb_L.default = 3.24 % of area (threshold 2)
-- ⚠ 1.27–1.77 s (16 samples, worst 1.27 s) · foldover · index_R.default = 3.18 % of area (threshold 2)
-- … 5 more in qa.json
+- ⚠ 2.80 s · foldover · pinky_R.default = 3.3 % of area (threshold 2)
+- ⚠ 4.23–4.87 s (20 samples, worst 4.40 s) · foldover · pinky_R.default = 3.3 % of area (threshold 2)
+- ⚠ 5.80 s · foldover · pinky_R.default = 3.3 % of area (threshold 2)
+- ⚠ 2.80 s · foldover · pinky_L.default = 2.5 % of area (threshold 2)
+- ⚠ 4.60–4.87 s (9 samples, worst 4.60 s) · foldover · pinky_L.default = 2.5 % of area (threshold 2)
+- ⚠ 5.80 s · foldover · pinky_L.default = 2.5 % of area (threshold 2)
+- ⚠ 1.60 s · foldover · index_L.default = 2.1 % of area (threshold 2)
+- ⚠ 4.53–4.87 s (11 samples, worst 4.53 s) · foldover · index_L.default = 2.1 % of area (threshold 2)
+- ⚠ 5.80 s · foldover · index_L.default = 2.1 % of area (threshold 2)
+- ⚠ 2.40 s · foldover · ring_R.default = 2 % of area (threshold 2)
+- ⚠ 4.50–4.87 s (12 samples, worst 4.50 s) · foldover · ring_R.default = 2 % of area (threshold 2)
+- ⚠ 5.80 s · foldover · ring_R.default = 2 % of area (threshold 2)
+- ✓ 2.80 s · order · draw order = 13 overlapping pairs swap (threshold 6) — exception: authored demo: the clip keys the right fingers behind the palm at 2.0 s and back at 2.8 s (finger_tests_2d shows keyed layer order)
+- ℹ 2.00 s · order · draw order = 13 overlapping pairs swap (threshold 6) — clip start: its depth order replaces the setup order as the clip begins
 
 ### contact_detonator_2d
 
-- ⚠ 0.00–3.00 s (91 samples, worst 1.10 s) · foldover · thumb_R.default = 9.45 % of area (threshold 2)
+- ⚠ 1.07–2.00 s (29 samples, worst 1.10 s) · foldover · thumb_R.default = 2.85 % of area (threshold 2)
 - ℹ 0.00–3.00 s (91 samples, worst 0.00 s) · foldover · under_arm_R.default = 4.37 % of area (threshold 2) — hidden underlap layer (drawn beneath the armour piece it backs)
 

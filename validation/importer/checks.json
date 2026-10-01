@@ -1,5 +1,5 @@
 {
- "date": "2026-10-01T16:00:38.257Z",
+ "date": "2026-10-01T17:05:32.086Z",
  "passed": 15,
  "failed": 0,
  "results": [
@@ -57,7 +57,7 @@
     "reopenVsEditorPx": 0,
     "runtimeVsEditorPx": 0,
     "sprite": {
-     "meanAlphaDiff": 0.736,
+     "meanAlphaDiff": 0.751,
      "t": 2
     }
    }
@@ -156,7 +156,7 @@
    "pass": true,
    "details": {
     "keyed": true,
-    "paintedMovedPx": 24.65
+    "paintedMovedPx": 24.64
    }
   },
   {
@@ -191,14 +191,14 @@
   },
   {
    "id": "pack-placement-roundtrip",
-   "title": "Template-pack layers.json placement equals the piece footprint for all 206 pieces (centre, rotation, displayed scale incl. props and hand captures)",
+   "title": "Template-pack layers.json placement equals the piece footprint for all 213 pieces (centre, rotation, displayed scale incl. props and hand captures)",
    "pass": true,
    "details": {
-    "pieces": 206,
+    "pieces": 213,
     "worst": {
-     "px": 0.0032438669456441548,
+     "px": 0.003456251955445141,
      "deg": 0.0004999999999881766,
-     "scale": 4.440892098500626e-16
+     "scale": 2.220446049250313e-16
     }
    }
   },
@@ -208,11 +208,11 @@
    "pass": true,
    "details": {
     "pack": {
-     "pieces": 206,
+     "pieces": 213,
      "worst": {
-      "px": 0.0032438669456441548,
+      "px": 0.003456251955445141,
       "deg": 0.0004999999999881766,
-      "scale": 4.440892098500626e-16
+      "scale": 2.220446049250313e-16
      }
     },
     "mode": "proportion",
@@ -255,10 +255,10 @@
      ]
     },
     "hand_L.hover": {
-     "bboxPx": 2.37,
+     "bboxPx": 0.45,
      "rotation": [
-      131.38,
-      131.38
+      133.29,
+      133.3
      ]
     }
    }

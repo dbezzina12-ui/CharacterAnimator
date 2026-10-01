@@ -1,0 +1,99 @@
+{
+ "starter": [
+  {
+   "joint": "neck",
+   "gapPct": 0.1,
+   "fullCharacterGapPct": 0.1,
+   "silhouetteLossPct": 0.3,
+   "flagged": false
+  },
+  {
+   "joint": "shoulder_L",
+   "gapPct": 0.2,
+   "fullCharacterGapPct": 0.2,
+   "silhouetteLossPct": 1.9,
+   "flagged": false
+  },
+  {
+   "joint": "shoulder_R",
+   "gapPct": 1,
+   "fullCharacterGapPct": 0.9,
+   "silhouetteLossPct": 7.6,
+   "flagged": false
+  },
+  {
+   "joint": "elbow_L",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "elbow_R",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "wrist_L",
+   "gapPct": 0.8,
+   "fullCharacterGapPct": 0.8,
+   "silhouetteLossPct": 5.5,
+   "flagged": false
+  },
+  {
+   "joint": "wrist_R",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "hip_L",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "hip_R",
+   "gapPct": 0.1,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 2.5,
+   "flagged": false
+  },
+  {
+   "joint": "knee_L",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "knee_R",
+   "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
+   "flagged": false
+  },
+  {
+   "joint": "ankle_L",
+   "gapPct": 1.2,
+   "fullCharacterGapPct": 1.2,
+   "silhouetteLossPct": 6.9,
+   "flagged": false
+  },
+  {
+   "joint": "ankle_R",
+   "gapPct": 1.4,
+   "fullCharacterGapPct": 1.4,
+   "silhouetteLossPct": 3.2,
+   "flagged": false
+  }
+ ],
+ "withoutUnderlap": [
+  "wrist_R 5.8%",
+  "ankle_R 3.6%"
+ ]
+}

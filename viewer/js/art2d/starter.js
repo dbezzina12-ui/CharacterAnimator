@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { SCHEMA, Rig, affCompose, affInv, affMul, affDecompose, wrapDeg } from './core.js';
 import { ArtCamera, Bridge, reduceKeys, axisOf } from './bridge3d.js';
 import { Occlusion, solveOrder } from './occlusion.js';
-import { gridMesh, bleedEdges, pruneWeights } from './mesh.js';
+import { gridMesh, bleedEdges, pruneWeights, smoothWeights } from './mesh.js';
 import { computeInverseBinds } from './schema.js';
 import { PROP_AXES, SUPPORT_CLIPS } from './specs.js';
 import { suggestHandSets } from './handviews.js';
@@ -306,22 +306,31 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
   }
 
   /** Attachment from a rendered layer; `frame` = 2D world transform of `bone` the art is registered to. */
-  async function addAttachment({ slot, name, bone, layer, weighted = null, frame = null, source, markers = null, mesh = null }) {
+  async function addAttachment({ slot, name, bone, layer, weighted = null, frame = null, source, markers = null, mesh = null, viewDrawing = false, fine = false }) {
     const id = `${slot}.${name}`, imgId = `${slot}__${name}`;
     await writeImage(imgId, layer.img);
     const w = layer.img.width, h = layer.img.height;
-    const cell = Math.max(14, Math.min(48, Math.round(Math.max(w, h) / 9)));
+    // fingers bend a lot over a short length: a denser mesh, so each knuckle has several blend rows
+    const cell = fine ? Math.max(5, Math.round(Math.max(w, h) / 16)) : Math.max(14, Math.min(48, Math.round(Math.max(w, h) / 9)));
     const alpha = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) alpha[i] = layer.img.data[i * 4 + 3];
     const m = mesh || gridMesh(alpha, w, h, { cell, threshold: 6, margin: 2 });
     const pivot = [w / 2, h / 2], pw = [layer.x0 + w / 2 / S, layer.yTop - h / 2 / S];
-    const F = frame || bindW(bone);
+    // a pose capture is drawn for that view: registered without the bone's foreshortening at the capture
+    // moment and played with `followScale: false`, so it never stretches when the bone's length changes
+    let F = frame || bindW(bone);
+    if (viewDrawing && frame) {
+      const B = bindW(bone), d = affDecompose(frame);
+      F = affCompose(d.x, d.y, d.rotation, Math.sign(d.scaleX || 1) * Math.hypot(B[0], B[1]), Math.sign(d.scaleY || 1) * Math.hypot(B[2], B[3]));
+    }
     const T = affDecompose(affMul(affInv(F), affCompose(pw[0], pw[1], 0, 1, 1)));
-    const weights = weighted ? weighted(m.vertices, cell) : null;
+    let weights = weighted ? weighted(m.vertices, cell) : null;
+    // widen the blend band at each knuckle so the inside of a bent finger compresses instead of folding over
+    if (weights && fine) weights = smoothWeights(weights, m.triangles, { iterations: 3, amount: 0.5 });
     attachments[id] = { id, name: `${slot} (${name})`, slot, type: weights ? 'mesh' : 'region', bone, image: imgId, imageScale: 1 / S,
       pivot, transform: { x: r4(T.x), y: r4(T.y), rotation: r4(T.rotation), scaleX: r4(T.scaleX), scaleY: r4(T.scaleY), mirror: false },
       registration: { sourceRect: [layer.rect.x0, layer.rect.y1, layer.rect.w, layer.rect.h], trim: [layer.rect.tx, layer.rect.ty], scale: S },
       vertices: m.vertices, triangles: m.triangles, weights, visible: true, opacity: 1, tint: [1, 1, 1], blend: 'normal',
-      view: spec.view.id, markers, source };
+      view: spec.view.id, markers, source, ...(viewDrawing ? { followScale: false } : {}) };
     return id;
   }
 
@@ -337,7 +346,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       const layer = renderLayer(list, sl);
       if (!layer) { log(`slot ${sl.id}: nothing visible, skipped`); continue; }
       const weighted = sl.kind === 'skinned' ? (verts, cell) => sampleWeights(list, sl, layer, verts, cell) : null;
-      const id = await addAttachment({ slot: sl.id, name: 'default', bone: sl.bone, layer, weighted,
+      const id = await addAttachment({ slot: sl.id, name: 'default', bone: sl.bone, layer, weighted, fine: !!weighted && /^(thumb|index|middle|ring|pinky)_/.test(sl.id),
         source: { kind: 'render3d', character: spec.source3d, pose: 'bind', note: 'Starter art rendered from the 3D model at the art camera (not hand-painted).' } });
       slots.push({ id: sl.id, name: sl.id.replace(/_/g, ' '), bone: sl.bone, attachment: id, group: sl.group, color: [1, 1, 1, 1] });
       slotGeometry.set(sl.id, { sl, list });
@@ -444,7 +453,8 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       ch.root.updateMatrixWorld(true);
       const a1 = bridge.sampleWorld()[i1].rot; b1.quaternion.copy(q0); ch.root.updateMatrixWorld(true);
       const sign = wrapDeg(a1 - a0) >= 0 ? 1 : -1;
-      fingers[f] = { bones: [1, 2, 3].map((k) => `${f}_0${k}_${s}`), sign, maxDeg: f === 'thumb' ? [20, 35, 45] : [70, 90, 60], curlShare: f === 'thumb' ? 0.6 : 1 };
+      fingers[f] = { bones: [1, 2, 3].map((k) => `${f}_0${k}_${s}`), sign, maxDeg: f === 'thumb' ? [20, 30, 35] : [35, 45, 30],
+        foreshorten: f === 'thumb' ? [1, 0.85, 0.8] : [0.6, 0.5, 0.6], curlShare: f === 'thumb' ? 0.6 : 1 };
     }
     hands[s] = { fingers, note: 'curl 0..1 (whole hand) plus per-finger -1..1; sign/max angles are this character\'s fitting' };
   }
@@ -505,7 +515,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         for (const g of cap.groups || ['hand', ...FINGERS]) {
           const sl = spec.slots.find((x) => x.id === `${g}_${s}`); if (!sl) continue;
           const layer = renderLayer(select(sl), sl); if (!layer) continue;
-          const id = await addAttachment({ slot: sl.id, name: cap.name, bone: hb, layer, frame,
+          const id = await addAttachment({ slot: sl.id, name: cap.name, bone: hb, layer, frame, viewDrawing: true,
             source: { kind: 'render3d', character: spec.source3d, pose: cap.clip ? `${cap.clip} @ ${cap.t}s` : `bind + finger curl ${cap.curl}`,
               note: 'Pose-specific hand art rendered from the 3D model; rigid on the hand bone.' } });
           for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.clipRanges?.[c] || cap.range || null });
@@ -517,7 +527,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         const sl = spec.slots.find((x) => x.id === slotId); if (!sl) continue;
         const bs = samples[bridge.index.get(sl.bone)]; if (!bs) continue;
         const layer = renderLayer(select(sl), sl); if (!layer) continue;
-        const id = await addAttachment({ slot: sl.id, name: cap.name, bone: sl.bone, layer, frame: affCompose(bs.pos[0], bs.pos[1], bs.rot, bs.sx, bs.sy),
+        const id = await addAttachment({ slot: sl.id, name: cap.name, bone: sl.bone, layer, frame: affCompose(bs.pos[0], bs.pos[1], bs.rot, bs.sx, bs.sy), viewDrawing: true,
           source: { kind: 'render3d', character: spec.source3d, pose: `${cap.clip} @ ${cap.t}s`, note: 'Pose-specific armour art rendered from the 3D model at this pose; rigid on its bone.' } });
         for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.clipRanges?.[c] || cap.range || null });
       }
@@ -697,6 +707,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       const def = slots.find((x) => x.id === slot)?.attachment ?? null, whole = list.find((c) => !c.range);
       if (whole) { tracks.slots[slot] = { attachment: { t: [0], v: [whole.attachment] } }; continue; }
       const iv = list.flatMap((c) => (Array.isArray(c.range[0]) ? c.range : [c.range]).map(([a, b]) => [a, b, c.attachment])).sort((x, y) => x[0] - y[0]);
+      for (let k = 1; k < iv.length; k++) if (iv[k][0] < iv[k - 1][1] - 1e-6) throw new Error(`capture ranges overlap on ${name}/${slot}: ${iv[k - 1][2]} [${iv[k - 1][0]}, ${iv[k - 1][1]}] and ${iv[k][2]} [${iv[k][0]}, ${iv[k][1]}]`);
       const t = [0], v = [def];
       for (const [a, b, att] of iv) {
         if (Math.abs(t[t.length - 1] - a) < 1e-6) v[v.length - 1] = att; else { t.push(a); v.push(att); }

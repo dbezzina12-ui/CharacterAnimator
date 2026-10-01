@@ -1,0 +1,91 @@
+{
+ "date": "2026-10-01T16:54:35.807Z",
+ "passed": 6,
+ "failed": 0,
+ "results": [
+  {
+   "id": "saved-project",
+   "title": "Painted project authored in the editor (helmet finished + fixture cape provisional) and saved with the Save button",
+   "pass": true,
+   "details": {
+    "replace": {
+     "helmet.default": "helmet.default@painted",
+     "mantle.default": "mantle.default@painted"
+    },
+    "status": {
+     "helmet.default": "finished",
+     "mantle.default": "provisional"
+    }
+   }
+  },
+  {
+   "id": "rebuild-rebased",
+   "title": "Rebuilt from the saved ZIP onto the current starter: same pieces, statuses kept, each piece at its saved placement (setup bind ≤ 0.01 px), all deliverables written",
+   "pass": true,
+   "details": {
+    "builtFrom": {
+     "saved": "validation/painted-rebuild/_tmp/saved.character2d.zip",
+     "placement": {
+      "helmet.default": 0,
+      "mantle.default": 0
+     },
+     "mode": "rebased",
+     "pieces": [
+      "helmet.default",
+      "mantle.default"
+     ],
+     "savedStatus": {
+      "helmet.default": "finished",
+      "mantle.default": "provisional"
+     }
+    },
+    "finished": [
+     "helmet.default"
+    ],
+    "provisional": [
+     "mantle.default"
+    ],
+    "missing": 211,
+    "log": "rebuilding from saved project validation/painted-rebuild/_tmp/saved.character2d.zip (rebased onto the current starter)"
+   }
+  },
+  {
+   "id": "rebuild-outputs",
+   "title": "Rebuilt outputs carry the painted cape animation (deformFrom in project and runtime package), the painted skin opens by default, and ART-REQUESTS lists the provisional cape",
+   "pass": true,
+   "details": {
+    "deformFrom": "mantle.default",
+    "runtimeDefaultSkin": "painted",
+    "artRequestsStatus": [
+     "  finished: 1 (helmet.default)",
+     "  provisional: 1",
+     "  missing: 211 pieces — they currently show the starter (3D-captured) art"
+    ]
+   }
+  },
+  {
+   "id": "rebuild-stable",
+   "title": "Rebuilding again — as saved (--no-rebase) and rebased a second time — reproduces the same painted pieces exactly",
+   "pass": true,
+   "details": {
+    "asSaved": "as saved",
+    "identicalAsSaved": true,
+    "identicalRebasedTwice": true
+   }
+  },
+  {
+   "id": "rebuild-refuses-loss",
+   "title": "A saved painted piece without a fit template stops the rebuild with a message (never silently dropped)",
+   "pass": true,
+   "details": {
+    "message": "page.evaluate: Error: saved painted skin cannot be carried over: missing images —; pieces without a fit template mantle.default"
+   }
+  },
+  {
+   "id": "no-errors",
+   "title": "No page errors",
+   "pass": true,
+   "details": []
+  }
+ ]
+}

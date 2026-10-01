@@ -1,7 +1,11 @@
-// Painted knight deliverable: the starter knight + a separate "painted" skin installed through the fitting
-// workflow with the ONLY painted art that exists (the kit's painted helmet). Every other piece is recorded as
-// missing and falls back to the starter art; nothing is restyled or invented.
-//   node scripts/build-painted-knight.mjs [--out=deliverables/painted-knight]
+// Painted knight deliverables, rebuilt from a SAVED painted project (the editable ZIP is the source of truth):
+//   node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--no-rebase] [--bootstrap] [--out=deliverables/painted-knight]
+// --from (default: <out>/aureate-knight-painted.character2d.zip when it exists): the saved project's painted skin —
+//   its painted PNGs, fit template, statuses and notes — is re-applied to the CURRENT starter project
+//   (characters2d/aureate_knight) through the fitting workflow, so starter improvements (rig, clips, captures)
+//   carry over without re-painting. --no-rebase rebuilds the outputs from the saved project exactly as saved.
+// --bootstrap (or no saved project): start a painted skin from the kit's painted helmet (the only painted art).
+// Pieces without painted art stay "missing" and fall back to the starter art; nothing is restyled or invented.
 // Writes: aureate-knight-painted.character2d.zip (editable), aureate-knight-painted.runtime.zip (runtime only),
 //         Aureate-Knight-2D-Player.html (single-file offline player), paint-template-pack.zip,
 //         ART-REQUESTS.txt, skin-status.json, previews.
@@ -14,6 +18,9 @@ import { startServer, CHROME, CHROME_ARGS } from './serve.mjs';
 const arg = (k, d = null) => { const a = process.argv.find((x) => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const OUT = arg('out', 'deliverables/painted-knight');
 const HELMET = 'validation/workflow/art/painted-helmet.png';
+const SAVED = process.argv.includes('--bootstrap') ? null : arg('from', fs.existsSync(path.join(OUT, 'aureate-knight-painted.character2d.zip')) ? path.join(OUT, 'aureate-knight-painted.character2d.zip') : null);
+const REBASE = !process.argv.includes('--no-rebase');
+console.log(SAVED ? `rebuilding from saved project ${SAVED}${REBASE ? ' (rebased onto the current starter)' : ' (as saved)'}` : 'bootstrapping the painted skin from the kit helmet');
 fs.mkdirSync(OUT, { recursive: true });
 const server = await startServer(0);
 const browser = await chromium.launch({ executablePath: CHROME, headless: true, args: [...CHROME_ARGS, '--no-sandbox', '--disable-dev-shm-usage'] });
@@ -23,23 +30,51 @@ await page.goto(`http://127.0.0.1:${server.address().port}/viewer/knight.html?ar
 await page.waitForFunction(() => window.art2d?.editor?.ready, null, { timeout: 120000 });
 await page.evaluate(() => art2d.editor.ready);
 
-const res = await page.evaluate(async (helmetB64) => {
+const res = await page.evaluate(async ({ helmetB64, savedB64, rebase }) => {
   const io = await import('./js/art2d/project-io.js'), zip = await import('./js/art2d/zip.js'), ex = await import('./js/art2d/exporters.js'), hv = await import('./js/art2d/handviews.js');
+  const { Rig } = await import('./js/art2d/core.js');
   const ed = art2d.editor, P = () => ed.project, u8 = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
   const b64 = (z) => { let s = ''; for (let i = 0; i < z.length; i += 0x8000) s += String.fromCharCode.apply(null, z.subarray(i, i + 0x8000)); return btoa(s); };
-  // 1) the template pack defines canvas coordinates; fit ONLY the helmet (real painted art) into skin "painted"
-  const pack0 = await art2d.paintPack('painted');
-  const L0 = JSON.parse(zip.textOf(pack0.files.find((f) => f.path === 'layers.json').data));
-  const helmetLayer = L0.layers.find((l) => l.target === 'helmet.default');
-  const files = new Map([[helmetLayer.file, u8(helmetB64)], ['layers.json', new TextEncoder().encode(JSON.stringify({ ...L0, layers: [helmetLayer] }))]]);
-  const sess = await art2d.startFit(files, { skin: 'painted' });
-  const mapped = sess.layers.map((l) => `${l.file} → ${l.target} (${l.mapping.status})`);
-  await art2d.acceptFit();
-  const sk = P().skins.find((s) => s.id === 'painted');
-  sk.note = 'Painted skin. Finished: the painted helmet from the upgrade kit. Every other piece is missing painted art and falls back to the starter (3D-captured) art — see ART-REQUESTS.txt.';
+  const SKIN = 'painted', source = {}; let mapped = [];
+  if (savedB64 && !rebase) {
+    // the saved project exactly as saved
+    await art2d.openZip(u8(savedB64)); await ed.ready;
+    source.mode = 'as saved';
+  } else if (savedB64) {
+    // rebase: re-apply the saved painted skin (its PNGs + fit template) onto the current starter project
+    const { project: S, store: SS } = await io.loadProjectZip(u8(savedB64));
+    const tpl = S.fitting?.templates?.[SKIN], sk = (S.skins || []).find((x) => x.id === SKIN);
+    if (!tpl || !sk) throw new Error('saved project has no painted skin with a fit template');
+    const files = new Map(), missingFiles = [];
+    for (const L of tpl.layers) { const a = S.attachments[sk.replace?.[L.target]]; const bytes = a && SS.bytes(S.images[a.image]?.path); if (bytes) files.set(L.file, bytes); else missingFiles.push(L.file); }
+    const notInTemplate = Object.keys(sk.replace || {}).filter((t) => !tpl.layers.some((l) => l.target === t));
+    if (missingFiles.length || notInTemplate.length) throw new Error(`saved painted skin cannot be carried over: missing images ${missingFiles.join(', ') || '—'}; pieces without a fit template ${notInTemplate.join(', ') || '—'}`);
+    const sess = await art2d.startFit(files, { skin: SKIN, template: tpl });
+    mapped = sess.layers.map((l) => `${l.file} → ${l.target} (${l.mapping.status})`);
+    await art2d.acceptFit();
+    const nsk = P().skins.find((x) => x.id === SKIN);
+    for (const [t, st] of Object.entries(sk.status || {})) if (nsk.replace[t]) nsk.status[t] = st;   // finished / provisional as saved
+    // every carried piece must sit where it sat in the saved project (setup pose, world bind positions)
+    const rs = new Rig(S), rn = new Rig(P()); source.placement = {};
+    for (const t of Object.keys(sk.replace)) { const a = rs.attachments.get(sk.replace[t]), b = rn.attachments.get(nsk.replace[t]); let m = a.bind.length === b.bind.length ? 0 : Infinity; for (let i = 0; i < a.bind.length && m < Infinity; i++) m = Math.max(m, Math.abs(a.bind[i] - b.bind[i])); source.placement[t] = +m.toFixed(4); }
+    source.mode = 'rebased'; source.pieces = Object.keys(sk.replace); source.savedStatus = sk.status;
+  } else {
+    // bootstrap: the template pack defines canvas coordinates; fit ONLY the helmet (real painted art)
+    const pack0 = await art2d.paintPack(SKIN);
+    const L0 = JSON.parse(zip.textOf(pack0.files.find((f) => f.path === 'layers.json').data));
+    const helmetLayer = L0.layers.find((l) => l.target === 'helmet.default');
+    const files = new Map([[helmetLayer.file, u8(helmetB64)], ['layers.json', new TextEncoder().encode(JSON.stringify({ ...L0, layers: [helmetLayer] }))]]);
+    const sess = await art2d.startFit(files, { skin: SKIN });
+    mapped = sess.layers.map((l) => `${l.file} → ${l.target} (${l.mapping.status})`);
+    await art2d.acceptFit();
+    source.mode = 'bootstrap';
+  }
+  const sk = P().skins.find((s) => s.id === SKIN);
+  const finished = Object.entries(sk.status || {}).filter(([t, v]) => sk.replace[t] && v === 'finished').map(([t]) => t), provisional = Object.entries(sk.status || {}).filter(([t, v]) => sk.replace[t] && v === 'provisional').map(([t]) => t);
+  sk.note = `Painted skin. Finished: ${finished.join(', ') || 'none'}. Provisional: ${provisional.join(', ') || 'none'}. Every other piece has no painted art yet and falls back to the starter (3D-captured) art — see ART-REQUESTS.txt.`;
   const def = P().skins.find((s) => s.id === 'default'); if (def) def.note = 'Starter skin: art captured from the 3D knight through the fixed art camera (not hand-painted).';
-  P().defaultSkin = 'painted';
-  art2d.setSkin('painted');
+  P().defaultSkin = SKIN;
+  art2d.setSkin(SKIN);
   // 2) template pack after the fit (helmet = finished, the rest = missing) + joint coverage
   const pack = await art2d.paintPack('painted');
   const missingHands = hv.missingHandArt(P(), 'painted');
@@ -47,12 +82,12 @@ const res = await page.evaluate(async (helmetB64) => {
   const proj = io.saveProjectZip(P(), ed.store);
   const rt = await ex.exportRuntimePackage(P(), ed.store, { name: 'aureate_knight_painted' });
   // previews: setup pose, starter vs painted
-  const r = await ex.offscreenRenderer(P(), ed.store), { Rig } = await import('./js/art2d/core.js');
+  const r = await ex.offscreenRenderer(P(), ed.store);
   const shot = async (skin) => { const rig = new Rig(P()); rig.setSkin(skin); const img = ex.renderPose(r, rig, rig.evaluate('idle', 1), [-420, -20, 420, 1080], 0.5, { background: [0.11, 0.12, 0.15, 1] }); const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').putImageData(img, 0, 0); return (await (await new Promise((res) => c.toBlob(res, 'image/png'))).arrayBuffer()); };
   const prevStarter = new Uint8Array(await shot('default')), prevPainted = new Uint8Array(await shot('painted'));
-  return { mapped, status: sk.status, replace: sk.replace, manifest: pack.manifest, missingHands, valid: art2d.validate(), history: art2d.history().slice(-2),
+  return { mapped, source, status: sk.status, replace: sk.replace, manifest: pack.manifest, missingHands, valid: art2d.validate(), history: art2d.history().slice(-2),
     proj: b64(proj), runtime: b64(rt.zip), pack: b64(pack.zip), prevStarter: b64(prevStarter), prevPainted: b64(prevPainted) };
-}, fs.readFileSync(HELMET).toString('base64'));
+}, { helmetB64: fs.readFileSync(HELMET).toString('base64'), savedB64: SAVED ? fs.readFileSync(SAVED).toString('base64') : null, rebase: REBASE });
 await browser.close(); server.close();
 if (errors.length || res.valid.errors.length) { console.log('errors', errors, res.valid.errors); process.exit(1); }
 
@@ -73,7 +108,7 @@ fs.rmSync(rtDir, { recursive: true, force: true });
 
 // skin status + art requests (from the template manifest: exact sizes, pivots, joints, guides)
 const m = res.manifest, pieces = m.pieces;
-const status = { skin: 'painted', finished: pieces.filter((p) => p.status === 'finished').map((p) => p.attachment), provisional: pieces.filter((p) => p.status === 'provisional').map((p) => p.attachment),
+const status = { skin: 'painted', builtFrom: { saved: SAVED, ...res.source }, finished: pieces.filter((p) => p.status === 'finished').map((p) => p.attachment), provisional: pieces.filter((p) => p.status === 'provisional').map((p) => p.attachment),
   missing: pieces.filter((p) => p.status === 'missing').map((p) => p.attachment), missingHandSets: res.missingHands.map((h) => `${h.side} ${h.set}`), coverage: m.coverage, fitMapping: res.mapped };
 fs.writeFileSync(path.join(OUT, 'skin-status.json'), JSON.stringify(status, null, 1));
 const HERO = ['idle', 'hover_sword_vigil', 'sword_2h_idle', 'sword_2h_slash', 'knight_salute'];
@@ -107,6 +142,9 @@ const txt = [`ART REQUESTS — Aureate Knight, painted skin`, `Generated by scri
     [3, 'PRIORITY 3 — pose-specific pieces and hand variants used only by other clips'], [4, 'PRIORITY 4 — other props']]
     .flatMap(([k, title]) => [title, `  (${groups[k].length} pieces)`, ...groups[k].map(line), '']),
   'HAND VIEWS STILL MISSING IN THE PAINTED SKIN', ...res.missingHands.map((h) => `  hand_${h.side} ${h.set} (${h.view}/${h.pose}): ${h.missing.join(', ')}`), '',
-  'JOINT COVERAGE (bend test on the painted skin; flagged = a gap opens at the bend)', ...(m.coverage || []).map((c) => `  ${c.joint}: gap ${c.gapPct}%${c.flagged ? '  ← FLAGGED' : ''}`), ''].join('\n');
+  'JOINT COVERAGE (bend test on the painted skin at the joint\'s extreme test angle; gap = a crack that opens BETWEEN the',
+  'pieces, flagged above 3 %; silhouette change where a piece rotates away is listed separately and is not a gap)',
+  ...(m.coverage || []).map((c) => `  ${c.joint}: crack ${c.gapPct}% (whole character ${c.fullCharacterGapPct}%), silhouette change ${c.silhouetteLossPct}%${c.gapPct || c.silhouetteLossPct ? ` at ${c.worstAngle}°` : ' at every test angle'}${c.flagged ? '  ← FLAGGED: ' + c.hint : ''}`),
+  '  Every painted piece that bends still needs hidden material under its neighbour at each joint: follow pieces/<id>/guide-underlap.png.', ''].join('\n');
 fs.writeFileSync(path.join(OUT, 'ART-REQUESTS.txt'), txt);
 console.log(`painted skin: ${status.finished.length} finished, ${status.missing.length} missing; ${errors.length} page errors; fit: ${res.mapped.join('; ')}`);

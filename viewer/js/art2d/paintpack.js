@@ -1,7 +1,9 @@
 // Paint-template pack + joint-coverage analysis for painting replacement skins.
 //  * jointCoverage(): bends each joint (neck, shoulders, elbows, wrists, hips, knees, ankles) and measures
-//    how much of the joint's body region opens up (lost coverage) between the neighbouring pieces. A gap
-//    means a piece needs hidden material painted beneath its neighbour.
+//    cracks that open BETWEEN the neighbouring pieces (uncovered area enclosed by them). A crack means a
+//    piece needs hidden material painted beneath its neighbour. Area lost at the outer silhouette because
+//    a piece rotated away is reported as silhouetteLoss, not as a gap; fullCharacterGapPct is the crack
+//    with every piece drawn (what the player sees).
 //  * paintTemplatePack(): per-piece canvases with SEPARATE guide layers (silhouette, joints/pivot/markers,
 //    underlap zones), a layers.json the fitting workflow re-imports directly, a clean preview without
 //    guides and a manifest of what exists / is still missing.
@@ -27,6 +29,15 @@ function jointPieces(P, B) {
   return out;
 }
 
+/** Morphological closing (dilate then erode, disk radius k) of an N×N 0/1 mask. */
+function closeMask(a, N, k) {
+  const pass = (src, want) => { const o = new Uint8Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let hit = !want;
+      for (let dy = -k; dy <= k && hit !== want; dy++) for (let dx = -k; dx <= k; dx++) { if (dx * dx + dy * dy > k * k) continue; const X = x + dx, Y = y + dy, v = X >= 0 && Y >= 0 && X < N && Y < N ? src[Y * N + X] : 0; if (!!v === want) { hit = want; break; } }
+      o[y * N + x] = hit ? 1 : 0; }
+    return o; };
+  return pass(pass(a, true), false);
+}
 export async function jointCoverage(project, store, { skin = 'default', scale = 0.5, threshold = 0.03, renderer = null } = {}) {
   const P = project, rig = new Rig(P); rig.setSkin(skin);
   const r = renderer || await offscreenRenderer(P, store), out = [];
@@ -42,19 +53,29 @@ export async function jointCoverage(project, store, { skin = 'default', scale = 
     const at = (m, x, y) => { const px = Math.round((x - rect[0]) * scale), py = Math.round((rect[3] - y) * scale); return px >= 0 && py >= 0 && px < N && py < N ? m[py * N + px] : 0; };
     let left = 0, right = 0; while (left < R - 2 && at(M0, J[0] + nrm[0] * left, J[1] + nrm[1] * left)) left += 1; while (right < R - 2 && at(M0, J[0] - nrm[0] * right, J[1] - nrm[1] * right)) right += 1;
     const rad = Math.max(4, Math.min(left, right) * 0.85);
-    let worst = { gap: 0, angle: 0 };
+    // a GAP is uncovered area ENCLOSED by the posed pieces (filled by a morphological closing of the posed
+    // mask) — a crack between the pieces. Coverage that disappears at the outer silhouette because the child
+    // piece rotated away is reported separately (silhouetteLoss) and is not a gap.
+    const k = Math.max(2, Math.round(8 * scale)), allSlots = new Set(rig.slots.map((x) => x.id));
+    const F0 = mask(renderPose(r, rig, rig.evaluate(null, 0), rect, scale, { only: allSlots }));
+    let worst = { gap: 0, angle: 0, loss: 0, full: 0 };
     for (const ang of angles) {
-      const M1 = mask(renderPose(r, rig, rig.evaluate(null, 0, { override: { [B]: { rotate: ang } } }), rect, scale, { only }));
-      let inDisk = 0, lost = 0;
+      const pose = rig.evaluate(null, 0, { override: { [B]: { rotate: ang } } });
+      const M1 = mask(renderPose(r, rig, pose, rect, scale, { only })), F1 = mask(renderPose(r, rig, pose, rect, scale, { only: allSlots }));
+      const C1 = closeMask(M1, N, k), CF = closeMask(F1, N, k);
+      let inDisk = 0, lost = 0, crack = 0, inFull = 0, crackFull = 0;
       for (let py = 0; py < N; py++) for (let px = 0; px < N; px++) {
-        const x = rect[0] + px / scale, y = rect[3] - py / scale; if (Math.hypot(x - J[0], y - J[1]) > rad) continue;
-        if (!M0[py * N + px]) continue; inDisk++; if (!M1[py * N + px]) lost++;
+        const x = rect[0] + px / scale, y = rect[3] - py / scale, i = py * N + px; if (Math.hypot(x - J[0], y - J[1]) > rad) continue;
+        if (M0[i]) { inDisk++; if (!M1[i]) { lost++; if (C1[i]) crack++; } }
+        if (F0[i]) { inFull++; if (!F1[i] && CF[i]) crackFull++; }
       }
-      const gap = inDisk ? lost / inDisk : 0; if (gap > worst.gap) worst = { gap, angle: ang };
+      const gap = inDisk ? crack / inDisk : 0;
+      if (gap > worst.gap || (!worst.gap && lost / (inDisk || 1) > worst.loss)) worst = { gap, angle: ang, loss: inDisk ? lost / inDisk : 0, full: inFull ? crackFull / inFull : 0 };
     }
     const flagged = worst.gap > threshold;
-    out.push({ joint: jointName(B), bone: B, worstAngle: worst.angle, gapPct: +(worst.gap * 100).toFixed(1), thresholdPct: threshold * 100, radiusPx: +rad.toFixed(1), pieces, flagged,
-      hint: flagged ? `at ${worst.angle}° the joint opens ${(worst.gap * 100).toFixed(1)}% of its area: paint hidden material on ${pieces.child.join('/') || '(child piece)'} extending under ${pieces.parent.join('/') || '(parent piece)'} (or extend the parent piece under the child)` : 'covered' });
+    out.push({ joint: jointName(B), bone: B, worstAngle: worst.angle, gapPct: +(worst.gap * 100).toFixed(1), fullCharacterGapPct: +(worst.full * 100).toFixed(1),
+      silhouetteLossPct: +(worst.loss * 100).toFixed(1), thresholdPct: threshold * 100, radiusPx: +rad.toFixed(1), pieces, flagged,
+      hint: flagged ? `at ${worst.angle}° a crack opens over ${(worst.gap * 100).toFixed(1)}% of the joint between ${pieces.child.join('/') || '(child piece)'} and ${pieces.parent.join('/') || '(parent piece)'}: paint hidden material on the child extending under the parent (or extend the parent under the child)` : 'covered' });
   }
   return out;
 }

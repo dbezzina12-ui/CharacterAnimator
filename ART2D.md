@@ -172,7 +172,9 @@ with a new name, or a fitted skin piece) records `deformFrom: <replaced attachme
 deformation resampled onto its own mesh, plus any keys of its own — so a painted cape keeps the cape flutter,
 and corrections authored later on the starter cape still apply. Keys that do not match their mesh (an old,
 already-broken file) are skipped and reported by the core, listed by validation, and refused by sprite and
-runtime export; they never produce invalid coordinates.
+runtime export; they never produce invalid coordinates. Both keys of the playing segment are validated (vertex
+count, finite offsets) *before* interpolating, so a valid key next to a shorter one only skips that segment
+(`pose.deformIssues` names the key) and the track's valid segments keep playing.
 
 Regression suite: `node scripts/check-2d-importer.mjs` → `validation/importer/REPORT.md`.
 
@@ -205,7 +207,9 @@ import folder. The starter skin is never overwritten and stays selectable (skin 
 **Paint-template pack** (button in the Fit artwork section): `pieces/<attachment>/current.png` plus separate guide
 layers (`guide-silhouette`, `guide-joints` with pivot/joint/marker IDs, `guide-underlap`), `layers.json`
 with canvas coordinates, `preview-clean.png`, `preview-joints.png` and `manifest.json` (exact canvas size,
-pivot, joints, markers, mesh type, finished/missing per piece, joint-coverage bend test).
+pivot, joints, markers, mesh type, finished/missing per piece, joint-coverage bend test). The bend test reports
+the crack that opens *between* the pieces at a joint (uncovered area enclosed by them) at the extreme test
+angles, flagged above 3 %, separately from silhouette change where a piece simply rotates away.
 
 ## Hand view sets
 
@@ -240,9 +244,24 @@ intentional one is excepted **with a reason** (`visualQA.exceptions`), and the p
 validity and missing art. For the knight both live in `characters2d/aureate_knight/visual-qa.json` and
 survive rebuilds. Coordinates being finite is never treated as the pose looking right.
 
+## Painted deliverables from a saved project
+
+`node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--no-rebase]` rebuilds the runtime
+package, offline player, template pack, ART-REQUESTS and skin status from the **saved painted project**: its
+painted PNGs, fit template, statuses and notes are re-applied to the current starter project through the fitting
+workflow (so rig/animation improvements carry over), or used exactly as saved with `--no-rebase`. A painted
+piece that cannot be carried over (no fit template, missing image) stops the build. Regression:
+`node scripts/check-2d-painted-rebuild.mjs`.
+
 ## Hands, props, contacts
 
 * Finger chains stay 3-bone per finger on both sides; 2D-only `<finger>_tip_<side>` bones mark the pads.
+* Hand controls (curl, per-finger) bend each segment in-plane by `maxDeg` and shorten it toward `foreshorten[k]`
+  at a full curl — a curl seen from the art view goes toward the palm rather than folding the finger back over
+  itself. Finger meshes are denser than other pieces, with wider weight blends at the knuckles.
+* Pose-specific captures are drawings of a particular view: they follow their bone's rotation and position but
+  not its foreshortening scale (`followScale: false`), so they never stretch when the bone's projected length
+  changes around the captured moment.
 * Hand art has pose-specific captures (hover, sword/staff/pistol/rifle/detonator grips, fist, relaxed),
   keyed as attachment swaps on the clips that need them; `finger_tests_2d` shows curls, a per-finger
   wave, weapon grip, a keyed swap to fist art and a keyed fingers-behind-palm order.
@@ -289,4 +308,5 @@ runtime = editor pose, sprite frame = editor render, the dwarf variant, narrow v
 * PSD import is not supported (use PNG layers + `layers.json`).
 * Deformation keys: authored with the Deform tool in the corrections layer (bind-space offsets); the
   starter bake uses them only for cape flutter.
-* Performance numbers in the report come from headless CPU-emulated WebGL (SwiftShader); a GPU is faster.
+* Performance numbers in the reports come from headless Chromium with CPU-emulated WebGL (SwiftShader) in a cloud
+  container. Desktop-GPU and mobile performance have **not** been measured; measure on the target devices.

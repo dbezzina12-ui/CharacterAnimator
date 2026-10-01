@@ -685,7 +685,7 @@ class Editor2D {
       fall[v] = dist < R ? 0.5 + 0.5 * Math.cos(Math.PI * dist / R) : 0;
       // linear part of this vertex's blended skinning matrix → world deltas become bind-space offsets
       let a = 0, b = 0, c = 0, dd = 0;
-      for (let k = 0; k < 4; k++) { const w = rec.ww[v * 4 + k]; if (!w) continue; const m = this.rig.skinMats[rec.wb[v * 4 + k]]; a += w * m[0]; b += w * m[1]; c += w * m[2]; dd += w * m[3]; }
+      for (let k = 0; k < 4; k++) { const w = rec.ww[v * 4 + k]; if (!w) continue; const m = (rec.def.followScale === false && this.rig.skinMatsU ? this.rig.skinMatsU : this.rig.skinMats)[rec.wb[v * 4 + k]]; a += w * m[0]; b += w * m[1]; c += w * m[2]; dd += w * m[3]; }
       const det = a * dd - b * c || 1; inv.push([dd / det, -b / det, -c / det, a / det]);
     }
     this.begin(`deform ${id} @${this.keyTime().toFixed(2)}s`, [[this.clipRef(clip), this.editKey()]]);
@@ -1344,10 +1344,11 @@ class Editor2D {
 
   // ---------------------------------------------------------------- fitting -------
   /** Open painted layers into a fitting session (nothing in the project changes until Accept). */
-  async startFit(files, { useTemplate = false, skin = null } = {}) {
+  async startFit(files, { useTemplate = false, skin = null, template = null } = {}) {
     if (this.fit) this.cancelFit();
     const skinId = skin || $(this.panel, '#p2FitSkin').value.trim() || 'painted';
-    const tpl = useTemplate ? (this.project.fitting?.templates?.[skinId] || this.project.fitting?.templates?.[this.project.fitting?.last]) : null;
+    // `template`: a fit template from another (saved) project, e.g. to carry a painted skin onto a rebuilt starter
+    const tpl = template || (useTemplate ? (this.project.fitting?.templates?.[skinId] || this.project.fitting?.templates?.[this.project.fitting?.last]) : null);
     if (useTemplate && !tpl) throw new Error('this project has no saved fitting template yet');
     const source = await readFitSource(files, tpl);
     if (!source.layers.length) throw new Error(`no readable layers${source.problems.length ? ': ' + source.problems.join('; ') : ''}`);

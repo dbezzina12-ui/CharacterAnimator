@@ -1,5 +1,18 @@
 {
  "skin": "painted",
+ "builtFrom": {
+  "saved": "deliverables/painted-knight/aureate-knight-painted.character2d.zip",
+  "placement": {
+   "helmet.default": 0
+  },
+  "mode": "rebased",
+  "pieces": [
+   "helmet.default"
+  ],
+  "savedStatus": {
+   "helmet.default": "finished"
+  }
+ },
  "finished": [
   "helmet.default"
  ],
@@ -131,7 +144,14 @@
   "ring_R.salute",
   "pinky_R.salute",
   "upperarm_R.salute_arm",
-  "forearm_R.salute_arm",
+  "forearm_R.salute_farm",
+  "hand_R.salute_mid",
+  "thumb_R.salute_mid",
+  "index_R.salute_mid",
+  "middle_R.salute_mid",
+  "ring_R.salute_mid",
+  "pinky_R.salute_mid",
+  "forearm_R.salute_mid_arm",
   "hand_R.salute_open",
   "thumb_R.salute_open",
   "index_R.salute_open",
@@ -237,6 +257,7 @@
   "R grip_rifle",
   "R grip_detonator",
   "R salute",
+  "R salute_mid",
   "R salute_open",
   "R walk_swing_R"
  ],
@@ -246,6 +267,8 @@
    "bone": "head",
    "worstAngle": -25,
    "gapPct": 0.1,
+   "fullCharacterGapPct": 0.1,
+   "silhouetteLossPct": 0.1,
    "thresholdPct": 3,
    "radiusPx": 43.4,
    "pieces": {
@@ -270,8 +293,10 @@
   {
    "joint": "shoulder_L",
    "bone": "upperarm_L",
-   "worstAngle": 75,
-   "gapPct": 10.6,
+   "worstAngle": -60,
+   "gapPct": 0.2,
+   "fullCharacterGapPct": 0.2,
+   "silhouetteLossPct": 1.9,
    "thresholdPct": 3,
    "radiusPx": 68,
    "pieces": {
@@ -287,14 +312,16 @@
      "upperarm_L"
     ]
    },
-   "flagged": true,
-   "hint": "at 75° the joint opens 10.6% of its area: paint hidden material on under_torso/under_arm_L/upperarm_L extending under (parent piece) (or extend the parent piece under the child)"
+   "flagged": false,
+   "hint": "covered"
   },
   {
    "joint": "shoulder_R",
    "bone": "upperarm_R",
    "worstAngle": -60,
-   "gapPct": 7.6,
+   "gapPct": 1,
+   "fullCharacterGapPct": 0.9,
+   "silhouetteLossPct": 7.6,
    "thresholdPct": 3,
    "radiusPx": 70.5,
    "pieces": {
@@ -310,14 +337,16 @@
      "upperarm_R"
     ]
    },
-   "flagged": true,
-   "hint": "at -60° the joint opens 7.6% of its area: paint hidden material on under_torso/under_arm_R/upperarm_R extending under (parent piece) (or extend the parent piece under the child)"
+   "flagged": false,
+   "hint": "covered"
   },
   {
    "joint": "elbow_L",
    "bone": "forearm_L",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 28.1,
    "pieces": {
@@ -344,6 +373,8 @@
    "bone": "forearm_R",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 28.9,
    "pieces": {
@@ -368,8 +399,10 @@
   {
    "joint": "wrist_L",
    "bone": "hand_L",
-   "worstAngle": -40,
-   "gapPct": 8.8,
+   "worstAngle": 40,
+   "gapPct": 0.8,
+   "fullCharacterGapPct": 0.8,
+   "silhouetteLossPct": 5.5,
    "thresholdPct": 3,
    "radiusPx": 22.9,
    "pieces": {
@@ -396,14 +429,16 @@
      "thumb_L"
     ]
    },
-   "flagged": true,
-   "hint": "at -40° the joint opens 8.8% of its area: paint hidden material on under_arm_L/pinky_L/ring_L/middle_L/index_L/hand_L/thumb_L extending under forearm_L (or extend the parent piece under the child)"
+   "flagged": false,
+   "hint": "covered"
   },
   {
    "joint": "wrist_R",
    "bone": "hand_R",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 9.3,
    "pieces": {
@@ -438,6 +473,8 @@
    "bone": "thigh_L",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 39.1,
    "pieces": {
@@ -467,7 +504,9 @@
    "joint": "hip_R",
    "bone": "thigh_R",
    "worstAngle": 50,
-   "gapPct": 2.5,
+   "gapPct": 0.1,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 2.5,
    "thresholdPct": 3,
    "radiusPx": 51,
    "pieces": {
@@ -498,6 +537,8 @@
    "bone": "shin_L",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 35.7,
    "pieces": {
@@ -528,6 +569,8 @@
    "bone": "shin_R",
    "worstAngle": 0,
    "gapPct": 0,
+   "fullCharacterGapPct": 0,
+   "silhouetteLossPct": 0,
    "thresholdPct": 3,
    "radiusPx": 35.7,
    "pieces": {
@@ -556,8 +599,10 @@
   {
    "joint": "ankle_L",
    "bone": "foot_L",
-   "worstAngle": -30,
-   "gapPct": 9,
+   "worstAngle": 30,
+   "gapPct": 1.2,
+   "fullCharacterGapPct": 1.2,
+   "silhouetteLossPct": 6.9,
    "thresholdPct": 3,
    "radiusPx": 42.5,
    "pieces": {
@@ -576,14 +621,16 @@
      "foot_L"
     ]
    },
-   "flagged": true,
-   "hint": "at -30° the joint opens 9.0% of its area: paint hidden material on under_leg_L/under_foot_L/foot_L extending under shin_L (or extend the parent piece under the child)"
+   "flagged": false,
+   "hint": "covered"
   },
   {
    "joint": "ankle_R",
    "bone": "foot_R",
-   "worstAngle": -30,
-   "gapPct": 7.4,
+   "worstAngle": 30,
+   "gapPct": 1.4,
+   "fullCharacterGapPct": 1.4,
+   "silhouetteLossPct": 3.2,
    "thresholdPct": 3,
    "radiusPx": 28.9,
    "pieces": {
@@ -602,8 +649,8 @@
      "foot_R"
     ]
    },
-   "flagged": true,
-   "hint": "at -30° the joint opens 7.4% of its area: paint hidden material on under_leg_R/under_foot_R/foot_R extending under shin_R (or extend the parent piece under the child)"
+   "flagged": false,
+   "hint": "covered"
   }
  ],
  "fitMapping": [

@@ -363,6 +363,8 @@ const perf = await page.evaluate(() => {
   return { evalMs: +evalMs.toFixed(3), editorFrameMs: +frameMs.toFixed(2), attachments: Object.keys(art2d.project.attachments).length, vertices: verts, renderer: 'headless Chromium + SwiftShader (CPU WebGL)' };
 });
 info('performance', 'Performance measured (CPU-emulated WebGL in headless Chromium: not representative of a GPU device)', perf);
+let bundle = 'up to date'; try { execSync('node scripts/build-runtime.mjs --check', { stdio: 'pipe' }); } catch (e) { bundle = String(e.stdout || e.message).trim(); }
+check('runtime-bundle-fresh', 'The committed standalone runtime bundle matches a fresh build of the core (no stale runtime)', bundle === 'up to date', bundle);
 check('no-errors', 'No page errors during the whole run', errors.length === 0, errors.slice(0, 5));
 
 const clipStatus = JSON.parse(fs.readFileSync('characters2d/aureate_knight/character.json', 'utf8')).clips.map((c) => ({ name: c.name + (c.source?.type === 'native2d' ? ' (native 2D)' : ''), level: c.status?.level, notes: c.status?.notes || [] }));

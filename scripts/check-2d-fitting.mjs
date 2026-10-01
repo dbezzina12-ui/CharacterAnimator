@@ -117,6 +117,19 @@ fs.writeFileSync(`${OUT}/painted-knight-fitted.character2d.zip`, Buffer.from(res
 await page.evaluate(() => { art2d.setSkin('painted'); art2d.selectClip('hover_sword_vigil'); art2d.seek(1.5); art2d.editor.fitView(true); });
 await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}/fitted-hover.png`, clip: { x: 310, y: 0, width: 1130, height: 950 } });
 
+// 3b) joint coverage measures cracks BETWEEN pieces (not silhouette change): the starter knight opens none at the
+// test bends; the same knight without its underlap layers must be flagged (positive control)
+await page.evaluate(() => art2d.openURL('../characters2d/aureate_knight/character.json')); await page.evaluate(() => art2d.editor.ready);
+const joints = await page.evaluate(async () => {
+  const pp = await import('./js/art2d/paintpack.js'), { computeInverseBinds } = await import('./js/art2d/schema.js');
+  const starter = await pp.jointCoverage(art2d.project, art2d.store, { skin: 'default' });
+  const P = structuredClone(art2d.project); for (const sl of P.slots) if (/^under_/.test(sl.id)) sl.attachment = null; computeInverseBinds(P);
+  const noUnder = await pp.jointCoverage(P, art2d.store, { skin: 'default' });
+  return { starter: starter.map((c) => ({ joint: c.joint, gapPct: c.gapPct, fullCharacterGapPct: c.fullCharacterGapPct, silhouetteLossPct: c.silhouetteLossPct, flagged: c.flagged })),
+    withoutUnderlap: noUnder.filter((c) => c.flagged).map((c) => `${c.joint} ${c.gapPct}%`) };
+});
+fs.writeFileSync(`${OUT}/joint-coverage.json`, JSON.stringify(joints, null, 1));
+
 // 4) dwarf: proportion fit moves the rig's next joint to the art anchor instead of resizing the art
 await page.evaluate(() => art2d.openURL('../characters2d/dwarf/character.json'));
 await page.evaluate(() => art2d.editor.ready);
@@ -135,6 +148,8 @@ const dwarf = await page.evaluate(async () => {
 });
 const o = res.out;
 const checks = {
+  jointCracksStarter: joints.starter.length >= 10 && joints.starter.every((c) => !c.flagged && c.fullCharacterGapPct <= 3),
+  jointCracksDetected: joints.withoutUnderlap.length >= 1,
   packRoundTrip: o.pack.allMapped && o.pack.layers === 8,
   footprintsPreserved: Object.entries(o.footprint).every(([k, x]) => (k === 'helmet.default' ? x.bboxIoU > 0.95 : x > 0.98)),
   acceptIsOneUndo: o.accept.oneUndoStep && o.undo.skinGone && o.undo.attachmentsRestored && o.undo.redoBack,

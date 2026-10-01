@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-01T14:38:58.804Z",
-  "passed": 26,
+  "date": "2026-10-01T17:08:50.208Z",
+  "passed": 27,
   "failed": 0,
   "info": 3,
   "results": [
@@ -36,8 +36,8 @@
       "pass": true,
       "details": {
         "slots": 37,
-        "attachments": 206,
-        "images": 206
+        "attachments": 213,
+        "images": 213
       }
     },
     {
@@ -211,9 +211,9 @@
       "pass": true,
       "details": {
         "bend_0": 0,
-        "bend_45": 0.17,
-        "bend_90": 0.57,
-        "bend_120": 0.63
+        "bend_45": 0.09,
+        "bend_90": 0.31,
+        "bend_120": 0.34
       }
     },
     {
@@ -223,8 +223,8 @@
       "info": true,
       "details": {
         "arms_raised": 0.75,
-        "arms_crossed_legs": 6.31,
-        "salute": 0.52,
+        "arms_crossed_legs": 4.77,
+        "salute": 0.34,
         "slash_windup": 1.39
       }
     },
@@ -294,7 +294,7 @@
       "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
       "pass": true,
       "details": {
-        "zipKB": 5495,
+        "zipKB": 5636,
         "errors": 0,
         "painted": [
           "forearm_L.painted",
@@ -307,7 +307,7 @@
       "title": "Sprite-sheet frame equals the editor render of the same pose (stable registration + trim offsets; mean alpha diff of 255)",
       "pass": true,
       "details": {
-        "meanAlphaDiff": 1.093
+        "meanAlphaDiff": 1.044
       }
     },
     {
@@ -384,12 +384,18 @@
       "pass": null,
       "info": true,
       "details": {
-        "evalMs": 0.171,
-        "editorFrameMs": 1.93,
-        "attachments": 206,
-        "vertices": 10472,
+        "evalMs": 0.047,
+        "editorFrameMs": 1.87,
+        "attachments": 213,
+        "vertices": 11699,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
       }
+    },
+    {
+      "id": "runtime-bundle-fresh",
+      "title": "The committed standalone runtime bundle matches a fresh build of the core (no stale runtime)",
+      "pass": true,
+      "details": "up to date"
     },
     {
       "id": "no-errors",
@@ -584,19 +590,19 @@
   },
   "stress": {
     "bend_0": 0,
-    "bend_45": 0.17,
-    "bend_90": 0.57,
-    "bend_120": 0.63,
+    "bend_45": 0.09,
+    "bend_90": 0.31,
+    "bend_120": 0.34,
     "arms_raised": 0.75,
-    "arms_crossed_legs": 6.31,
-    "salute": 0.52,
+    "arms_crossed_legs": 4.77,
+    "salute": 0.34,
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.171,
-    "editorFrameMs": 1.93,
-    "attachments": 206,
-    "vertices": 10472,
+    "evalMs": 0.047,
+    "editorFrameMs": 1.87,
+    "attachments": 213,
+    "vertices": 11699,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
   }
 }

@@ -242,7 +242,7 @@ export class Rig {
     this.slots = P.slots.slice();
     this.slotIndex = new Map(this.slots.map((s, i) => [s.id, i]));
     this.setupOrder = this.slots.map((s) => s.id);
-    this.attachments = new Map(); this.deformFromIds = new Set();
+    this.attachments = new Map(); this.deformFromIds = new Set(); this.noScaleIds = new Set();
     for (const a of Object.values(P.attachments)) this.rebuildAttachment(a.id);
     this.constraints = (P.constraints || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     this.hands = P.hands || {};
@@ -312,6 +312,8 @@ export class Rig {
     this.attachments.set(id, rec);
     (this.deformFromIds ||= new Set());
     if (a.deformFrom && a.deformFrom !== id) this.deformFromIds.add(id); else this.deformFromIds.delete(id);
+    (this.noScaleIds ||= new Set());
+    if (a.followScale === false) this.noScaleIds.add(id); else this.noScaleIds.delete(id);
     return rec;
   }
 
@@ -444,6 +446,20 @@ export class Rig {
       m[2] = w[0] * b[2] + w[2] * b[3]; m[3] = w[1] * b[2] + w[3] * b[3];
       m[4] = w[0] * b[4] + w[2] * b[5] + w[4]; m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
     }
+    // drawings of a specific view (pose captures, `followScale: false`) follow their bone's rotation and position
+    // but keep the bind scale: the drawing already shows the foreshortened view, so it must not be squashed or
+    // stretched again when the bone's projected length changes around the captured moment
+    if (this.noScaleIds?.size) {
+      this.skinMatsU ||= this.bones.map(() => [1, 0, 0, 1, 0, 0]);
+      for (let i = 0; i < this.bones.length; i++) {
+        const W = this.world[i], B = this.bindWorld[i], b = this.invBind[i], m = this.skinMatsU[i];
+        const kx = Math.hypot(B[0], B[1]) / (Math.hypot(W[0], W[1]) || 1), ky = Math.hypot(B[2], B[3]) / (Math.hypot(W[2], W[3]) || 1);
+        const w = [W[0] * kx, W[1] * kx, W[2] * ky, W[3] * ky, W[4], W[5]];
+        m[0] = w[0] * b[0] + w[2] * b[1]; m[1] = w[1] * b[0] + w[3] * b[1];
+        m[2] = w[0] * b[2] + w[2] * b[3]; m[3] = w[1] * b[2] + w[3] * b[3];
+        m[4] = w[0] * b[4] + w[2] * b[5] + w[4]; m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
+      }
+    }
     return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets, ...(deformSkipped ? { deformSkipped: [...deformSkipped], deformIssues } : {}) };
   }
 
@@ -464,9 +480,13 @@ export class Rig {
     for (const [finger, f] of Object.entries(def.fingers || {})) {
       const c = Math.max(-0.25, Math.min(1.2, hv.curl * (f.curlShare ?? 1) + (hv[finger] || 0)));
       if (!c) continue;
+      // a curl seen from the art view mostly goes toward the palm: each segment bends in-plane by maxDeg and
+      // shortens toward foreshorten[k] (its length at a full curl), instead of folding back over itself
+      const fold = Math.max(0, Math.min(1, c));
       f.bones.forEach((id, k) => {
         const i = this.boneIndex.get(id); if (i === undefined) return;
         this.local[i * 5 + 2] += (f.sign ?? 1) * (f.maxDeg?.[k] ?? 60) * c;
+        if (f.foreshorten?.[k] != null) this.local[i * 5 + 3] *= 1 - (1 - f.foreshorten[k]) * fold;
       });
     }
   }
@@ -554,7 +574,7 @@ export class Rig {
   /** Deformed vertex positions (world px) of attachment `id` for the last evaluate(). */
   skinAttachment(id, pose, out) {
     const r = this.attachments.get(id); if (!r) return null;
-    const nv = r.nv, bind = r.bind, wb = r.wb, ww = r.ww, M = this.skinMats;
+    const nv = r.nv, bind = r.bind, wb = r.wb, ww = r.ww, M = r.def.followScale === false && this.skinMatsU ? this.skinMatsU : this.skinMats;
     const def = pose?.deform?.get(id);
     out ||= new Float32Array(nv * 2);
     for (let v = 0; v < nv; v++) {

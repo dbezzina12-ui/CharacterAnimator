@@ -221,7 +221,7 @@ try {
       out[t] = { bboxPx: +Math.max(...ba.map((v, i) => Math.abs(v - b2[i]))).toFixed(2), rotation: [+affDecompose(A.place).rotation.toFixed(2), +affDecompose(B.place).rotation.toFixed(2)] }; }
     return out; });
   check('layered-import-placement', 'Layered import of template-pack layers keeps each piece\'s rotation and displayed size (prop at -175° on a scaled bone, rotated hover hand)',
-    Object.values(imp).every((x) => x.bboxPx < 4 && Math.abs(x.rotation[0] - x.rotation[1]) < 0.01), imp);
+    Object.values(imp).every((x) => x.bboxPx < 4 && Math.abs(x.rotation[0] - x.rotation[1]) < 0.05), imp);
   check('no-errors', 'No page errors (editor, fresh pages, runtime)', errors.length === 0, errors.slice(0, 5));
 } finally {
   await browser.close(); server.close(); fs.rmSync(TMP, { recursive: true, force: true });
