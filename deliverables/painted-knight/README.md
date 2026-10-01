@@ -1,11 +1,13 @@
 # Aureate Knight — painted-skin deliverable
 
 Built by `node scripts/build-painted-knight.mjs` (+ `node scripts/record-player-videos.mjs` for the videos).
-**The saved editable project is the source of truth:** the build reads `aureate-knight-painted.character2d.zip`
-(or `--from=<your saved ZIP>`), takes its painted PNGs, fit template, statuses and notes, and re-applies them to
-the current starter project, so improvements to the rig and animation carry over without re-painting
-(`--no-rebase` rebuilds exactly as saved). A painted piece that cannot be carried over stops the build with a
-message. Tested by `node scripts/check-2d-painted-rebuild.mjs`.
+**The saved editable project is the source of truth:** by default the build reads
+`aureate-knight-painted.character2d.zip` (or `--from=<your saved ZIP>`) and rebuilds every output from it
+**exactly as saved** — every clip (including your own), correction, pose and painted piece is kept.
+`--rebase` is an explicit option: it re-applies the saved painted skin (PNGs, fit template, statuses) to the
+current starter project so starter rig/animation improvements carry over, and carries your own clips,
+corrections, edited native clips, poses and review across; anything that cannot play on the new starter stops
+the build with a message instead of being dropped. Tested by `node scripts/check-2d-painted-rebuild.mjs`.
 
 **Status, plainly:** the target of a *fully painted* knight is **not met**. Only the helmet has painted
 art (the painted helmet from the upgrade kit). The other 212 pieces have no painted version yet and show

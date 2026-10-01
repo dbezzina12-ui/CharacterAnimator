@@ -246,12 +246,14 @@ survive rebuilds. Coordinates being finite is never treated as the pose looking 
 
 ## Painted deliverables from a saved project
 
-`node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--no-rebase]` rebuilds the runtime
-package, offline player, template pack, ART-REQUESTS and skin status from the **saved painted project**: its
-painted PNGs, fit template, statuses and notes are re-applied to the current starter project through the fitting
-workflow (so rig/animation improvements carry over), or used exactly as saved with `--no-rebase`. A painted
-piece that cannot be carried over (no fit template, missing image) stops the build. Regression:
-`node scripts/check-2d-painted-rebuild.mjs`.
+`node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--rebase]` rebuilds the runtime
+package, offline player, template pack, ART-REQUESTS and skin status from the **saved painted project**. By
+default the saved project is used **exactly as saved** (custom clips, corrections, poses and painted pieces all
+kept). `--rebase` (explicit) re-applies its painted PNGs, fit template and statuses to the current starter project
+through the fitting workflow so rig/animation improvements carry over, and carries the saved project's own clips,
+corrections of shared clips, edited native clips, poses and review across. A painted piece or clip that cannot be
+carried over (no fit template, missing image, art the starter lacks) stops the build with a message — nothing is
+dropped silently. Regression: `node scripts/check-2d-painted-rebuild.mjs`.
 
 ## Hands, props, contacts
 

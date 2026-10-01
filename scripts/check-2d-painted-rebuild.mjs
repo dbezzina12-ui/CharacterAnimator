@@ -1,4 +1,6 @@
-// Deliverables are rebuilt from a SAVED painted project (the editable ZIP is the source of truth).
+// Deliverables are rebuilt from a SAVED painted project (the editable ZIP is the source of truth). By default the
+// saved project is used as saved (custom clips and corrections kept); --rebase re-applies it to the current starter
+// and must carry the saved animation work across or stop with a message.
 // A painted project with two fitted pieces (the kit's painted helmet = finished, a resampled + hue-shifted
 // starter cape = provisional TEST FIXTURE, not a painting) is saved from the editor; then
 // build-painted-knight.mjs rebuilds every deliverable from that ZIP (rebased onto the current starter, and as
@@ -41,43 +43,75 @@ try {
     sess.layers.find((l) => l.target === 'mantle.default').status = 'provisional';
     await art2d.acceptFit();
     const sk = art2d.project.skins.find((x) => x.id === 'painted');
-    return { replace: sk.replace, status: sk.status };
+    // the user's own animation work: a custom native clip (bone keys, a painted-cape deform key, a hand set,
+    // an event) and a correction on a bridged clip
+    const Pp = art2d.project, n = Pp.attachments['mantle.default'].vertices.length, setR = Object.keys(Pp.handViews?.R?.sets || {})[0];
+    const layer = () => ({ bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, handSets: {}, constraints: {}, events: [] });
+    const custom = { name: 'victory_custom', duration: 1.5, loop: true, fps: 30, source: { type: 'native2d', note: 'user clip (test fixture)' }, tracks: layer(), corrections: layer() };
+    custom.tracks.bones.upperarm_R = { rotate: { t: [0, 0.75, 1.5], v: [0, -40, 0] } };
+    custom.tracks.deform['mantle.default'] = { t: [0, 1.5], v: [new Array(n).fill(0), new Array(n).fill(2.5)] };
+    if (setR) custom.tracks.handSets.R = { t: [0], v: [setR] };
+    custom.tracks.events = [{ t: 0.75, name: 'cheer' }];
+    Pp.clips.push(custom);
+    const idle = Pp.clips.find((c) => c.name === 'idle'); idle.corrections ||= layer(); idle.corrections.bones.head = { rotate: { t: [0, 1], v: [0, 6] } };
+    art2d.editor.rebuild();
+    return { replace: sk.replace, status: sk.status, customClip: true, valid: art2d.validate().errors.length };
   }, fs.readFileSync('validation/workflow/art/painted-helmet.png').toString('base64'));
   const dl = page.waitForEvent('download'); await page.locator('#p2Save').click(); await (await dl).saveAs(`${TMP}/saved.character2d.zip`);
   await page.close();
   const saved = await projectOf(`${TMP}/saved.character2d.zip`);
-  check('saved-project', 'Painted project authored in the editor (helmet finished + fixture cape provisional) and saved with the Save button',
-    saved?.skins.find((s) => s.id === 'painted')?.replace?.['mantle.default'] && authored.status['mantle.default'] === 'provisional' && saved.fitting?.templates?.painted?.layers?.length === 2, authored);
-
-  // ---- 2) rebuild every deliverable from that ZIP, rebased onto the current starter
-  const log1 = build([`--from=${TMP}/saved.character2d.zip`, `--out=${TMP}/rebased`]);
-  const st1 = JSON.parse(fs.readFileSync(`${TMP}/rebased/skin-status.json`, 'utf8')), p1 = await projectOf(`${TMP}/rebased/aureate-knight-painted.character2d.zip`), rt1 = await runtimeOf(`${TMP}/rebased/aureate-knight-painted.runtime.zip`);
+  const clipOf = (p, n) => JSON.stringify(p.clips.find((c) => c.name === n) || null), corrOf = (p) => JSON.stringify(p.clips.find((c) => c.name === 'idle').corrections.bones.head || null);
+  check('saved-project', 'Painted project authored in the editor (helmet finished + fixture cape provisional, a custom clip, an idle correction) and saved with the Save button',
+    saved?.skins.find((s) => s.id === 'painted')?.replace?.['mantle.default'] && authored.status['mantle.default'] === 'provisional' && saved.fitting?.templates?.painted?.layers?.length === 2
+      && clipOf(saved, 'victory_custom') !== 'null' && corrOf(saved) !== 'null' && authored.valid === 0, { ...authored, clips: saved.clips.length });
   const files = ['aureate-knight-painted.character2d.zip', 'aureate-knight-painted.runtime.zip', 'Aureate-Knight-2D-Player.html', 'paint-template-pack.zip', 'ART-REQUESTS.txt', 'skin-status.json'];
+  const pick = (p) => JSON.stringify(['helmet.default@painted', 'mantle.default@painted'].map((id) => [p.attachments[id].transform, p.attachments[id].imageScale, p.attachments[id].pivot, p.attachments[id].vertices.length]));
+
+  // ---- 2) DEFAULT rebuild (no flags): the saved project exactly as saved — custom clip and correction kept
+  const log0 = build([`--from=${TMP}/saved.character2d.zip`, `--out=${TMP}/default`]);
+  const st0 = JSON.parse(fs.readFileSync(`${TMP}/default/skin-status.json`, 'utf8')), p0 = await projectOf(`${TMP}/default/aureate-knight-painted.character2d.zip`), rt0 = await runtimeOf(`${TMP}/default/aureate-knight-painted.runtime.zip`);
+  check('default-keeps-saved', 'Default rebuild uses the saved project as saved: the custom clip (incl. its cape deform key, hand set, event) and the idle correction are kept byte-for-byte, in the project and the runtime package',
+    st0.builtFrom.mode === 'as saved' && clipOf(p0, 'victory_custom') === clipOf(saved, 'victory_custom') && corrOf(p0) === corrOf(saved) && p0.clips.length === saved.clips.length
+      && rt0.clips.some((c) => c.name === 'victory_custom') && pick(p0) === pick(saved) && files.every((f) => fs.existsSync(`${TMP}/default/${f}`)),
+    { mode: st0.builtFrom.mode, clips: [saved.clips.length, p0.clips.length], customKept: clipOf(p0, 'victory_custom') === clipOf(saved, 'victory_custom'), correctionKept: corrOf(p0) === corrOf(saved), log: log0.trim().split('\n')[0] });
+
+  // ---- 3) explicit --rebase: painted skin onto the current starter AND the saved animation work carried across
+  const log1 = build([`--from=${TMP}/saved.character2d.zip`, '--rebase', `--out=${TMP}/rebased`]);
+  const st1 = JSON.parse(fs.readFileSync(`${TMP}/rebased/skin-status.json`, 'utf8')), p1 = await projectOf(`${TMP}/rebased/aureate-knight-painted.character2d.zip`), rt1 = await runtimeOf(`${TMP}/rebased/aureate-knight-painted.runtime.zip`);
   const sk1 = p1.skins.find((s) => s.id === 'painted');
-  check('rebuild-rebased', 'Rebuilt from the saved ZIP onto the current starter: same pieces, statuses kept, each piece at its saved placement (setup bind ≤ 0.01 px), all deliverables written',
+  check('rebase-keeps-work', '--rebase: same painted pieces, statuses and placement (≤ 0.01 px) on the current starter, and the custom clip + idle correction carried across unchanged (reported)',
     st1.builtFrom.mode === 'rebased' && Object.keys(sk1.replace).sort().join() === 'helmet.default,mantle.default' && sk1.status['mantle.default'] === 'provisional' && sk1.status['helmet.default'] === 'finished'
-      && Object.values(st1.builtFrom.placement).every((d) => d <= 0.01) && files.every((f) => fs.existsSync(`${TMP}/rebased/${f}`)) && st1.finished.includes('helmet.default') && st1.provisional.includes('mantle.default'),
-    { builtFrom: st1.builtFrom, finished: st1.finished, provisional: st1.provisional, missing: st1.missing.length, log: log1.trim().split('\n')[0] });
+      && Object.values(st1.builtFrom.placement).every((d) => d <= 0.01) && st1.builtFrom.carried.clips.includes('victory_custom') && st1.builtFrom.carried.corrections.includes('idle')
+      && clipOf(p1, 'victory_custom') === clipOf(saved, 'victory_custom') && corrOf(p1) === corrOf(saved) && rt1.clips.some((c) => c.name === 'victory_custom') && files.every((f) => fs.existsSync(`${TMP}/rebased/${f}`)),
+    { builtFrom: st1.builtFrom, log: log1.trim().split('\n')[0] });
   const art = fs.readFileSync(`${TMP}/rebased/ART-REQUESTS.txt`, 'utf8');
   check('rebuild-outputs', 'Rebuilt outputs carry the painted cape animation (deformFrom in project and runtime package), the painted skin opens by default, and ART-REQUESTS lists the provisional cape',
     p1.attachments['mantle.default@painted']?.deformFrom === 'mantle.default' && rt1.attachments['mantle.default@painted']?.deformFrom === 'mantle.default' && rt1.defaultSkin === 'painted'
       && /provisional: 1/.test(art) && fs.readFileSync(`${TMP}/rebased/Aureate-Knight-2D-Player.html`, 'utf8').includes('mantle.default@painted'),
     { deformFrom: p1.attachments['mantle.default@painted']?.deformFrom, runtimeDefaultSkin: rt1.defaultSkin, artRequestsStatus: art.split('\n').filter((l) => /^ {2}(finished|provisional|missing):/.test(l)) });
 
-  // ---- 3) as saved (no rebase) from the rebuilt ZIP, and a second rebase: identical painted placement
-  build([`--from=${TMP}/rebased/aureate-knight-painted.character2d.zip`, '--no-rebase', `--out=${TMP}/as-saved`]);
-  build([`--from=${TMP}/rebased/aureate-knight-painted.character2d.zip`, `--out=${TMP}/rebased2`]);
+  // ---- 4) stability: default rebuild of the rebased output, and a second --rebase, reproduce it exactly
+  build([`--from=${TMP}/rebased/aureate-knight-painted.character2d.zip`, `--out=${TMP}/as-saved`]);
+  build([`--from=${TMP}/rebased/aureate-knight-painted.character2d.zip`, '--rebase', `--out=${TMP}/rebased2`]);
   const st2 = JSON.parse(fs.readFileSync(`${TMP}/as-saved/skin-status.json`, 'utf8')), p2 = await projectOf(`${TMP}/as-saved/aureate-knight-painted.character2d.zip`), p3 = await projectOf(`${TMP}/rebased2/aureate-knight-painted.character2d.zip`);
-  const pick = (p) => JSON.stringify(['helmet.default@painted', 'mantle.default@painted'].map((id) => [p.attachments[id].transform, p.attachments[id].imageScale, p.attachments[id].pivot, p.attachments[id].vertices.length]));
-  check('rebuild-stable', 'Rebuilding again — as saved (--no-rebase) and rebased a second time — reproduces the same painted pieces exactly',
-    st2.builtFrom.mode === 'as saved' && pick(p2) === pick(p1) && pick(p3) === pick(p1), { asSaved: st2.builtFrom.mode, identicalAsSaved: pick(p2) === pick(p1), identicalRebasedTwice: pick(p3) === pick(p1) });
-  // ---- 4) a saved project that cannot be carried over fails loudly instead of silently dropping art
-  const broken = structuredClone(saved); broken.fitting.templates.painted.layers = broken.fitting.templates.painted.layers.filter((l) => l.target !== 'mantle.default');
+  check('rebuild-stable', 'Rebuilding again — default (as saved) and --rebase a second time — reproduces the same painted pieces and clips exactly',
+    st2.builtFrom.mode === 'as saved' && pick(p2) === pick(p1) && pick(p3) === pick(p1) && clipOf(p2, 'victory_custom') === clipOf(saved, 'victory_custom') && clipOf(p3, 'victory_custom') === clipOf(saved, 'victory_custom') && p3.clips.length === p1.clips.length,
+    { asSaved: st2.builtFrom.mode, identicalAsSaved: pick(p2) === pick(p1), identicalRebasedTwice: pick(p3) === pick(p1), clips: [p1.clips.length, p2.clips.length, p3.clips.length] });
+
+  // ---- 5) --rebase refuses instead of dropping: (a) a painted piece without a fit template, (b) a custom clip that
+  // uses art the starter does not have. The default as-saved rebuild keeps (b) intact.
   const { writeZip } = await import('../viewer/js/art2d/zip.js');
-  const entries = []; for (const [p, b] of await readZip(new Uint8Array(fs.readFileSync(`${TMP}/saved.character2d.zip`)))) entries.push({ path: p, data: p === 'character.json' ? JSON.stringify(broken) : b });
-  fs.writeFileSync(`${TMP}/broken.character2d.zip`, writeZip(entries));
-  let failMsg = null; try { build([`--from=${TMP}/broken.character2d.zip`, `--out=${TMP}/broken`]); } catch (e) { failMsg = String(e.stdout || '') + String(e.stderr || ''); }
-  check('rebuild-refuses-loss', 'A saved painted piece without a fit template stops the rebuild with a message (never silently dropped)', failMsg && /cannot be carried over/.test(failMsg) && /mantle.default/.test(failMsg), { message: (failMsg || '').split('\n').find((l) => /carried over/.test(l))?.slice(0, 200) });
+  const variant = async (name, mutate) => { const j = structuredClone(saved); mutate(j); const entries = []; for (const [p, b] of await readZip(new Uint8Array(fs.readFileSync(`${TMP}/saved.character2d.zip`)))) entries.push({ path: p, data: p === 'character.json' ? JSON.stringify(j) : b }); fs.writeFileSync(`${TMP}/${name}.character2d.zip`, writeZip(entries)); return `${TMP}/${name}.character2d.zip`; };
+  const tryBuild = (args) => { try { build(args); return null; } catch (e) { return String(e.stdout || '') + String(e.stderr || ''); } };
+  const noTpl = await variant('no-template', (j) => { j.fitting.templates.painted.layers = j.fitting.templates.painted.layers.filter((l) => l.target !== 'mantle.default'); });
+  const msgA = tryBuild([`--from=${noTpl}`, '--rebase', `--out=${TMP}/nt`]);
+  const extra = await variant('extra-art', (j) => { j.attachments['mantle.extra'] = { ...structuredClone(j.attachments['mantle.default']), id: 'mantle.extra', name: 'mantle (extra)' };
+    const c = structuredClone(j.clips.find((x) => x.name === 'victory_custom')); c.name = 'extra_clip'; c.tracks.slots = { mantle: { attachment: { t: [0], v: ['mantle.extra'] } } }; j.clips.push(c); });
+  const msgB = tryBuild([`--from=${extra}`, '--rebase', `--out=${TMP}/ea`]);
+  const okB = tryBuild([`--from=${extra}`, `--out=${TMP}/ea-default`]), pB = okB ? null : await projectOf(`${TMP}/ea-default/aureate-knight-painted.character2d.zip`);
+  check('rebase-refuses-loss', '--rebase never drops work silently: a painted piece without a fit template, or a custom clip using art the starter lacks, stops the build with a message; the default as-saved rebuild keeps that clip',
+    /cannot be carried over/.test(msgA || '') && /mantle.default/.test(msgA || '') && /cannot be carried onto the current starter/.test(msgB || '') && /extra_clip/.test(msgB || '') && !okB && pB?.clips.some((c) => c.name === 'extra_clip'),
+    { template: (msgA || '').split('\n').find((l) => /carried over/.test(l))?.slice(0, 160), customArt: (msgB || '').split('\n').find((l) => /carried onto/.test(l))?.slice(0, 220), asSavedKeepsIt: !!pB?.clips.some((c) => c.name === 'extra_clip') });
   check('no-errors', 'No page errors', errors.length === 0, errors.slice(0, 5));
 } finally {
   await browser.close(); server.close(); fs.rmSync(TMP, { recursive: true, force: true });

@@ -1,11 +1,11 @@
 {
- "date": "2026-10-01T16:54:35.807Z",
- "passed": 6,
+ "date": "2026-10-01T17:55:13.835Z",
+ "passed": 7,
  "failed": 0,
  "results": [
   {
    "id": "saved-project",
-   "title": "Painted project authored in the editor (helmet finished + fixture cape provisional) and saved with the Save button",
+   "title": "Painted project authored in the editor (helmet finished + fixture cape provisional, a custom clip, an idle correction) and saved with the Save button",
    "pass": true,
    "details": {
     "replace": {
@@ -15,12 +15,30 @@
     "status": {
      "helmet.default": "finished",
      "mantle.default": "provisional"
-    }
+    },
+    "customClip": true,
+    "valid": 0,
+    "clips": 27
    }
   },
   {
-   "id": "rebuild-rebased",
-   "title": "Rebuilt from the saved ZIP onto the current starter: same pieces, statuses kept, each piece at its saved placement (setup bind ≤ 0.01 px), all deliverables written",
+   "id": "default-keeps-saved",
+   "title": "Default rebuild uses the saved project as saved: the custom clip (incl. its cape deform key, hand set, event) and the idle correction are kept byte-for-byte, in the project and the runtime package",
+   "pass": true,
+   "details": {
+    "mode": "as saved",
+    "clips": [
+     27,
+     27
+    ],
+    "customKept": true,
+    "correctionKept": true,
+    "log": "rebuilding from saved project validation/painted-rebuild/_tmp/saved.character2d.zip (as saved)"
+   }
+  },
+  {
+   "id": "rebase-keeps-work",
+   "title": "--rebase: same painted pieces, statuses and placement (≤ 0.01 px) on the current starter, and the custom clip + idle correction carried across unchanged (reported)",
    "pass": true,
    "details": {
     "builtFrom": {
@@ -37,15 +55,19 @@
      "savedStatus": {
       "helmet.default": "finished",
       "mantle.default": "provisional"
+     },
+     "carried": {
+      "clips": [
+       "victory_custom"
+      ],
+      "corrections": [
+       "idle",
+       "hover_sword_vigil"
+      ],
+      "nativeClips": [],
+      "poses": []
      }
     },
-    "finished": [
-     "helmet.default"
-    ],
-    "provisional": [
-     "mantle.default"
-    ],
-    "missing": 211,
     "log": "rebuilding from saved project validation/painted-rebuild/_tmp/saved.character2d.zip (rebased onto the current starter)"
    }
   },
@@ -65,20 +87,27 @@
   },
   {
    "id": "rebuild-stable",
-   "title": "Rebuilding again — as saved (--no-rebase) and rebased a second time — reproduces the same painted pieces exactly",
+   "title": "Rebuilding again — default (as saved) and --rebase a second time — reproduces the same painted pieces and clips exactly",
    "pass": true,
    "details": {
     "asSaved": "as saved",
     "identicalAsSaved": true,
-    "identicalRebasedTwice": true
+    "identicalRebasedTwice": true,
+    "clips": [
+     27,
+     27,
+     27
+    ]
    }
   },
   {
-   "id": "rebuild-refuses-loss",
-   "title": "A saved painted piece without a fit template stops the rebuild with a message (never silently dropped)",
+   "id": "rebase-refuses-loss",
+   "title": "--rebase never drops work silently: a painted piece without a fit template, or a custom clip using art the starter lacks, stops the build with a message; the default as-saved rebuild keeps that clip",
    "pass": true,
    "details": {
-    "message": "page.evaluate: Error: saved painted skin cannot be carried over: missing images —; pieces without a fit template mantle.default"
+    "template": "page.evaluate: Error: saved painted skin cannot be carried over: missing images —; pieces without a fit template mantle.default",
+    "customArt": "page.evaluate: Error: saved animation work cannot be carried onto the current starter (use the default as-saved rebuild, or fix these): clip extra_clip: slot mantle keys missing attachment mantle.extra",
+    "asSavedKeepsIt": true
    }
   },
   {

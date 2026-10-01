@@ -1,14 +1,13 @@
 // Painted knight deliverables, rebuilt from a SAVED painted project (the editable ZIP is the source of truth):
-//   node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--no-rebase] [--bootstrap] [--out=deliverables/painted-knight]
-// --from (default: <out>/aureate-knight-painted.character2d.zip when it exists): the saved project's painted skin —
-//   its painted PNGs, fit template, statuses and notes — is re-applied to the CURRENT starter project
-//   (characters2d/aureate_knight) through the fitting workflow, so starter improvements (rig, clips, captures)
-//   carry over without re-painting. --no-rebase rebuilds the outputs from the saved project exactly as saved.
+//   node scripts/build-painted-knight.mjs [--from=<saved .character2d.zip>] [--rebase] [--bootstrap] [--out=deliverables/painted-knight]
+// --from (default: <out>/aureate-knight-painted.character2d.zip when it exists): by DEFAULT the saved project is used
+//   exactly as saved — every clip, correction, pose and painted piece is kept.
+// --rebase (explicit): re-apply the saved painted skin (PNGs + fit template + statuses) to the CURRENT starter project
+//   (characters2d/aureate_knight) so starter rig/animation improvements carry over, AND carry the saved project's own
+//   animation work across: clips the starter does not have, corrections of shared clips, edited native 2D clips,
+//   named poses and the visual review. Anything that cannot play on the new starter stops the build with a message.
 // --bootstrap (or no saved project): start a painted skin from the kit's painted helmet (the only painted art).
 // Pieces without painted art stay "missing" and fall back to the starter art; nothing is restyled or invented.
-// Writes: aureate-knight-painted.character2d.zip (editable), aureate-knight-painted.runtime.zip (runtime only),
-//         Aureate-Knight-2D-Player.html (single-file offline player), paint-template-pack.zip,
-//         ART-REQUESTS.txt, skin-status.json, previews.
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +18,7 @@ const arg = (k, d = null) => { const a = process.argv.find((x) => x.startsWith(`
 const OUT = arg('out', 'deliverables/painted-knight');
 const HELMET = 'validation/workflow/art/painted-helmet.png';
 const SAVED = process.argv.includes('--bootstrap') ? null : arg('from', fs.existsSync(path.join(OUT, 'aureate-knight-painted.character2d.zip')) ? path.join(OUT, 'aureate-knight-painted.character2d.zip') : null);
-const REBASE = !process.argv.includes('--no-rebase');
+const REBASE = process.argv.includes('--rebase');               // --no-rebase is accepted (the default)
 console.log(SAVED ? `rebuilding from saved project ${SAVED}${REBASE ? ' (rebased onto the current starter)' : ' (as saved)'}` : 'bootstrapping the painted skin from the kit helmet');
 fs.mkdirSync(OUT, { recursive: true });
 const server = await startServer(0);
@@ -57,7 +56,21 @@ const res = await page.evaluate(async ({ helmetB64, savedB64, rebase }) => {
     // every carried piece must sit where it sat in the saved project (setup pose, world bind positions)
     const rs = new Rig(S), rn = new Rig(P()); source.placement = {};
     for (const t of Object.keys(sk.replace)) { const a = rs.attachments.get(sk.replace[t]), b = rn.attachments.get(nsk.replace[t]); let m = a.bind.length === b.bind.length ? 0 : Infinity; for (let i = 0; i < a.bind.length && m < Infinity; i++) m = Math.max(m, Math.abs(a.bind[i] - b.bind[i])); source.placement[t] = +m.toFixed(4); }
-    source.mode = 'rebased'; source.pieces = Object.keys(sk.replace); source.savedStatus = sk.status;
+    // the saved project's own animation work comes along: a rebase must never drop clips or edits
+    const NP = P(), starterNames = new Set(NP.clips.map((c) => c.name)), carried = { clips: [], corrections: [], nativeClips: [], poses: [] };
+    const empty = (L) => !L || ['bones', 'slots', 'deform', 'hands', 'handSets', 'constraints'].every((k) => !Object.keys(L[k] || {}).length) && !(L.drawOrder?.t?.length) && !(L.events?.length);
+    for (const c of S.clips || []) {
+      if (!starterNames.has(c.name)) { NP.clips.push(structuredClone(c)); carried.clips.push(c.name); continue; }
+      const n = NP.clips.find((x) => x.name === c.name);
+      if (c.source?.type === 'native2d') { if (JSON.stringify(c.tracks) !== JSON.stringify(n.tracks) || !empty(c.corrections)) { Object.assign(n, structuredClone(c)); carried.nativeClips.push(c.name); } continue; }
+      if (!empty(c.corrections)) { n.corrections = structuredClone(c.corrections); carried.corrections.push(c.name); }
+    }
+    for (const pz of S.poses || []) if (!(NP.poses || []).some((x) => x.name === pz.name)) { (NP.poses ||= []).push(structuredClone(pz)); carried.poses.push(pz.name); }
+    if (S.visualQA) NP.visualQA = structuredClone(S.visualQA);
+    ed.rebuild();
+    const bad = art2d.validate().errors.filter((e) => [...carried.clips, ...carried.corrections, ...carried.nativeClips].some((n) => e.includes(`clip ${n}:`)) || /pose/.test(e));
+    if (bad.length) throw new Error(`saved animation work cannot be carried onto the current starter (use the default as-saved rebuild, or fix these): ${bad.slice(0, 6).join('; ')}`);
+    source.mode = 'rebased'; source.pieces = Object.keys(sk.replace); source.savedStatus = sk.status; source.carried = carried;
   } else {
     // bootstrap: the template pack defines canvas coordinates; fit ONLY the helmet (real painted art)
     const pack0 = await art2d.paintPack(SKIN);
