@@ -8,7 +8,9 @@
 //   feet       hover: correction deform keys keep the painted dark under-boot tucked under the painted shoe plate
 //              (feet hang toes-down there); the plate art and every other clip are untouched.
 //   salute     the mid-raise cuff drawing (forearm toward the camera) rides on the hand bone (its placement at 0.45 s is
-//              kept exactly), and the forearm drawings switch at 0.6 s / 3.27 s (correction slot keys).
+//              kept exactly); the forearm drawings switch on the hand drawings' keys (correction slot keys); and the
+//              raised pauldron is drawn beneath the forearm and hand while it shows (correction draw-order keys); the
+//              dark elbow under-sleeve is hidden while the cuff drawing shows (nothing covers it then).
 //   fingers    painted finger meshes get two extra weight-smoothing passes at the knuckles (pixels unchanged).
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
@@ -91,9 +93,30 @@ const res = await page.evaluate(async ({ zipB64, skip }) => {
     }
     const L = layer(c);
     if (L.slots.forearm_R) throw new Error('knight_salute already has a forearm_R slot correction — refusing to overwrite saved work');
-    const bake = c.tracks.slots.forearm_R.attachment, at = (t) => bake.v[core.keyIndex(bake.t, t)];
-    L.slots.forearm_R = { attachment: { t: [0, 0.33, 0.6, 3.27, 3.53], v: [at(0), at(0.4), at(1), at(3.4), at(3.6)] } };
-    log.push(`salute: forearm drawings switch at 0.33 / 0.6 / 3.27 / 3.53 s (${L.slots.forearm_R.attachment.v.join(' → ')})`);
+    // the forearm drawings switch on exactly the hand drawings' keys, so the fist always has its vambrace and the
+    // mid-raise hand always has its cuff (a forearm switch on another frame leaves the hand off the end of the arm)
+    const bake = c.tracks.slots.forearm_R.attachment, at = (t) => bake.v[core.keyIndex(bake.t, t)], hk = c.tracks.slots.hand_R.attachment.t;
+    L.slots.forearm_R = { attachment: { t: [...hk], v: hk.map(at) } };
+    log.push(`salute: forearm drawings switch with the hand drawings at ${hk.join(' / ')} s (${L.slots.forearm_R.attachment.v.join(' → ')})`);
+    // the dark under-sleeve at the elbow (under_arm_R) has nothing over it while the forearm points at the camera
+    // (cuff drawing): it stuck out below-left of the cuff, so it is hidden exactly while the cuff drawing shows
+    if (L.slots.under_arm_R) throw new Error('knight_salute already has an under_arm_R slot correction — refusing to overwrite saved work');
+    const ub = c.tracks.slots.under_arm_R?.attachment, uDef = P.slots.find((x) => x.id === 'under_arm_R').attachment ?? null;
+    const cuff = L.slots.forearm_R.attachment.v.map((v) => /salute_mid_arm/.test(v));
+    L.slots.under_arm_R = { attachment: { t: [...hk], v: hk.map((t, i) => (cuff[i] ? null : ub ? ub.v[core.keyIndex(ub.t, t)] ?? null : uDef)) } };
+    log.push(`salute: under_arm_R hidden while the cuff drawing shows (${hk.filter((_, i) => cuff[i]).map((t, k) => `${t}–${hk[hk.indexOf(t) + 1]}`).join(', ')} s)`);
+    // draw order: while the raised pauldron drawing shows (upperarm_R.salute_arm), the forearm and hand are in front
+    // of it, as in 3D; the auto order put the pauldron over the raised hand from 0.42 s to 0.57 s (and at 3.4 s)
+    const ua = c.tracks.slots.upperarm_R.attachment, i0 = ua.v.findIndex((v) => /salute_arm/.test(v)), u0 = ua.t[i0], u1 = ua.t[i0 + 1];
+    const auto = c.tracks.drawOrder;
+    if (L.drawOrder.t.length) throw new Error('knight_salute already has draw-order corrections — refusing to overwrite saved work');
+    const times = [...new Set([u0, ...auto.t.filter((t) => t > u0), u1])].sort((a, b) => a - b), fixed = [];
+    for (const t of times) {
+      const o = [...auto.v[core.keyIndex(auto.t, t)]], ui = o.indexOf('upperarm_R'), fi = o.indexOf('forearm_R');
+      if (t >= u0 && t < u1 && ui > fi) { o.splice(ui, 1); o.splice(fi, 0, 'upperarm_R'); fixed.push(t); }
+      L.drawOrder.t.push(r4(t)); L.drawOrder.v.push(o);
+    }
+    log.push(`salute: upperarm_R drawn beneath the forearm while the raised pauldron shows (${u0}–${u1} s; order changed at keys ${fixed.join(', ')} s, other keys copied from the clip)`);
   }
   // ---- 4) painted finger meshes: wider knuckle blends (weights only)
   if (!skip.includes('fingers')) {
