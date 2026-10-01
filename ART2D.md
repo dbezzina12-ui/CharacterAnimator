@@ -255,6 +255,19 @@ corrections of shared clips, edited native clips, poses and review across. A pai
 carried over (no fit template, missing image, art the starter lacks) stops the build with a message — nothing is
 dropped silently. Regression: `node scripts/check-2d-painted-rebuild.mjs`.
 
+## Targeted fixes on a saved painted project
+
+`node scripts/fix-painted-project.mjs --in=<saved.zip> --out=<fixed.zip> [--skip=detonator,feet,salute,fingers]` edits a
+saved painted project in place — no rebase, no regeneration: correction keys hold the detonator at its grip
+pose in `press_detonator`; hover deform corrections keep the painted under-boot tucked under the painted shoe
+plate; the salute's mid-raise cuff drawing rides on the hand bone and the forearm drawings switch at 0.6 / 3.27 s;
+painted finger meshes get two extra knuckle weight-smoothing passes. It refuses to overwrite existing corrections
+on those tracks, reports every changed JSON path, and fails if any image byte or bake track changed. Then rebuild
+the player/runtime from the fixed ZIP with `node scripts/build-painted-knight.mjs --from=<fixed.zip>` (as saved: the
+editable project is written back unchanged). Previews: `node scripts/preview-2d.mjs` (contact sheets, optional
+`--zip2` side by side, `--follow=<bone>`) and `node scripts/record-before-after.mjs` (side-by-side WebM from two
+runtime packages).
+
 ## Hands, props, contacts
 
 * Finger chains stay 3-bone per finger on both sides; 2D-only `<finger>_tip_<side>` bones mark the pads.

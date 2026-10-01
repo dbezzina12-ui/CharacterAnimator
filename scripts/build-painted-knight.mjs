@@ -84,9 +84,11 @@ const res = await page.evaluate(async ({ helmetB64, savedB64, rebase }) => {
   }
   const sk = P().skins.find((s) => s.id === SKIN);
   const finished = Object.entries(sk.status || {}).filter(([t, v]) => sk.replace[t] && v === 'finished').map(([t]) => t), provisional = Object.entries(sk.status || {}).filter(([t, v]) => sk.replace[t] && v === 'provisional').map(([t]) => t);
-  sk.note = `Painted skin. Finished: ${finished.join(', ') || 'none'}. Provisional: ${provisional.join(', ') || 'none'}. Every other piece has no painted art yet and falls back to the starter (3D-captured) art — see ART-REQUESTS.txt.`;
-  const def = P().skins.find((s) => s.id === 'default'); if (def) def.note = 'Starter skin: art captured from the 3D knight through the fixed art camera (not hand-painted).';
-  P().defaultSkin = SKIN;
+  // as saved: the project is not modified at all (notes, default skin and everything else stay as the user saved them)
+  const asSaved = source.mode === 'as saved';
+  if (!asSaved || !sk.note) sk.note = `Painted skin. Finished: ${finished.join(', ') || 'none'}. Provisional: ${provisional.join(', ') || 'none'}. Every other piece has no painted art yet and falls back to the starter (3D-captured) art — see ART-REQUESTS.txt.`;
+  const def = P().skins.find((s) => s.id === 'default'); if (def && (!asSaved || !def.note)) def.note = 'Starter skin: art captured from the 3D knight through the fixed art camera (not hand-painted).';
+  if (!asSaved || !P().defaultSkin) P().defaultSkin = SKIN;
   art2d.setSkin(SKIN);
   // 2) template pack after the fit (helmet = finished, the rest = missing) + joint coverage
   const pack = await art2d.paintPack('painted');
