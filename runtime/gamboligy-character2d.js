@@ -50,13 +50,22 @@ function keyIndex(times, t) {
   }
   return lo;
 }
+function easeU(tr, i, u) {
+  const e = tr.ease?.[i];
+  if (!e || e === "linear") return u;
+  if (e === "step") return 0;
+  if (e === "smooth") return u * u * (3 - 2 * u);
+  if (e === "in") return u * u;
+  if (e === "out") return 1 - (1 - u) * (1 - u);
+  return u;
+}
 function sampleField(tr, f, t) {
   const T = tr.t, V = tr[f];
   if (!T || !T.length || !V) return void 0;
   const i = keyIndex(T, t);
   if (i < 0) return V[0];
   if (i >= T.length - 1) return V[T.length - 1];
-  const u = (t - T[i]) / (T[i + 1] - T[i]);
+  const u = easeU(tr, i, (t - T[i]) / (T[i + 1] - T[i]));
   return V[i] + (V[i + 1] - V[i]) * u;
 }
 function sampleVector(tr, t) {
@@ -65,7 +74,7 @@ function sampleVector(tr, t) {
   const i = keyIndex(T, t);
   if (i < 0) return V[0];
   if (i >= T.length - 1) return V[T.length - 1];
-  const u = (t - T[i]) / (T[i + 1] - T[i]), a = V[i], b = V[i + 1];
+  const u = easeU(tr, i, (t - T[i]) / (T[i + 1] - T[i])), a = V[i], b = V[i + 1];
   if (a == null || b == null) return u < 1 ? a : b;
   const out = new Array(a.length);
   for (let k = 0; k < a.length; k++) out[k] = a[k] + (b[k] - a[k]) * u;
@@ -127,6 +136,9 @@ var Rig = class {
     for (const a of Object.values(P.attachments)) this.rebuildAttachment(a.id);
     this.constraints = (P.constraints || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     this.hands = P.hands || {};
+    this.handViews = P.handViews || {};
+    this.handSlotSide = /* @__PURE__ */ new Map();
+    for (const [side, hv] of Object.entries(this.handViews)) for (const set of Object.values(hv.sets || {})) for (const sl of Object.keys(set.slots || {})) this.handSlotSide.set(sl, side);
     this.clips = new Map((P.clips || []).map((c) => [c.name, c]));
     this.setSkin(this.skinId || "default");
   }
@@ -235,7 +247,7 @@ var Rig = class {
       const hv = { curl: 0, thumb: 0, index: 0, middle: 0, ring: 0, pinky: 0 };
       for (const layer of layers) {
         const tr = layer.hands?.[side];
-        if (tr && tr.t?.length) for (const f of HAND_FIELDS) {
+        if (tr && tr.t?.length && !tr.disabled) for (const f of HAND_FIELDS) {
           const v = sampleField(tr, f, t);
           if (v !== void 0) hv[f] += v;
         }
@@ -259,15 +271,36 @@ var Rig = class {
     }
     const nS = this.slots.length;
     const slotAttachment = new Array(nS), slotColor = new Array(nS);
+    const handSets = {};
+    for (const side of Object.keys(this.handViews)) {
+      let set;
+      for (const layer of layers) {
+        if (layer.handSets?.[side]?.disabled) continue;
+        const v = sampleStep(layer.handSets?.[side], t);
+        if (v !== void 0) set = v;
+      }
+      if (opts.handSets?.[side] !== void 0) set = opts.handSets[side];
+      if (set != null && this.handViews[side].sets?.[set]) handSets[side] = set;
+    }
     for (let i = 0; i < nS; i++) {
       const s = this.slots[i];
       let att = s.attachment ?? null, col = s.color || [1, 1, 1, 1];
+      const hs = this.handSlotSide.get(s.id);
       for (const layer of layers) {
         const st = layer.slots?.[s.id];
-        if (!st) continue;
-        const a = sampleStep(st.attachment, t);
-        if (a !== void 0) att = a;
-        if (st.color?.t?.length) col = sampleVector(st.color, t);
+        if (st && !st.disabled) {
+          const a = sampleStep(st.attachment, t);
+          if (a !== void 0) att = a;
+          if (st.color?.t?.length) col = sampleVector(st.color, t);
+        }
+        if (hs && !layer.handSets?.[hs]?.disabled) {
+          const v = sampleStep(layer.handSets?.[hs], t), m = v != null && this.handViews[hs].sets?.[v]?.slots;
+          if (m && s.id in m) att = m[s.id];
+        }
+      }
+      if (hs && opts.handSets?.[hs] != null) {
+        const m = this.handViews[hs].sets?.[opts.handSets[hs]]?.slots;
+        if (m && s.id in m) att = m[s.id];
       }
       if (opts.props && s.id in opts.props) att = opts.props[s.id];
       if (opts.slotAttachments && s.id in opts.slotAttachments) att = opts.slotAttachments[s.id];
@@ -281,7 +314,7 @@ var Rig = class {
       let mix = c.mix ?? 1;
       for (const layer of layers) {
         const tr = layer.constraints?.[c.id];
-        if (tr && tr.t?.length) mix = sampleField(tr, "v", t);
+        if (tr && tr.t?.length && !tr.disabled) mix = sampleField(tr, "v", t);
       }
       if (opts.constraints && opts.constraints[c.id] !== void 0) mix = opts.constraints[c.id];
       if (c.enabled === false) mix = 0;
@@ -290,7 +323,7 @@ var Rig = class {
     let order = this.setupOrder;
     const auto = clip?.tracks?.drawOrder ? sampleStep(clip.tracks.drawOrder, t) : void 0;
     if (auto) order = auto;
-    if (opts.corrections !== false && clip?.corrections?.drawOrder) {
+    if (opts.corrections !== false && clip?.corrections?.drawOrder && !clip.corrections.drawOrder.disabled) {
       const manual = sampleStep(clip.corrections.drawOrder, t);
       if (manual) order = manual;
     }
@@ -298,6 +331,7 @@ var Rig = class {
     const drawOrder = resolveOrder(order, this.setupOrder).map((id) => this.slotIndex.get(id));
     const deform = /* @__PURE__ */ new Map();
     for (const layer of layers) for (const [attId, tr] of Object.entries(layer.deform || {})) {
+      if (tr.disabled) continue;
       const v = sampleVector(tr, t);
       if (!v) continue;
       const prev = deform.get(attId);
@@ -313,14 +347,14 @@ var Rig = class {
       m[4] = w[0] * b[4] + w[2] * b[5] + w[4];
       m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
     }
-    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands };
+    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets };
   }
   _applyBones(bones, t) {
     if (!bones) return;
     const L = this.local;
     for (const [id, tr] of Object.entries(bones)) {
       const i = this.boneIndex.get(id);
-      if (i === void 0) continue;
+      if (i === void 0 || tr.disabled) continue;
       const k = i * 5;
       if (tr.rotate?.t?.length) L[k + 2] += sampleField(tr.rotate, "v", t);
       if (tr.translate?.t?.length) {
@@ -684,7 +718,8 @@ var Renderer2D = class {
   }
   /**
    * Draw one evaluated pose. opts: { clear=true, dpr, only:Set(slotIds), dim:Set(slotIds) (drawn faded),
-   *   flat: [r,g,b,a] silhouette colour, skip:Set(slotIds), viewport:[x,y,w,h] device px, view:{x,y,zoom} }
+   *   flat: [r,g,b,a] silhouette colour, skip:Set(slotIds), viewport:[x,y,w,h] device px, view:{x,y,zoom},
+   *   alpha: overall opacity (overlays such as a starter-art ghost under painted art) }
    * Returns the draw list with world-space vertices (reused by hit testing).
    */
   draw(rig, pose, opts = {}) {
@@ -706,7 +741,7 @@ var Renderer2D = class {
       const pos = rig.skinAttachment(d.attachment, pose, new Float32Array(att.vertices.length));
       drawn.push({ ...d, pos, tris: att.triangles });
       const c = opts.flat || d.color;
-      const a = (opts.dim && opts.dim.has(d.slot) ? 0.25 : 1) * c[3];
+      const a = (opts.dim && opts.dim.has(d.slot) ? 0.25 : 1) * c[3] * (opts.alpha ?? 1);
       gl.uniform4f(this.loc.color, c[0] * a, c[1] * a, c[2] * a, a);
       gl.uniform1f(this.loc.flat, opts.flat ? 1 : 0);
       switch (d.blend) {

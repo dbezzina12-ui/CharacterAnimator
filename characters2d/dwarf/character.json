@@ -5668,6 +5668,18 @@
     "clip": "cheer",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2],
+      "palm": [-0.162,0,0.361,0.484,0.485,0.468,0.464,0.479,0.542,0.583,0.542,0.479,0.464,0.468,0.485,0.564,0.578,0.515,0.485,0.484,0.361,0,-0.162],
+      "curl": [0.106,0.322,0.755,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.755,0.322,0.106]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2],
+      "palm": [0.17,0.147,0.097,0.045,0.041,0.014,0.009,0.03,0.114,0.171,0.114,0.03,0.009,0.014,0.041,0.144,0.164,0.078,0.041,0.045,0.097,0.147,0.17],
+      "curl": [0.106,0.322,0.755,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.755,0.322,0.106]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -6349,7 +6361,17 @@
       "t": 0.3333,
       "name": "armsUp"
      }
-    ]
+    ],
+    "handSets": {
+     "L": {
+      "t": [0,0.2],
+      "v": ["open_back","fist_back"]
+     },
+     "R": {
+      "t": [0,0.2],
+      "v": ["open_palm","fist_palm"]
+     }
+    }
    },
    "corrections": {
     "bones": {},
@@ -6360,12 +6382,13 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
    "status": {
-    "level": "needs-art",
-    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_L: the other side of the hand turns toward the camera; the default hand art shows the wrong side — add palm/back-side hand art or a swap"]
+    "level": "attention",
+    "notes": ["forearm_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_R foreshortens to 32% of its length (points at/away from the camera): art is squashed along the bone","hand_L: missing hand art fist_palm, relaxed_palm, open_palm (fell back to the back-of-hand set)"]
    }
   },
   {
@@ -6379,6 +6402,18 @@
     "clip": "float_idle",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3],
+      "palm": [0.026,0.024,0.014,-0.003,-0.027,-0.055,-0.086,-0.119,-0.151,-0.181,-0.207,-0.229,-0.245,-0.255,-0.261,-0.261,-0.256,-0.248,-0.235,-0.219,-0.199,-0.175,-0.149,-0.12,-0.091,-0.062,-0.035,-0.011,0.008,0.02,0.026],
+      "curl": [0.206,0.201,0.193,0.184,0.174,0.163,0.152,0.142,0.131,0.123,0.115,0.11,0.107,0.106,0.107,0.11,0.116,0.123,0.132,0.143,0.153,0.164,0.175,0.185,0.194,0.201,0.207,0.21,0.211,0.21,0.206]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3],
+      "palm": [0.326,0.32,0.308,0.293,0.275,0.254,0.233,0.212,0.193,0.177,0.165,0.156,0.151,0.15,0.153,0.158,0.165,0.175,0.187,0.2,0.214,0.23,0.246,0.263,0.279,0.295,0.308,0.318,0.325,0.328,0.326],
+      "curl": [0.206,0.201,0.193,0.184,0.174,0.163,0.152,0.142,0.131,0.123,0.115,0.11,0.107,0.106,0.107,0.11,0.116,0.123,0.132,0.143,0.153,0.164,0.175,0.185,0.194,0.201,0.207,0.21,0.211,0.21,0.206]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -7034,7 +7069,8 @@
     "deform": {},
     "hands": {},
     "constraints": {},
-    "events": []
+    "events": [],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -7045,6 +7081,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -7064,6 +7101,18 @@
     "clip": "idle",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4],
+      "palm": [-0.153,-0.154,-0.154,-0.154,-0.152,-0.149,-0.144,-0.138,-0.131,-0.124,-0.117,-0.111,-0.106,-0.104,-0.104,-0.107,-0.113,-0.121,-0.132,-0.144,-0.156,-0.169,-0.181,-0.191,-0.199,-0.205,-0.207,-0.207,-0.204,-0.199,-0.192,-0.185,-0.177,-0.169,-0.163,-0.158,-0.154,-0.152,-0.151,-0.152,-0.153],
+      "curl": [0.153,0.156,0.157,0.158,0.158,0.158,0.156,0.154,0.151,0.148,0.144,0.139,0.135,0.13,0.125,0.12,0.115,0.111,0.107,0.103,0.1,0.098,0.096,0.095,0.095,0.096,0.097,0.099,0.102,0.106,0.11,0.114,0.119,0.124,0.128,0.133,0.138,0.143,0.147,0.15,0.153]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4],
+      "palm": [0.192,0.183,0.175,0.167,0.162,0.159,0.157,0.159,0.162,0.166,0.172,0.177,0.182,0.185,0.187,0.186,0.183,0.178,0.171,0.163,0.155,0.147,0.14,0.136,0.133,0.134,0.138,0.144,0.153,0.163,0.175,0.186,0.196,0.205,0.211,0.214,0.215,0.212,0.207,0.2,0.192],
+      "curl": [0.153,0.156,0.157,0.158,0.158,0.158,0.156,0.154,0.151,0.148,0.144,0.139,0.135,0.13,0.125,0.12,0.115,0.111,0.107,0.103,0.1,0.098,0.096,0.095,0.095,0.096,0.097,0.099,0.102,0.106,0.11,0.114,0.119,0.124,0.128,0.133,0.138,0.143,0.147,0.15,0.153]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -7725,7 +7774,8 @@
     "deform": {},
     "hands": {},
     "constraints": {},
-    "events": []
+    "events": [],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -7736,6 +7786,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -7755,6 +7806,18 @@
     "clip": "sword_2h_idle",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [-0.412,-0.412,-0.412,-0.412,-0.413,-0.414,-0.414,-0.415,-0.415,-0.416,-0.416,-0.416,-0.415,-0.415,-0.414,-0.414,-0.413,-0.412,-0.412,-0.412,-0.412],
+      "curl": [0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [0.695,0.696,0.696,0.697,0.699,0.7,0.702,0.703,0.705,0.705,0.706,0.705,0.705,0.703,0.702,0.7,0.699,0.697,0.696,0.696,0.695],
+      "curl": [0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -8486,7 +8549,8 @@
       "v": [1]
      }
     },
-    "events": []
+    "events": [],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -8497,6 +8561,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -8516,6 +8581,18 @@
     "clip": "sword_2h_slash",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [-0.411,-0.607,-0.9,-0.938,-0.864,-0.867,-0.886,-0.641,-0.958,-0.982,-0.964,-0.956,-0.952,-0.949,-0.967,-0.997,-0.997,-0.98,-0.808,-0.774,-0.709],
+      "curl": [0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [0.691,0.822,0.929,0.759,0.6,0.603,0.617,0.326,0.719,0.569,0.51,0.477,0.462,0.451,0.508,0.659,0.758,0.796,0.843,0.974,0.963],
+      "curl": [0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627,0.627]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -9305,7 +9382,8 @@
       "t": 1.4667,
       "name": "recover"
      }
-    ]
+    ],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -9316,6 +9394,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -9335,6 +9414,18 @@
     "clip": "walk_in_place",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1],
+      "palm": [-0.298,-0.292,-0.269,-0.235,-0.193,-0.17,-0.172,-0.198,-0.233,-0.262,-0.283,-0.297],
+      "curl": [0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1],
+      "palm": [0.289,0.272,0.24,0.208,0.185,0.167,0.16,0.17,0.197,0.235,0.272,0.289],
+      "curl": [0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232,0.232]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -10037,7 +10128,8 @@
     "deform": {},
     "hands": {},
     "constraints": {},
-    "events": []
+    "events": [],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -10048,6 +10140,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -10067,6 +10160,18 @@
     "clip": "wave",
     "artView": "front34",
     "bakeRate": 30,
+    "handSignal": {
+     "L": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [-0.162,-0.173,-0.193,-0.203,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.205,-0.203,-0.193,-0.173,-0.162],
+      "curl": [0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211,0.211]
+     },
+     "R": {
+      "t": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2],
+      "palm": [0.17,0.136,0.061,0.04,0.151,0.356,0.541,0.641,0.641,0.541,0.356,0.151,0.019,0.019,0.151,0.356,0.541,0.574,0.397,0.204,0.17],
+      "curl": [0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053,0.053]
+     }
+    },
     "tolerance": {
      "rotateDeg": 0.05,
      "translatePx": 0.05,
@@ -10611,7 +10716,8 @@
     "deform": {},
     "hands": {},
     "constraints": {},
-    "events": []
+    "events": [],
+    "handSets": {}
    },
    "corrections": {
     "bones": {},
@@ -10622,6 +10728,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -10744,6 +10851,7 @@
       "pinky": [0,0.1,0,0,0,1,0,0.1,0,0,0,0]
      }
     },
+    "handSets": {},
     "constraints": {},
     "events": [
      {
@@ -10781,6 +10889,7 @@
     },
     "deform": {},
     "hands": {},
+    "handSets": {},
     "constraints": {},
     "events": []
    },
@@ -11422,5 +11531,131 @@
   },
   "reference": null,
   "mode": "setup"
+ },
+ "handViews": {
+  "L": {
+   "sets": {
+    "open_back": {
+     "view": "back",
+     "pose": "open",
+     "slots": {
+      "hand_L": "hand_L.default",
+      "thumb_L": "thumb_L.default",
+      "index_L": "index_L.default",
+      "middle_L": "middle_L.default",
+      "ring_L": "ring_L.default",
+      "pinky_L": "pinky_L.default"
+     },
+     "source": "setup art (articulated fingers)",
+     "measuredPalmFacing": -0.162
+    },
+    "relaxed_back": {
+     "view": "back",
+     "pose": "relaxed",
+     "slots": {
+      "hand_L": "hand_L.default",
+      "thumb_L": "thumb_L.default",
+      "index_L": "index_L.default",
+      "middle_L": "middle_L.default",
+      "ring_L": "ring_L.default",
+      "pinky_L": "pinky_L.default"
+     },
+     "source": "setup art; fingers curl through the finger bones",
+     "measuredPalmFacing": -0.162
+    },
+    "fist_back": {
+     "view": "back",
+     "pose": "fist",
+     "slots": {
+      "hand_L": "hand_L.fist",
+      "thumb_L": "thumb_L.fist",
+      "index_L": "index_L.fist",
+      "middle_L": "middle_L.fist",
+      "ring_L": "ring_L.fist",
+      "pinky_L": "pinky_L.fist"
+     },
+     "source": "3D capture",
+     "measuredPalmFacing": -0.162
+    },
+    "grip_sword": {
+     "view": "back",
+     "pose": "grip",
+     "slots": {
+      "hand_L": "hand_L.grip_sword",
+      "thumb_L": "thumb_L.grip_sword",
+      "index_L": "index_L.grip_sword",
+      "middle_L": "middle_L.grip_sword",
+      "ring_L": "ring_L.grip_sword",
+      "pinky_L": "pinky_L.grip_sword"
+     },
+     "source": "3D capture of sword_2h_idle @ 0s",
+     "measuredPalmFacing": -0.412
+    }
+   },
+   "setupView": "back",
+   "note": "palm + finger layers swap together; keys: tracks/corrections.handSets. view = measured palm facing (+palm / -back) at capture"
+  },
+  "R": {
+   "sets": {
+    "open_palm": {
+     "view": "palm",
+     "pose": "open",
+     "slots": {
+      "hand_R": "hand_R.default",
+      "thumb_R": "thumb_R.default",
+      "index_R": "index_R.default",
+      "middle_R": "middle_R.default",
+      "ring_R": "ring_R.default",
+      "pinky_R": "pinky_R.default"
+     },
+     "source": "setup art (articulated fingers)",
+     "measuredPalmFacing": 0.17
+    },
+    "relaxed_palm": {
+     "view": "palm",
+     "pose": "relaxed",
+     "slots": {
+      "hand_R": "hand_R.default",
+      "thumb_R": "thumb_R.default",
+      "index_R": "index_R.default",
+      "middle_R": "middle_R.default",
+      "ring_R": "ring_R.default",
+      "pinky_R": "pinky_R.default"
+     },
+     "source": "setup art; fingers curl through the finger bones",
+     "measuredPalmFacing": 0.17
+    },
+    "fist_palm": {
+     "view": "palm",
+     "pose": "fist",
+     "slots": {
+      "hand_R": "hand_R.fist",
+      "thumb_R": "thumb_R.fist",
+      "index_R": "index_R.fist",
+      "middle_R": "middle_R.fist",
+      "ring_R": "ring_R.fist",
+      "pinky_R": "pinky_R.fist"
+     },
+     "source": "3D capture",
+     "measuredPalmFacing": 0.17
+    },
+    "grip_sword": {
+     "view": "palm",
+     "pose": "grip",
+     "slots": {
+      "hand_R": "hand_R.grip_sword",
+      "thumb_R": "thumb_R.grip_sword",
+      "index_R": "index_R.grip_sword",
+      "middle_R": "middle_R.grip_sword",
+      "ring_R": "ring_R.grip_sword",
+      "pinky_R": "pinky_R.grip_sword"
+     },
+     "source": "3D capture of sword_2h_idle @ 0s",
+     "measuredPalmFacing": 0.695
+    }
+   },
+   "setupView": "palm",
+   "note": "palm + finger layers swap together; keys: tracks/corrections.handSets. view = measured palm facing (+palm / -back) at capture"
+  }
  }
 }

@@ -51,14 +51,27 @@ export function keyIndex(times, t) {
   while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (times[mid] <= t) lo = mid; else hi = mid; }
   return lo;
 }
-/** Linear sample of numeric field `f`; undefined when the track has no keys. */
+/**
+ * Per-key easing of the segment that starts at key i: tr.ease = ['linear'|'smooth'|'in'|'out'|'step', ...]
+ * (missing = linear). 'step' holds the value until the next key (crisp impacts).
+ */
+export function easeU(tr, i, u) {
+  const e = tr.ease?.[i];
+  if (!e || e === 'linear') return u;
+  if (e === 'step') return 0;
+  if (e === 'smooth') return u * u * (3 - 2 * u);
+  if (e === 'in') return u * u;
+  if (e === 'out') return 1 - (1 - u) * (1 - u);
+  return u;
+}
+/** Sample of numeric field `f` (linear unless eased); undefined when the track has no keys. */
 export function sampleField(tr, f, t) {
   const T = tr.t, V = tr[f];
   if (!T || !T.length || !V) return undefined;
   const i = keyIndex(T, t);
   if (i < 0) return V[0];
   if (i >= T.length - 1) return V[T.length - 1];
-  const u = (t - T[i]) / (T[i + 1] - T[i]);
+  const u = easeU(tr, i, (t - T[i]) / (T[i + 1] - T[i]));
   return V[i] + (V[i + 1] - V[i]) * u;
 }
 /** Linear sample of vector values (arrays of equal length) in field `v`. */
@@ -68,7 +81,7 @@ export function sampleVector(tr, t) {
   const i = keyIndex(T, t);
   if (i < 0) return V[0];
   if (i >= T.length - 1) return V[T.length - 1];
-  const u = (t - T[i]) / (T[i + 1] - T[i]), a = V[i], b = V[i + 1];
+  const u = easeU(tr, i, (t - T[i]) / (T[i + 1] - T[i])), a = V[i], b = V[i + 1];
   if (a == null || b == null) return u < 1 ? a : b;
   const out = new Array(a.length);
   for (let k = 0; k < a.length; k++) out[k] = a[k] + (b[k] - a[k]) * u;
@@ -90,7 +103,7 @@ export function setKey(tr, t, values) {
     tr.t.splice(i, 0, t);
     for (const f of Object.keys(values)) { tr[f] ||= []; tr[f].splice(i, 0, values[f]); }
     for (const f of Object.keys(tr)) if (f !== 't' && !(f in values) && Array.isArray(tr[f]) && tr[f].length < tr.t.length) {
-      tr[f].splice(i, 0, tr[f][Math.max(0, i - 1)] ?? 0);
+      tr[f].splice(i, 0, f === 'ease' ? (tr[f][Math.max(0, i - 1)] ?? 'linear') : (tr[f][Math.max(0, i - 1)] ?? 0));
     }
   } else {
     for (const f of Object.keys(values)) { tr[f] ||= []; tr[f][i] = values[f]; }
@@ -113,7 +126,7 @@ export function frameTimes(duration, fps, loop) {
 
 // ------------------------------------------------------------------ rig -------------
 const HAND_FIELDS = ['curl', 'thumb', 'index', 'middle', 'ring', 'pinky'];
-function emptyLayer() { return { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] }; }
+function emptyLayer() { return { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, handSets: {}, constraints: {}, events: [] }; }
 export function ensureLayer(l) {
   const e = emptyLayer();
   for (const k of Object.keys(e)) if (l[k] == null) l[k] = e[k];
@@ -163,6 +176,10 @@ export class Rig {
     for (const a of Object.values(P.attachments)) this.rebuildAttachment(a.id);
     this.constraints = (P.constraints || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     this.hands = P.hands || {};
+    // hand view sets: { L: { sets: { open_back: { view, pose, slots: { hand_L: attId, thumb_L: attId, ... } } } } }
+    this.handViews = P.handViews || {};
+    this.handSlotSide = new Map();
+    for (const [side, hv] of Object.entries(this.handViews)) for (const set of Object.values(hv.sets || {})) for (const sl of Object.keys(set.slots || {})) this.handSlotSide.set(sl, side);
     this.clips = new Map((P.clips || []).map((c) => [c.name, c]));
     this.setSkin(this.skinId || 'default');
   }
@@ -250,7 +267,7 @@ export class Rig {
       const hv = { curl: 0, thumb: 0, index: 0, middle: 0, ring: 0, pinky: 0 };
       for (const layer of layers) {
         const tr = layer.hands?.[side];
-        if (tr && tr.t?.length) for (const f of HAND_FIELDS) { const v = sampleField(tr, f, t); if (v !== undefined) hv[f] += v; }
+        if (tr && tr.t?.length && !tr.disabled) for (const f of HAND_FIELDS) { const v = sampleField(tr, f, t); if (v !== undefined) hv[f] += v; }
       }
       const o = opts.hands?.[side];
       if (o) for (const f of HAND_FIELDS) if (o[f] !== undefined) hv[f] += o[f];
@@ -266,15 +283,27 @@ export class Rig {
     // slots: attachment + colour
     const nS = this.slots.length;
     const slotAttachment = new Array(nS), slotColor = new Array(nS);
+    // hand view sets (palm + finger layers swapped together): per layer, a keyed set overrides that layer's
+    // slot keys for the slots it names; later layers (corrections) win; opts.handSets wins over all
+    const handSets = {};
+    for (const side of Object.keys(this.handViews)) {
+      let set; for (const layer of layers) { if (layer.handSets?.[side]?.disabled) continue; const v = sampleStep(layer.handSets?.[side], t); if (v !== undefined) set = v; }
+      if (opts.handSets?.[side] !== undefined) set = opts.handSets[side];
+      if (set != null && this.handViews[side].sets?.[set]) handSets[side] = set;
+    }
     for (let i = 0; i < nS; i++) {
       const s = this.slots[i];
       let att = s.attachment ?? null, col = s.color || [1, 1, 1, 1];
+      const hs = this.handSlotSide.get(s.id);
       for (const layer of layers) {
         const st = layer.slots?.[s.id];
-        if (!st) continue;
-        const a = sampleStep(st.attachment, t); if (a !== undefined) att = a;
-        if (st.color?.t?.length) col = sampleVector(st.color, t);
+        if (st && !st.disabled) {
+          const a = sampleStep(st.attachment, t); if (a !== undefined) att = a;
+          if (st.color?.t?.length) col = sampleVector(st.color, t);
+        }
+        if (hs && !layer.handSets?.[hs]?.disabled) { const v = sampleStep(layer.handSets?.[hs], t), m = v != null && this.handViews[hs].sets?.[v]?.slots; if (m && s.id in m) att = m[s.id]; }
       }
+      if (hs && opts.handSets?.[hs] != null) { const m = this.handViews[hs].sets?.[opts.handSets[hs]]?.slots; if (m && s.id in m) att = m[s.id]; }
       if (opts.props && s.id in opts.props) att = opts.props[s.id];
       if (opts.slotAttachments && s.id in opts.slotAttachments) att = opts.slotAttachments[s.id];
       if (att && this.skinMap[att]) att = this.skinMap[att];
@@ -285,7 +314,7 @@ export class Rig {
     const contacts = [];
     for (const c of this.constraints) {
       let mix = c.mix ?? 1;
-      for (const layer of layers) { const tr = layer.constraints?.[c.id]; if (tr && tr.t?.length) mix = sampleField(tr, 'v', t); }
+      for (const layer of layers) { const tr = layer.constraints?.[c.id]; if (tr && tr.t?.length && !tr.disabled) mix = sampleField(tr, 'v', t); }
       if (opts.constraints && opts.constraints[c.id] !== undefined) mix = opts.constraints[c.id];
       if (c.enabled === false) mix = 0;
       contacts.push(this.solveConstraint(c, mix, slotAttachment));
@@ -294,7 +323,7 @@ export class Rig {
     let order = this.setupOrder;
     const auto = clip?.tracks?.drawOrder ? sampleStep(clip.tracks.drawOrder, t) : undefined;
     if (auto) order = auto;
-    if (opts.corrections !== false && clip?.corrections?.drawOrder) {
+    if (opts.corrections !== false && clip?.corrections?.drawOrder && !clip.corrections.drawOrder.disabled) {
       const manual = sampleStep(clip.corrections.drawOrder, t);
       if (manual) order = manual;
     }
@@ -303,6 +332,7 @@ export class Rig {
     // deform offsets (bind space), additive across layers
     const deform = new Map();
     for (const layer of layers) for (const [attId, tr] of Object.entries(layer.deform || {})) {
+      if (tr.disabled) continue;
       const v = sampleVector(tr, t); if (!v) continue;
       const prev = deform.get(attId);
       if (!prev) deform.set(attId, Float64Array.from(v));
@@ -314,14 +344,14 @@ export class Rig {
       m[2] = w[0] * b[2] + w[2] * b[3]; m[3] = w[1] * b[2] + w[3] * b[3];
       m[4] = w[0] * b[4] + w[2] * b[5] + w[4]; m[5] = w[1] * b[4] + w[3] * b[5] + w[5];
     }
-    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands };
+    return { t, clip: clip?.name ?? null, slotAttachment, slotColor, drawOrder, deform, contacts, hands, handSets };
   }
 
   _applyBones(bones, t) {
     if (!bones) return;
     const L = this.local;
     for (const [id, tr] of Object.entries(bones)) {
-      const i = this.boneIndex.get(id); if (i === undefined) continue;
+      const i = this.boneIndex.get(id); if (i === undefined || tr.disabled) continue;
       const k = i * 5;
       if (tr.rotate?.t?.length) L[k + 2] += sampleField(tr.rotate, 'v', t);
       if (tr.translate?.t?.length) { L[k] += sampleField(tr.translate, 'x', t); L[k + 1] += sampleField(tr.translate, 'y', t); }

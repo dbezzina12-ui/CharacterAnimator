@@ -85,7 +85,19 @@ export function validateProject(p, { images = null, runtime = false } = {}) {
       for (const b of Object.keys(layer.bones || {})) if (!bones.has(b)) E(`clip ${c.name}: track for unknown bone ${b}`);
       for (const s of Object.keys(layer.slots || {})) if (!slots.has(s)) E(`clip ${c.name}: track for unknown slot ${s}`);
       for (const [s, tr] of Object.entries(layer.slots || {})) for (const a of tr.attachment?.v || []) if (a && !p.attachments[a]) E(`clip ${c.name}: slot ${s} keys missing attachment ${a}`);
+      for (const [side, tr] of Object.entries(layer.handSets || {})) for (const v of tr.v || []) if (v != null && !p.handViews?.[side]?.sets?.[v]) E(`clip ${c.name}: hand set ${v} (${side}) is not defined in handViews`);
+      for (const [attId, tr] of Object.entries(layer.deform || {})) {
+        const a = p.attachments[attId];
+        if (!a) { E(`clip ${c.name}: deform keys for missing attachment ${attId}`); continue; }
+        const n = a.vertices.length;
+        (tr.v || []).forEach((v, k) => { if (v && v.length !== n) E(`clip ${c.name}: deform key ${k} of ${attId} has ${v.length / 2} vertices but the mesh has ${n / 2} (mesh edited without remapping keys)`); });
+        if (tr.ease && tr.ease.length !== tr.t.length) E(`clip ${c.name}: deform easing of ${attId} does not match its keys`);
+      }
     }
+  }
+  for (const [side, hv] of Object.entries(p.handViews || {})) for (const [name, set] of Object.entries(hv.sets || {})) for (const [sl, a] of Object.entries(set.slots || {})) {
+    if (!slots.has(sl)) E(`hand set ${side}/${name}: slot ${sl} does not exist`);
+    if (a && !p.attachments[a]) E(`hand set ${side}/${name}: attachment ${a} is missing`);
   }
   for (const sk of p.skins || []) for (const [a, b] of Object.entries(sk.replace || {})) {
     if (!p.attachments[a]) E(`skin ${sk.id}: replaces unknown attachment ${a}`);
@@ -123,7 +135,7 @@ export function computeInverseBinds(project) {
  */
 export function runtimeSubset(project, { atlas = null } = {}) {
   const keep = ['characterId', 'displayName', 'axes', 'referenceHeightPx', 'pixelsPerMeter', 'artView', 'bones', 'slots',
-    'attachments', 'images', 'skins', 'hands', 'constraints', 'props', 'clips', 'sockets'];
+    'attachments', 'images', 'skins', 'hands', 'handViews', 'constraints', 'props', 'clips', 'sockets'];
   const out = { schema: RUNTIME_SCHEMA, generatedFrom: SCHEMA };
   for (const k of keep) if (project[k] !== undefined) out[k] = JSON.parse(JSON.stringify(project[k]));
   out.clips = out.clips.map((c) => ({ name: c.name, duration: c.duration, loop: !!c.loop, fps: c.fps, meta: c.meta, tracks: c.tracks, corrections: c.corrections, status: c.status }));
@@ -135,7 +147,7 @@ export function runtimeSubset(project, { atlas = null } = {}) {
 
 function ensureEmptyDrop(c) {
   const k = c.corrections, empty = (o) => !o || (Array.isArray(o) ? !o.length : !Object.keys(o).length);
-  if (empty(k.bones) && empty(k.slots) && empty(k.drawOrder?.t) && empty(k.deform) && empty(k.hands) && empty(k.constraints) && empty(k.events)) delete c.corrections;
+  if (empty(k.bones) && empty(k.slots) && empty(k.drawOrder?.t) && empty(k.deform) && empty(k.hands) && empty(k.handSets) && empty(k.constraints) && empty(k.events)) delete c.corrections;
 }
 
 /** Project JSON for files: objects indented, arrays of numbers/strings kept on one line (diff-friendly, compact). */

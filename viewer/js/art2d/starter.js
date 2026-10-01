@@ -10,9 +10,24 @@ import { Occlusion, solveOrder } from './occlusion.js';
 import { gridMesh, bleedEdges, pruneWeights } from './mesh.js';
 import { computeInverseBinds } from './schema.js';
 import { PROP_AXES, SUPPORT_CLIPS } from './specs.js';
+import { suggestHandSets } from './handviews.js';
 
 const FPS = 30;
 const FINGERS = ['thumb', 'index', 'middle', 'ring', 'pinky'];
+const POSES_2D = ['open', 'relaxed', 'fist'];
+/**
+ * How much of the PALM faces the camera: +1 palm, -1 back of the hand. The palm normal is
+ * (wrist→middle knuckle) × (pinky→index knuckle), signed so that in the bind A-pose it points toward the
+ * body midline (palms face the thighs).
+ */
+function palmFacing(ch, cam, s, signs) {
+  const P = (n) => ch.bones[n] && new THREE.Vector3().setFromMatrixPosition(ch.bones[n].matrixWorld);
+  const H = P(`hand_${s}`), M = P(`middle_01_${s}`), I = P(`index_01_${s}`), K = P(`pinky_01_${s}`); if (!H || !M || !I || !K) return 0;
+  const n = M.clone().sub(H).cross(I.clone().sub(K)).normalize();
+  if (signs[s] === undefined) { const mid = new THREE.Vector3(-Math.sign(H.x || 1), 0, 0); signs[s] = n.dot(mid) >= 0 ? 1 : -1; return null; }
+  const toCam = cam.f.clone().negate();
+  return n.multiplyScalar(signs[s]).dot(toCam);
+}
 const r3 = (x) => +(+x).toFixed(3), r4 = (x) => +(+x).toFixed(4);
 
 // ------------------------------------------------------------------ materials -------
@@ -461,6 +476,11 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
 
   // ---------------- pose-specific hand art
   const captureKeys = [];                   // {clip, slot, attachment}
+  // palm-normal sign per side, measured once at the bind pose; then the view of every capture
+  const palmSigns = {}, captureView = {};
+  ch.resetPose(); ch.root.updateMatrixWorld(true);
+  for (const s of ['L', 'R']) palmFacing(ch, cam, s, palmSigns);
+  const bindView = Object.fromEntries(['L', 'R'].map((s) => [s, palmFacing(ch, cam, s, palmSigns)]));
   const captureMarkers = [];
   stage.begin();
   try {
@@ -473,8 +493,11 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
           const deg = (f === 'thumb' ? [20, 35, 45] : [78, 95, 62])[k - 1] * cap.curl;
           b.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), deg * Math.PI / 180));
         });
+        // palm-side captures: the hand turned 180° about its own length axis shows its palm to the camera
+        if (cap.twist) for (const s of cap.sides) ch.bones[`hand_${s}`]?.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), cap.twist * Math.PI / 180));
       }
       ch.root.updateMatrixWorld(true);
+      for (const s of cap.sides) (captureView[cap.name] ||= {})[s] = palmFacing(ch, cam, s, palmSigns);
       const samples = bridge.sampleWorld(cap.clip ? PROP_AXES[clipMeta(cap.clip)?.prop] : null);
       for (const s of cap.sides) {
         const hb = `hand_${s}`, hs = samples[bridge.index.get(hb)];
@@ -485,8 +508,18 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
           const id = await addAttachment({ slot: sl.id, name: cap.name, bone: hb, layer, frame,
             source: { kind: 'render3d', character: spec.source3d, pose: cap.clip ? `${cap.clip} @ ${cap.t}s` : `bind + finger curl ${cap.curl}`,
               note: 'Pose-specific hand art rendered from the 3D model; rigid on the hand bone.' } });
-          for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id });
+          for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.range || null });
         }
+      }
+      // pose-specific armour pieces (e.g. a raised pauldron, a forearm pointing at the camera): rigid on
+      // their own bone, registered to that bone's 2D frame at the captured pose
+      for (const slotId of cap.limbs || []) {
+        const sl = spec.slots.find((x) => x.id === slotId); if (!sl) continue;
+        const bs = samples[bridge.index.get(sl.bone)]; if (!bs) continue;
+        const layer = renderLayer(select(sl), sl); if (!layer) continue;
+        const id = await addAttachment({ slot: sl.id, name: cap.name, bone: sl.bone, layer, frame: affCompose(bs.pos[0], bs.pos[1], bs.rot, bs.sx, bs.sy),
+          source: { kind: 'render3d', character: spec.source3d, pose: `${cap.clip} @ ${cap.t}s`, note: 'Pose-specific armour art rendered from the 3D model at this pose; rigid on its bone.' } });
+        for (const c of cap.clips || []) captureKeys.push({ clip: c, slot: sl.id, attachment: id, range: cap.range || null });
       }
       if (cap.propMarker && viewer.state.clipProp) {
         const pm = viewer.state.clipProp.matrixWorld, sock = ch.sockets[cap.propMarker.socket];
@@ -498,6 +531,30 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
   } finally { stage.end(); }
   function zeroMorphsIfNone() { /* morphs stay as animated; they do not affect hands */ }
   function clipMeta(name) { return cfg.animations?.find((a) => a.name === name) || null; }
+  // hand view sets: palm + five finger layers that swap together (see handviews.js for the rule)
+  project.handViews = {};
+  for (const s of ['L', 'R']) {
+    const groups = ['hand', ...FINGERS].map((g) => `${g}_${s}`).filter((sl) => slots.some((x) => x.id === sl));
+    const setOf = (name) => (groups.every((sl) => attachments[`${sl}.${name}`]) ? Object.fromEntries(groups.map((sl) => [sl, `${sl}.${name}`])) : null);
+    const sets = {}, viewOf = (f) => (f > 0.1 ? 'palm' : f < -0.1 ? 'back' : 'side');
+    const def = Object.fromEntries(groups.map((sl) => [sl, slots.find((x) => x.id === sl).attachment]));
+    const put = (pose, name, slotMap, f, source) => {
+      const view = viewOf(f), key = `${pose}_${view}`;
+      if (!sets[key]) sets[key] = { view, pose, slots: slotMap, source, measuredPalmFacing: f == null ? null : +f.toFixed(3) };
+    };
+    // setup art: articulated fingers, so it serves both open and relaxed in its own view
+    put('open', 'default', def, bindView[s], 'setup art (articulated fingers)');
+    put('relaxed', 'default', def, bindView[s], 'setup art; fingers curl through the finger bones');
+    if (setOf('fist')) put('fist', 'fist', setOf('fist'), captureView.fist?.[s] ?? bindView[s], '3D capture');
+    if (setOf('relaxed') && !sets[`relaxed_${viewOf(bindView[s])}`]) put('relaxed', 'relaxed', setOf('relaxed'), captureView.relaxed?.[s], '3D capture');
+    for (const pose of POSES_2D) if (setOf(`${pose}_turned`)) put(pose, `${pose}_turned`, setOf(`${pose}_turned`), captureView[`${pose}_turned`]?.[s], '3D capture, hand turned 180° about its length axis');
+    for (const cap of spec.captures || []) if (cap.clip && cap.sides.includes(s)) {
+      const m = Object.fromEntries(groups.map((sl) => [sl, attachments[`${sl}.${cap.name}`] ? `${sl}.${cap.name}` : def[sl]]));
+      const f = captureView[cap.name]?.[s];
+      sets[cap.name] = { view: f > 0.1 ? 'palm' : f < -0.1 ? 'back' : 'side', pose: 'grip', slots: m, source: `3D capture of ${cap.clip} @ ${cap.t}s`, measuredPalmFacing: f == null ? null : +f.toFixed(3) };
+    }
+    if (groups.length) project.handViews[s] = { sets, setupView: viewOf(bindView[s]), note: 'palm + finger layers swap together; keys: tracks/corrections.handSets. view = measured palm facing (+palm / -back) at capture' };
+  }
   for (const cm of captureMarkers) {            // e.g. where the left palm rests on the sword in the hover
     const a = attachments[`prop_R.${cm.prop}`]; if (!a) continue;
     const axes = PROP_AXES[cm.prop], X = new THREE.Vector3(...axes.x), Y = new THREE.Vector3(...axes.y), p = new THREE.Vector3(...cm.local);
@@ -546,6 +603,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     const axes = propId ? PROP_AXES[propId] : PROP_AXES.Sword2H;
     const frames = [], orders = [], deforms = [];
     const notes = new Set();
+    const handSignal = {};
     let yawMax = 0, headYawMax = 0; const minRatio = {}; const flips = { L: false, R: false }; let edgeOn = false;
     const bindFacing = {}; const chestBind = new THREE.Quaternion(), headBind = new THREE.Quaternion();
     ch.resetPose(); ch.root.updateMatrixWorld(true);
@@ -577,6 +635,11 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
         for (const s of ['L', 'R']) {
           const f = -axisOf(ch.sockets[`socket_hand_${s}_prop`].matrixWorld, '+z').dot(cam.f);
           if (Math.abs(f) > 0.3 && Math.sign(f) !== Math.sign(bindFacing[s])) flips[s] = true;
+          if (fi % 3 === 0) {                               // 10 Hz source signal for the hand-view rule
+            const curl = ['index', 'middle', 'ring', 'pinky'].reduce((a, fg) => { const b = ch.bones[`${fg}_02_${s}`], r = ch.rest?.[`${fg}_02_${s}`]; return a + (b && r ? b.quaternion.angleTo(r.q) / (Math.PI / 2) : 0); }, 0) / 4;
+            const sg = handSignal[s] ||= { t: [], palm: [], curl: [] };
+            sg.t.push(+times[fi].toFixed(4)); sg.palm.push(+palmFacing(ch, cam, s, palmSigns).toFixed(3)); sg.curl.push(+Math.min(1, curl).toFixed(3));
+          }
         }
         if (propId) { const ps = sm[bridge.index.get('prop_R')]; if (Math.abs(ps.sy) < 0.3) edgeOn = true; }
         // cape flutter from the 3D morph targets -> deform offsets (bind space of the chest-rigid mantle)
@@ -617,7 +680,21 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       last = key;
     });
     if (propId) tracks.slots.prop_R = { attachment: { t: [0], v: [`prop_R.${propId}`] } };
-    for (const ck of captureKeys.filter((c) => c.clip === name)) tracks.slots[ck.slot] = { attachment: { t: [0], v: [ck.attachment] } };
+    // capture keys per slot: whole-clip captures, or one or more [from, to] intervals (merged into one step track)
+    const bySlot = new Map();
+    for (const ck of captureKeys.filter((c) => c.clip === name)) (bySlot.get(ck.slot) || bySlot.set(ck.slot, []).get(ck.slot)).push(ck);
+    for (const [slot, list] of bySlot) {
+      const def = slots.find((x) => x.id === slot)?.attachment ?? null, whole = list.find((c) => !c.range);
+      if (whole) { tracks.slots[slot] = { attachment: { t: [0], v: [whole.attachment] } }; continue; }
+      const iv = list.flatMap((c) => (Array.isArray(c.range[0]) ? c.range : [c.range]).map(([a, b]) => [a, b, c.attachment])).sort((x, y) => x[0] - y[0]);
+      const t = [0], v = [def];
+      for (const [a, b, att] of iv) {
+        if (Math.abs(t[t.length - 1] - a) < 1e-6) v[v.length - 1] = att; else { t.push(a); v.push(att); }
+        t.push(b); v.push(def);
+      }
+      for (let i = t.length - 1; i > 0; i--) if (Math.abs(t[i] - t[i - 1]) < 1e-6) { t.splice(i - 1, 1); v.splice(i - 1, 1); }
+      tracks.slots[slot] = { attachment: { t: t.map((x) => +x.toFixed(4)), v } };
+    }
     if (SUPPORT_CLIPS[name]) tracks.constraints.support_L = { t: [0], v: [1] };
     if (deforms.length && mantleLookup && deforms.some(([, v]) => v.some((x) => Math.abs(x) > 0.05))) {
       // keep only the keys needed to stay within 0.3 px of the sampled flutter
@@ -631,19 +708,29 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     }
     tracks.events.sort((a, b) => a.t - b.t);
     // ---- status
-    const captured = new Set(captureKeys.filter((c) => c.clip === name).map((c) => c.slot.split('_').pop()));
+    const captured = new Set(captureKeys.filter((c) => c.clip === name && /^(hand|thumb|index|middle|ring|pinky)_/.test(c.slot)).map((c) => c.slot.split('_').pop()));
     if (yawMax > 30) notes.add(`torso turns up to ${yawMax.toFixed(0)}° from the art view: the front-three-quarter body art is shown rotated in-plane; a side/turned view skin would be needed for fidelity`);
     if (headYawMax > 35) notes.add(`head turns up to ${headYawMax.toFixed(0)}°: needs a turned-head view for accuracy`);
     for (const [b, r] of Object.entries(minRatio)) if (r < 0.45) notes.add(`${b} foreshortens to ${(r * 100).toFixed(0)}% of its length (points at/away from the camera): art is squashed along the bone`);
-    for (const s of ['L', 'R']) if (flips[s] && !captured.has(s)) notes.add(`hand_${s}: the other side of the hand turns toward the camera; the default hand art shows the wrong side — add palm/back-side hand art or a swap`);
+    // hand view sets suggested from the source signal (grip captures keyed above stay authoritative)
+    tracks.handSets = {};
+    const tmpClip = { name, duration: dur, source: { handSignal } };
+    for (const s of ['L', 'R']) {
+      if (captured.has(s) || !project.handViews[s]) continue;
+      const sug = suggestHandSets(project, tmpClip, s), setup = `open_${project.handViews[s].setupView}`;
+      if (sug.keys && sug.keys.v.some((v) => v !== setup)) tracks.handSets[s] = sug.keys;
+      const other = sug.keys?.v.filter((v) => !v.endsWith(`_${project.handViews[s].setupView}`));
+      if (other?.length) notes.add(`hand_${s} turns to show its other side: swapped to ${[...new Set(other)].join(', ')} by the hand-view rule`);
+      if (sug.missing?.length) notes.add(`hand_${s}: missing hand art ${sug.missing.join(', ')} (fell back to the back-of-hand set)`);
+    }
     if (edgeOn) notes.add(`prop ${propId} turns edge-on to the camera (blade/barrel narrows)`);
     if (tracks.drawOrder.t.length > 6) notes.add(`${tracks.drawOrder.t.length} draw-order changes (limbs cross in front of/behind each other)`);
     const lvl = [...notes].some((x) => /wrong side|turned-head|side\/turned view/.test(x)) ? 'needs-art' : notes.size ? 'attention' : 'ok';
     project.clips.push({ name, duration: +dur.toFixed(4), loop, fps,
-      source: { type: 'bridge3d', character: spec.source3d, clip: name, artView: spec.view.id, bakeRate: fps,
+      source: { type: 'bridge3d', character: spec.source3d, clip: name, artView: spec.view.id, bakeRate: fps, handSignal,
         tolerance: { rotateDeg: 0.05, translatePx: 0.05, scale: 0.002 }, note: 'Offsets relative to the 2D setup pose; artist corrections live in `corrections`.' },
       meta: { prop: meta.prop || null, attach: meta.attach || null, support: meta.support || null, markers: meta.markers || null, propTransform: meta.propTransform ? true : undefined },
-      tracks, corrections: { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] },
+      tracks, corrections: { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, handSets: {}, constraints: {}, events: [] },
       status: { level: lvl, notes: [...notes] } });
     log(`clip ${name}: ${frames.length} frames, ${Object.keys(tracks.bones).length} bone tracks, ${tracks.drawOrder.t.length} order keys, ${lvl}`);
   }

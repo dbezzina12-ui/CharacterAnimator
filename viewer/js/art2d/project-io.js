@@ -175,7 +175,7 @@ function imageRevision(project, store, attachment, img, png) {
  * old triangle that contains it (bind space), so the same art at a new resolution deforms identically.
  * Vertices outside the old mesh fall back to the nearest old vertex.
  */
-function replacementSamples(source, sourceTris, target) {
+export function replacementSamples(source, sourceTris, target) {
   const result = [];
   for (let v = 0; v < target.length; v += 2) {
     const hit = findTriangle(source, sourceTris, target[v], target[v + 1]);

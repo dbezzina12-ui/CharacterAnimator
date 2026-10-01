@@ -66,7 +66,7 @@ export const KNIGHT = {
   props: ['Sword2H', 'Staff', 'Pistol', 'Rifle', 'Detonator'],
   // pose-specific hand art (view-specific attachments) keyed onto the listed clips
   captures: [
-    { name: 'hover', clip: 'hover_sword_vigil', t: 0, sides: ['L', 'R'], clips: ['hover_sword_vigil'],
+    { name: 'hover', clip: 'hover_sword_vigil', t: 0, sides: ['L', 'R'], clips: ['hover_sword_vigil'], limbs: ['forearm_L', 'forearm_R'],
       propMarker: { marker: 'support_L_hover', socket: 'socket_hand_L_prop' } },
     { name: 'grip_sword', clip: 'sword_2h_idle', t: 0, sides: ['L', 'R'], clips: ['sword_2h_idle', 'sword_2h_slash'] },
     { name: 'grip_staff', clip: 'staff_idle', t: 0, sides: ['R'], clips: ['staff_idle', 'staff_stomp'] },
@@ -75,8 +75,16 @@ export const KNIGHT = {
     { name: 'grip_rifle', clip: 'rifle_aim', t: 0, sides: ['L', 'R'], clips: ['rifle_aim', 'rifle_fire'] },
     // the thumb stays articulated so it can travel to the button
     { name: 'grip_detonator', clip: 'press_detonator', t: 0.9, sides: ['R'], clips: ['press_detonator'], groups: ['hand', 'index', 'middle', 'ring', 'pinky'] },
+    // salute: fist on the chest with the right arm raised toward the camera — hand, pauldron and vambrace as
+    // seen in that pose, keyed only while the arm is up
+    { name: 'salute', clip: 'knight_salute', t: 1.6, sides: ['R'], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [0.6, 3.3] },
+    { name: 'salute_raise', clip: 'knight_salute', t: 0.45, sides: ['R'], limbs: ['upperarm_R', 'forearm_R'], clips: ['knight_salute'], range: [[0.3, 0.6], [3.3, 3.6]] },
     { name: 'fist', curl: 0.95, sides: ['L', 'R'] },
     { name: 'relaxed', curl: 0.3, sides: ['L', 'R'] },
+    // the other side of each hand (turned 180° about its length axis); set names come from the measured view
+    { name: 'open_turned', curl: 0, twist: 180, sides: ['L', 'R'] },
+    { name: 'relaxed_turned', curl: 0.3, twist: 180, sides: ['L', 'R'] },
+    { name: 'fist_turned', curl: 0.95, twist: 180, sides: ['L', 'R'] },
   ],
 };
 

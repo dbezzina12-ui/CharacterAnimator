@@ -1,14 +1,15 @@
 // 2D artwork mode of the CharacterAnimator viewer: editor UI on top of the shared 2D core.
 // Setup mode edits the bind pose (bones, pivots, meshes, weights, layer order); Animate mode keys the
 // current clip (bridged clips: the identifiable `corrections` layer; native 2D clips: their tracks).
-import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder } from './core.js';
+import { Rig, Player, setKey, deleteKey, sampleField, sampleStep, sampleVector, keyIndex, ensureLayer, affApply, affInv, affMul, affCompose, affDecompose, wrapDeg, resolveOrder } from './core.js';
 import { Renderer2D, hitTest } from './render2d.js';
-import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell } from './project-io.js';
+import { AssetStore, loadProjectURL, loadProjectZip, saveProjectZip, importLayers, replaceImage, autoWeightAttachment, meshCell, replacementSamples } from './project-io.js';
 import { validateProject, computeInverseBinds } from './schema.js';
 import { gridMesh, addVertex, deleteVertex, smoothWeights, normalizeWeights, paintWeights } from './mesh.js';
 import { exportRuntimePackage, exportFramePNG, exportSpriteSheets, download, poseBounds } from './exporters.js';
 import { readFitSource, planFit, installFit, resetFit, snapToJoints, slotAnchors, imageToWorld, worldToImage, templateOf, FIT_SCHEMA } from './fitting.js';
 import { jointCoverage, paintTemplatePack } from './paintpack.js';
+import { suggestHandSets, missingHandArt, setsUsed } from './handviews.js';
 
 const FINGERS = ['thumb', 'index', 'middle', 'ring', 'pinky'];
 const HAND_PRESETS = {
@@ -101,6 +102,7 @@ class Editor2D {
     this.brush = { radius: 24, strength: 0.25, mode: 'add', locked: new Set() };
     this.undoStack = []; this.redoStack = [];
     this.events = []; this.compare = 'off'; this.active = false;
+    this.onion = { on: false, n: 2, step: 3 }; this.previewCorrections = true;
     this.alphaCache = new Map();
   }
 
@@ -257,8 +259,9 @@ class Editor2D {
     const o = {};
     if (this.mode === 'setup' || !this.clip) {
       o.hands = this.preview.hands; o.override = this.preview.pose || undefined;
-      o.props = this.preview.props;
+      o.props = this.preview.props; if (this.preview.handSets) o.handSets = this.preview.handSets;
     } else if (this.preview.pose) o.override = this.preview.pose;
+    if (this.previewCorrections === false) o.corrections = false;
     return o;
   }
   evaluate(rig = this.fit?.rig || this.rig) {
@@ -279,8 +282,20 @@ class Editor2D {
       this.pose = this.evaluate(F.rig);
       this.drawn = F.painted > 0 ? this.renderer.draw(F.rig, this.pose, { dpr, only, skip, alpha: F.painted, clear: false }) : [];
     } else {
+      const skip = this.hidden.size ? this.hidden : null;
+      let cleared = false;
+      if (this.onion.on && this.mode === 'animate' && this.clip) {      // ghost frames: past blue, future orange
+        const fps = this.clip.fps || 30, t0 = this.player.time, D = this.clip.duration;
+        for (let k = -this.onion.n; k <= this.onion.n; k++) {
+          if (!k) continue;
+          let t = t0 + k * this.onion.step / fps; if (this.clip.loop) t = ((t % D) + D) % D; else if (t < 0 || t > D) continue;
+          const g = this.rig.evaluate(this.clip.name, t, this.evalOpts());
+          this.renderer.draw(this.rig, g, { dpr, only, skip, clear: !cleared, flat: k < 0 ? [0.35, 0.6, 1, 1] : [1, 0.55, 0.25, 1], alpha: 0.22 * (1 - Math.abs(k) / (this.onion.n + 1)) });
+          cleared = true;
+        }
+      }
       this.pose = this.evaluate();
-      this.drawn = this.renderer.draw(this.rig, this.pose, { dpr, only, skip: this.hidden.size ? this.hidden : null });
+      this.drawn = this.renderer.draw(this.rig, this.pose, { dpr, only, skip, clear: !cleared });
     }
     this.drawReference(dpr);
     this.drawOverlay(dpr);
@@ -528,16 +543,18 @@ class Editor2D {
       let hit = -1, bd = 8;
       for (let v = 0; v < d.pos.length / 2; v++) { const [x, y] = this.w2s(d.pos[v * 2], d.pos[v * 2 + 1]); const dd = Math.hypot(x - (e.clientX - this.ovCanvas.getBoundingClientRect().left), y - (e.clientY - this.ovCanvas.getBoundingClientRect().top)); if (dd < bd) { bd = dd; hit = v; } }
       const a = this.project.attachments[this.sel.attachment];
-      this.begin('edit mesh', [[() => this.project.attachments, a.id]], a.id);
+      this.begin('edit mesh', [[() => this.project.attachments, a.id], [this.project, 'clips']], a.id);
       if (hit < 0) {
-        const [ix, iy] = this.toImage(a.id, wx, wy);
+        const [ix, iy] = this.toImage(a.id, wx, wy), old = this.meshSnapshot(a.id);
         const mesh = { vertices: a.vertices, triangles: a.triangles, weights: a.weights };
         hit = addVertex(mesh, ix, iy);
         a.weights = mesh.weights;
         if (hit < 0) { this.pending = null; return; }
-        this.rebuild(a.id);
+        this.rebuild(a.id); this.remapDeformKeys(a.id, old);
       }
       this.sel.vertex = hit; this.drag.vertex = hit;
+    } else if (t === 'deform' && this.mode === 'animate' && this.clip && this.sel.attachment) {
+      this.deformDown(e, wx, wy);
     } else if (t === 'weights' && this.mode === 'setup' && this.sel.attachment && this.sel.bone) {
       const a = this.project.attachments[this.sel.attachment];
       if (!a.weights) { a.weights = a.vertices.map(() => [a.bone, 1]).filter((_, i) => i % 2 === 0); }
@@ -574,6 +591,7 @@ class Editor2D {
       const a = this.project.attachments[this.sel.attachment], [ix, iy] = this.toImage(a.id, wx, wy);
       a.vertices[d.vertex * 2] = +ix.toFixed(2); a.vertices[d.vertex * 2 + 1] = +iy.toFixed(2); this.rebuild(a.id);
     } else if (t === 'weights' && this.pending) this.paintAt(e);
+    else if (t === 'deform' && this.pending && d.deform) this.deformMove(wx, wy);
   }
 
   onUp(e) {
@@ -641,11 +659,54 @@ class Editor2D {
   }
   deleteSelectedVertex() {
     const a = this.project.attachments[this.sel.attachment]; if (!a) return;
-    this.record('delete vertex', [[() => this.project.attachments, a.id]], () => {
+    const old = this.meshSnapshot(a.id);
+    this.record('delete vertex', [[() => this.project.attachments, a.id], [this.project, 'clips']], () => {
       const mesh = { vertices: a.vertices, triangles: a.triangles, weights: a.weights };
       if (deleteVertex(mesh, this.sel.vertex) !== false) { a.vertices = mesh.vertices; a.triangles = mesh.triangles; a.weights = mesh.weights; }
+      this.rebuild(a.id); this.remapDeformKeys(a.id, old);
     }, a.id);
     this.sel.vertex = -1; this.rebuild(a.id);
+  }
+  // ---- deformation keys (corrections layer of bridged clips; tracks of native clips)
+  deformDown(e, wx, wy) {
+    const id = this.sel.attachment, d = this.drawn.find((x) => x.attachment === id); if (!d) return;
+    const rec = this.rig.attachments.get(id), clip = this.clip, L = this.editLayer(clip), nv = rec.nv;
+    const tr = L.deform?.[id], base = (tr && sampleVector(tr, this.player.time)) || new Array(nv * 2).fill(0);
+    const r = this.ovCanvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, R = this.brush.radius;
+    const fall = new Float64Array(nv), inv = [];
+    for (let v = 0; v < nv; v++) {
+      const [x, y] = this.w2s(d.pos[v * 2], d.pos[v * 2 + 1]), dist = Math.hypot(x - mx, y - my);
+      fall[v] = dist < R ? 0.5 + 0.5 * Math.cos(Math.PI * dist / R) : 0;
+      // linear part of this vertex's blended skinning matrix → world deltas become bind-space offsets
+      let a = 0, b = 0, c = 0, dd = 0;
+      for (let k = 0; k < 4; k++) { const w = rec.ww[v * 4 + k]; if (!w) continue; const m = this.rig.skinMats[rec.wb[v * 4 + k]]; a += w * m[0]; b += w * m[1]; c += w * m[2]; dd += w * m[3]; }
+      const det = a * dd - b * c || 1; inv.push([dd / det, -b / det, -c / det, a / det]);
+    }
+    this.begin(`deform ${id} @${this.keyTime().toFixed(2)}s`, [[this.clipRef(clip), this.editKey()]]);
+    this.drag.deform = { id, base: Array.from(base), fall, inv, nv };
+  }
+  deformMove(wx, wy) {
+    const D = this.drag.deform, dx = wx - this.drag.wx, dy = wy - this.drag.wy, out = D.base.slice();
+    for (let v = 0; v < D.nv; v++) { const f = D.fall[v]; if (!f) continue; const m = D.inv[v]; out[v * 2] = +(D.base[v * 2] + f * (m[0] * dx + m[2] * dy)).toFixed(3); out[v * 2 + 1] = +(D.base[v * 2 + 1] + f * (m[1] * dx + m[3] * dy)).toFixed(3); }
+    const L = this.editLayer(), tr = ((L.deform ||= {})[D.id] ||= { t: [], v: [] });
+    setKey(tr, this.keyTime(), { v: out });
+  }
+  /** Bind-space vertices + triangles of an attachment before a topology edit. */
+  meshSnapshot(attId) { const r = this.rig.attachments.get(attId); return { bind: Float64Array.from(r.bind), tris: this.project.attachments[attId].triangles.slice() }; }
+  /**
+   * Keep deformation keys valid after the mesh topology changed: every key of this attachment, in every
+   * clip and layer, is resampled onto the new vertices (barycentric in the old mesh). Never silently
+   * leaves keys with the wrong vertex count.
+   */
+  remapDeformKeys(attId, old) {
+    const target = this.rig.attachments.get(attId).bind, samples = replacementSamples(old.bind, old.tris, target);
+    let n = 0;
+    for (const clip of this.project.clips) for (const layer of [clip.tracks, clip.corrections]) {
+      const tr = layer?.deform?.[attId]; if (!tr) continue;
+      tr.v = tr.v.map((off) => off == null ? off : samples.flatMap((near) => [0, 1].map((ax) => +near.reduce((sum, [i, k]) => sum + (off[i * 2 + ax] || 0) * k, 0).toFixed(3))));
+      n++;
+    }
+    return n;
   }
 
   selectBone(id) { this.sel.bone = id; if (id) this.sel.vertex = -1; this.refreshPanel(); }
@@ -681,15 +742,19 @@ class Editor2D {
   <label>Time <input type="range" id="p2Time" min="0" max="1" step="0.001" value="0"></label>
   <label>Speed <input type="range" id="p2Speed" min="0.1" max="2" step="0.05" value="1"></label>
   <canvas class="timeline" id="p2Timeline"></canvas>
+  <div class="grid2"><label class="small"><input type="checkbox" id="p2Onion"> onion skin ±<input type="number" id="p2OnionN" value="2" min="1" max="6" style="width:42px"> fr ×<input type="number" id="p2OnionStep" value="3" min="1" max="15" style="width:42px"></label>
+  <label class="small"><input type="checkbox" id="p2CorrOn" checked> show corrections</label></div>
+  <div class="grid3"><select id="p2Ease" title="Easing of the selected bone's correction keys from the key at the playhead"><option value="linear">ease: linear</option><option value="smooth">ease: smooth</option><option value="in">ease: in</option><option value="out">ease: out</option><option value="step">ease: step (crisp)</option></select>
+  <button id="p2CorrToggle" title="Disable/enable (not delete) the selected bone's correction">Disable bone corr.</button><button id="p2CorrDeform" title="Disable/enable the selected attachment's deformation correction">Toggle deform corr.</button></div>
   <div class="row"><button id="p2KeyDel" title="Remove the selected bone's key at this time from the edit layer">Delete key</button><button id="p2KeyClear" title="Remove every key of the selected bone from the edit layer">Clear bone</button><button id="p2NewClip">New 2D clip</button></div>
   <div class="row"><input id="p2EventName" placeholder="event name" style="flex:1"><button id="p2EventAdd">Add event</button></div>
   <div id="p2Status" class="notes"></div>
 </div>
 <div class="sec"><h3>Tools</h3>
   <div class="grid3 tools"><button data-tool="select" class="on">Select</button><button data-tool="rotate">Rotate</button><button data-tool="move">Move</button>
-  <button data-tool="ik">IK drag</button><button data-tool="pivot">Pivot</button><button data-tool="mesh">Mesh</button><button data-tool="weights">Weights</button>
+  <button data-tool="ik">IK drag</button><button data-tool="pivot">Pivot</button><button data-tool="mesh">Mesh</button><button data-tool="weights">Weights</button><button data-tool="deform" title="Animate: pull mesh vertices into a deformation key (corrections layer)">Deform</button>
   <button id="p2Bend" title="Elbow/knee bend used by IK drag">Bend: keep</button><button id="p2Fit">Fit view</button></div>
-  <div class="small">Drag empty space to pan (right/middle drag or Alt anywhere), wheel to zoom. Pivot, Mesh and Weights work in Setup.</div>
+  <div class="small">Drag empty space to pan (right/middle drag or Alt anywhere), wheel to zoom. Pivot, Mesh and Weights work in Setup; Deform keys a mesh correction in Animate (brush radius from Mesh & weights).</div>
 </div>
 <div class="sec"><h3>Selection</h3><div id="p2Inspect" class="small">Click a bone or a layer.</div></div>
 <div class="sec"><h3>Mesh & weights</h3>
@@ -743,6 +808,13 @@ class Editor2D {
     p.querySelectorAll('[data-ov]').forEach((c) => c.addEventListener('change', (e) => { this.overlay[e.target.dataset.ov] = e.target.checked; }));
     on('p2Compare', 'change', (e) => this.setCompare(e.target.value));
     on('p2KeyDel', 'click', () => this.deleteBoneKey());
+    on('p2Onion', 'change', (e) => { this.onion.on = e.target.checked; });
+    on('p2OnionN', 'change', (e) => { this.onion.n = +e.target.value || 2; });
+    on('p2OnionStep', 'change', (e) => { this.onion.step = +e.target.value || 3; });
+    on('p2CorrOn', 'change', (e) => { this.previewCorrections = e.target.checked; });
+    on('p2Ease', 'change', (e) => this.setCorrectionEase(e.target.value));
+    on('p2CorrToggle', 'click', () => this.toggleCorrection('bone'));
+    on('p2CorrDeform', 'click', () => this.toggleCorrection('deform'));
     on('p2KeyClear', 'click', () => this.clearBone());
     on('p2NewClip', 'click', () => this.newClip());
     on('p2EventAdd', 'click', () => this.addEvent($(p, '#p2EventName').value.trim()));
@@ -808,6 +880,9 @@ class Editor2D {
     g.fillStyle = '#ffffff55'; g.fillText('order · events', 4, 44);
     for (const t of clip.tracks?.drawOrder?.t || []) { g.fillStyle = '#6aa7ff'; g.fillRect(X(t) - 1, 46, 2, 6); }
     for (const t of clip.corrections?.drawOrder?.t || []) { g.fillStyle = '#ff9e5e'; g.fillRect(X(t) - 1, 46, 2, 6); }
+    for (const L of [clip.tracks, clip.corrections]) for (const tr of Object.values(L?.handSets || {})) for (const t of tr.t || []) { g.fillStyle = L === clip.tracks ? '#b48cff' : '#ff6fd8'; g.fillRect(X(t) - 1, 38, 2, 5); }
+    const dtr = this.sel.attachment && clip.corrections?.deform?.[this.sel.attachment];
+    for (const t of dtr?.t || []) { g.fillStyle = dtr.disabled ? '#666' : '#3fe0d0'; g.beginPath(); g.arc(X(t), 31, 2.5, 0, 7); g.fill(); }
     for (const e of [...(clip.tracks?.events || []), ...(clip.corrections?.events || [])]) { g.fillStyle = '#6fe39a'; g.beginPath(); g.moveTo(X(e.t), 53); g.lineTo(X(e.t) - 3, 60); g.lineTo(X(e.t) + 3, 60); g.fill(); }
     g.fillStyle = '#ff5b5b'; g.fillRect(X(this.player.time) - 0.5, 0, 1.5, H);
   }
@@ -851,7 +926,7 @@ class Editor2D {
     box.querySelectorAll('[data-bs]').forEach((i) => i.onchange = () => { this.record(`setup ${b.id}.${i.dataset.bs}`, [[this.project, 'bones']], () => { b.setup[i.dataset.bs] = +i.value; }); this.rebuild(); });
     box.querySelectorAll('[data-bk]').forEach((i) => i.onchange = () => {
       const f = i.dataset.bk;
-      if (f === 'rotate') this.keyBone(b.id, 'rotate', () => ({ v: +i.value }));
+      if (f === 'rotate') { const cur = this.layerValue(tr?.rotate, 'v'); this.keyBone(b.id, 'rotate', () => ({ v: +(cur + wrapDeg(+i.value - cur)).toFixed(3) })); }
       else { const tr = this.editLayer()?.bones?.[b.id]; const x = f === 'x' ? +i.value : this.layerValue(tr?.translate, 'x'), y = f === 'y' ? +i.value : this.layerValue(tr?.translate, 'y'); this.keyBone(b.id, 'translate', () => ({ x, y })); }
     });
     const sa = box.querySelector('[data-sa]'); if (sa) sa.onchange = () => this.setSlotAttachment(s.id, sa.value || null);
@@ -942,8 +1017,10 @@ class Editor2D {
       <label class="small">whole hand <input type="range" data-h="${s}" data-f="curl" min="-0.25" max="1.2" step="0.01" value="${v.curl}"></label>
       <div class="grid2">${FINGERS.map((f) => `<label class="small">${f} <input type="range" data-h="${s}" data-f="${f}" min="-1" max="1" step="0.01" value="${v[f]}"></label>`).join('')}</div>
       <div class="row">${Object.keys(HAND_PRESETS).map((k) => `<button data-hp="${s}" data-p="${k}">${k === 'open' ? 'open palm' : k === 'grip' ? 'weapon grip' : k}</button>`).join('')}</div>
-      <div class="grid2"><select data-hart="${s}">${captures(s).map((c) => `<option>${esc(c)}</option>`).join('')}</select><button data-hfb="${s}">fingers front/back</button></div></div>`;
+      <div class="grid2"><select data-hart="${s}">${captures(s).map((c) => `<option>${esc(c)}</option>`).join('')}</select><button data-hfb="${s}">fingers front/back</button></div>
+      ${this.handSetUI(s)}</div>`;
     }).join('');
+    this.bindHandSetUI(box);
     box.querySelectorAll('[data-h]').forEach((i) => i.onchange = () => this.setHand(i.dataset.h, { [i.dataset.f]: +i.value }, `hand ${i.dataset.h} ${i.dataset.f}`));
     box.querySelectorAll('[data-hp]').forEach((b) => b.onclick = () => this.setHand(b.dataset.hp, HAND_PRESETS[b.dataset.p], `hand ${b.dataset.hp} ${b.dataset.p}`));
     box.querySelectorAll('[data-hart]').forEach((sel) => {
@@ -952,6 +1029,48 @@ class Editor2D {
       sel.onchange = () => this.swapHandArt(s, sel.value);
     });
     box.querySelectorAll('[data-hfb]').forEach((b) => b.onclick = () => this.toggleFingerOrder(b.dataset.hfb));
+  }
+  // ---- hand view sets (palm + finger layers together; see handviews.js for the suggestion rule)
+  handSetUI(side) {
+    const hv = this.project.handViews?.[side]; if (!hv) return '';
+    const shown = this.pose?.handSets?.[side] || null, L = this.clip && this.editLayer(), corr = L?.handSets?.[side];
+    const baked = this.clip?.tracks?.handSets?.[side];
+    const miss = missingHandArt(this.project, this.rig.skinId).filter((m) => m.side === side);
+    const src = !this.clip || this.mode === 'setup' ? 'setup preview' : corr?.t?.length ? `${this.editKey()} key` : baked?.t?.length ? 'source bake' : 'slot keys / setup';
+    return `<div class="small" style="margin-top:4px">view set <b>${esc(shown || '—')}</b> <span class="small">(${src})</span></div>
+      <div class="grid2"><select data-hset="${side}"><option value="">(follow clip)</option>${Object.entries(hv.sets).map(([k, v]) => `<option value="${esc(k)}" ${k === shown ? 'selected' : ''}>${esc(k)} · ${esc(v.view)}</option>`).join('')}</select>
+      <label class="small">threshold <input type="number" data-hthr="${side}" value="0.3" step="0.05" min="0.05" max="0.9"></label></div>
+      <div class="row"><button data-hsug="${side}" title="Recompute from the clip's recorded 3D hand orientation/curl into the edit layer">Suggest from source</button><button data-hclr="${side}">Clear set keys</button></div>
+      ${miss.length ? `<div class="small status-attention">skin "${esc(this.rig.skinId)}" lacks: ${miss.map((m) => esc(m.set)).join(', ')}</div>` : ''}`;
+  }
+  bindHandSetUI(box) {
+    box.querySelectorAll('[data-hset]').forEach((sel) => sel.onchange = () => this.setHandSet(sel.dataset.hset, sel.value || null));
+    box.querySelectorAll('[data-hsug]').forEach((b) => b.onclick = () => { const side = b.dataset.hsug, thr = +box.querySelector(`[data-hthr="${side}"]`).value || 0.3; this.suggestHandSetKeys(side, { threshold: thr }); });
+    box.querySelectorAll('[data-hclr]').forEach((b) => b.onclick = () => this.clearHandSetKeys(b.dataset.hclr));
+  }
+  /** Setup: preview; Animate: key the set at the playhead in the edit layer (null = remove that key). */
+  setHandSet(side, name) {
+    if (this.mode === 'setup' || !this.clip) { (this.preview.handSets ||= {})[side] = name || undefined; this.renderHands(); return; }
+    const clip = this.clip;
+    this.record(`hand set ${side} ${name || '(follow clip)'}`, [[this.clipRef(clip), this.editKey()]], () => {
+      const L = this.editLayer(clip), tr = (L.handSets ||= {})[side] ||= { t: [], v: [] };
+      if (name) setKey(tr, this.keyTime(), { v: name }); else deleteKey(tr, this.keyTime());
+    });
+    this.rebuild(); this.renderHands();
+  }
+  suggestHandSetKeys(side, opts = {}) {
+    const clip = this.clip; if (!clip) return null;
+    const r = suggestHandSets(this.project, clip, side, opts);
+    if (!r.keys) { $(this.panel, '#p2Report').textContent = `hand ${side}: ${r.reason}`; return r; }
+    this.record(`suggest hand sets ${side}`, [[this.clipRef(clip), this.editKey()]], () => { (this.editLayer(clip).handSets ||= {})[side] = r.keys; });
+    this.rebuild(); this.renderHands();
+    $(this.panel, '#p2Report').textContent = `hand ${side}: ${r.keys.v.map((v, i) => `${r.keys.t[i]}s ${v}`).join(' → ')}${r.missing.length ? `\nmissing art (fell back): ${r.missing.join(', ')}` : ''}`;
+    return r;
+  }
+  clearHandSetKeys(side) {
+    const clip = this.clip; if (!clip) return;
+    this.record(`clear hand sets ${side}`, [[this.clipRef(clip), this.editKey()]], () => { const L = this.editLayer(clip); if (L.handSets) delete L.handSets[side]; });
+    this.rebuild(); this.renderHands();
   }
   /** Swap the whole hand (palm + five finger layers) to one captured art set, keyed in Animate. */
   swapHandArt(side, name) {
@@ -1035,6 +1154,30 @@ class Editor2D {
     this.rebuild();
   }
 
+  /** Easing of the selected bone's correction keys (all fields) from the key at the playhead. */
+  setCorrectionEase(ease) {
+    const clip = this.clip, id = this.sel.bone; if (!clip || !id) return;
+    this.record(`ease ${ease} ${id}`, [[this.clipRef(clip), this.editKey()]], () => {
+      const tr = this.editLayer(clip).bones[id]; if (!tr) return;
+      for (const f of ['rotate', 'translate', 'scale']) {
+        const T = tr[f]; if (!T?.t?.length) continue;
+        const i = Math.max(0, keyIndex(T.t, this.player.time + 1e-6));
+        T.ease ||= T.t.map(() => 'linear'); T.ease[i] = ease;
+      }
+    });
+    this.rebuild();
+  }
+  /** Disable / re-enable (never delete) the selected bone's or attachment's correction; undoable. */
+  toggleCorrection(kind) {
+    const clip = this.clip; if (!clip) return;
+    const L = this.editLayer(clip), id = kind === 'bone' ? this.sel.bone : this.sel.attachment;
+    const tr = kind === 'bone' ? L.bones?.[id] : L.deform?.[id]; if (!tr) { $(this.panel, '#p2Report').textContent = `no ${kind} correction for ${id || '(nothing selected)'} in ${clip.name}`; return; }
+    this.record(`${tr.disabled ? 'enable' : 'disable'} ${kind} correction ${id}`, [[this.clipRef(clip), this.editKey()]], () => {
+      const t2 = kind === 'bone' ? this.editLayer(clip).bones[id] : this.editLayer(clip).deform[id];
+      if (t2.disabled) delete t2.disabled; else t2.disabled = true;
+    });
+    this.rebuild(); this.refreshPanel();
+  }
   deleteBoneKey() {
     const clip = this.clip, id = this.sel.bone; if (!clip || !id) return;
     this.record(`delete key ${id}`, [[this.clipRef(clip), this.editKey()]], () => { const tr = this.editLayer(clip).bones[id]; if (tr) for (const f of ['rotate', 'translate', 'scale']) if (tr[f]) deleteKey(tr[f], this.keyTime()); });
@@ -1061,10 +1204,10 @@ class Editor2D {
     this.rebuild();
   }
 
-  withAttachment(label, fn) {
+  withAttachment(label, fn, extraTargets = []) {
     const a = this.sel.attachment && this.project.attachments[this.sel.attachment];
     if (!a) { alert('Select a layer (attachment) first.'); return; }
-    this.record(label, [[() => this.project.attachments, a.id]], () => fn(a), a.id);
+    this.record(label, [[() => this.project.attachments, a.id], ...extraTargets], () => fn(a), a.id);
     this.rebuild(a.id); this.refreshPanel();
   }
   async autoMesh() {
@@ -1073,12 +1216,14 @@ class Editor2D {
     const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
     const d = g.getImageData(0, 0, img.width, img.height).data, A = new Uint8Array(img.width * img.height); for (let i = 0; i < A.length; i++) A[i] = d[i * 4 + 3];
     const cell = +(prompt('Mesh cell size (image px); smaller = more vertices', String(meshCell(img.width, img.height)))) || meshCell(img.width, img.height);
+    const old = this.meshSnapshot(a.id);
     this.withAttachment('auto mesh', (att) => {
       const m = gridMesh(A, img.width, img.height, { cell, threshold: 6, margin: 2 });
       const hadWeights = !!att.weights; att.vertices = m.vertices; att.triangles = m.triangles; att.weights = null;
       this.rig.rebuildAttachment(att.id);
       if (hadWeights) autoWeightAttachment(this.project, att.id);
-    });
+      this.rig.rebuildAttachment(att.id); this.remapDeformKeys(att.id, old);
+    }, [[this.project, 'clips']]);
   }
   /**
    * One undoable step around an async project change (image replacement, layered import, fitting).
@@ -1291,6 +1436,11 @@ class Editor2D {
       history: () => ed.undoStack.map((h) => h.label),
       startFit: (files, o) => ed.startFit(files, o), refreshFit: () => ed.refreshFit(), acceptFit: () => ed.acceptFit(), cancelFit: () => ed.cancelFit(),
       get fit() { return ed.fit; }, fitSelect: (i) => { ed.fit.sel = i; ed.renderFitPanel(); }, fitUpdate: (fn) => ed.updateFitLayer(fn), snapLayer: (i) => { const l = ed.fit.session.layers[i]; snapToJoints(l, ed.fitAnchors(l)); return ed.refreshFit(); },
+      setEase: (e) => ed.setCorrectionEase(e), toggleCorrection: (k) => ed.toggleCorrection(k), setOnion: (o) => Object.assign(ed.onion, o),
+      deformDrag: (att, fromW, toW, radiusPx = 40) => { ed.sel.attachment = att; ed.tool = 'deform'; ed.frame(0); const sp = ed.w2s(...fromW), r = ed.ovCanvas.getBoundingClientRect(); ed.brush.radius = radiusPx;
+        ed.drag = { x: r.left + sp[0], y: r.top + sp[1], wx: fromW[0], wy: fromW[1], moved: true }; ed.deformDown({ clientX: r.left + sp[0], clientY: r.top + sp[1] }, ...fromW); ed.deformMove(...toW); ed.end(); ed.drag = null; ed.tool = 'select'; },
+      remapDeformTest: (att) => { const old = ed.meshSnapshot(att); return { old, remap: () => ed.remapDeformKeys(att, old) }; },
+      setHandSet: (side, name) => ed.setHandSet(side, name), suggestHandSets: (side, o) => ed.suggestHandSetKeys(side, o), handSetsUsed: (clip, side) => setsUsed(ed.rig, ed.rig.clips.get(clip), side),
       setSkin: (id) => { const r = ed.rig.setSkin(id); $(ed.panel, '#p2Skin').value = r; return r; }, paintPack: (skin) => ed.paintPack(skin), coverage: (skin) => jointCoverage(ed.project, ed.store, { skin }),
     };
   }

@@ -1,6 +1,6 @@
 // node tests/art2d-core.test.mjs — unit tests for the pure 2D core (no browser needed).
 import assert from 'node:assert/strict';
-import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv } from '../viewer/js/art2d/core.js';
+import { Rig, Player, SCHEMA, resolveOrder, frameTimes, setKey, sampleField, affCompose, affMul, affInv, easeU } from '../viewer/js/art2d/core.js';
 import { gridMesh, checkMesh, addVertex, deleteVertex, autoWeights, smoothWeights, paintWeights, normalizeWeights } from '../viewer/js/art2d/mesh.js';
 import { writeZip, readZip, textOf } from '../viewer/js/art2d/zip.js';
 import { validateProject, computeInverseBinds, runtimeSubset } from '../viewer/js/art2d/schema.js';
@@ -146,5 +146,39 @@ await test('zip round-trip keeps names and bytes', async () => {
 await test('runtime subset validates as a runtime package', () => {
   const r = runtimeSubset(toyProject());
   assert.deepEqual(validateProject(r, { runtime: true }).errors, []);
+});
+await test('hand view sets swap palm + fingers together; corrections win; skins still apply', () => {
+  const p = toyProject();
+  p.images.img_hand_palm = { path: 'images/hand_palm.png', w: 20, h: 20 };
+  p.attachments['hand.palm'] = { ...p.attachments['hand.default'], id: 'hand.palm', image: 'img_hand_palm' };
+  p.attachments['hand.painted'] = { ...p.attachments['hand.default'], id: 'hand.painted' };
+  p.handViews = { L: { sets: { open_back: { view: 'back', pose: 'open', slots: { hand: 'hand.default' } }, open_palm: { view: 'palm', pose: 'open', slots: { hand: 'hand.palm' } } } } };
+  p.clips[0].tracks.handSets = { L: { t: [0, 0.6], v: ['open_back', 'open_palm'] } };
+  const rig = new Rig(p), at = (t, o) => rig.evaluate('bend', t, o).slotAttachment[rig.slotIndex.get('hand')];
+  assert.equal(at(0.2), 'hand.default');
+  assert.equal(at(0.7), 'hand.palm');
+  p.clips[0].corrections.handSets = { L: { t: [0.65], v: ['open_back'] } };
+  assert.equal(at(0.7), 'hand.default', 'correction key overrides the baked set');
+  assert.equal(at(0.7, { handSets: { L: 'open_palm' } }), 'hand.palm', 'explicit override wins');
+  p.skins = [{ id: 'default' }, { id: 'painted', replace: { 'hand.default': 'hand.painted' } }]; rig.rebuild(); rig.setSkin('painted');
+  assert.equal(at(0.2), 'hand.painted', 'skin replacement applies to the set attachment');
+  assert.deepEqual(validateProject(p).errors, []);
+  p.clips[0].tracks.handSets.L.v[1] = 'nope';
+  assert.ok(validateProject(p).errors.some((e) => /hand set nope/.test(e)));
+});
+await test('easing per key (step keeps impacts crisp) and disabled corrections', () => {
+  const tr = { t: [0, 1], v: [0, 10], ease: ['smooth', 'linear'] };
+  assert.equal(sampleField(tr, 'v', 0.5), 5);
+  assert.ok(Math.abs(sampleField(tr, 'v', 0.25) - 10 * easeU(tr, 0, 0.25)) < 1e-9 && sampleField(tr, 'v', 0.25) < 2.5);
+  tr.ease[0] = 'step'; assert.equal(sampleField(tr, 'v', 0.99), 0); assert.equal(sampleField(tr, 'v', 1), 10);
+  setKey(tr, 0.5, { v: 3 }); assert.equal(tr.ease.length, tr.t.length);
+  const p = toyProject(), rig = new Rig(p);
+  p.clips[0].corrections.bones.lower = { rotate: { t: [0], v: [30] } };
+  rig.evaluate('bend', 0); const on = rig.worldRot[rig.boneIndex.get('lower')];
+  p.clips[0].corrections.bones.lower.disabled = true;
+  rig.evaluate('bend', 0); const off = rig.worldRot[rig.boneIndex.get('lower')];
+  assert.ok(Math.abs(on - off - 30) < 1e-9, 'disabled correction is ignored, data kept');
+  p.clips[0].corrections.deform = { 'arm.default': { t: [0], v: [[1, 2]] } };
+  assert.ok(validateProject(p).errors.some((e) => /deform key 0 of arm.default/.test(e)), 'deform keys that no longer match the mesh are reported');
 });
 console.log(`${passed} tests passed`);
