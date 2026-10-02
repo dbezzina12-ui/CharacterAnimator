@@ -266,12 +266,17 @@ together at the same forearm foreshortening going up and coming down (0.65 of it
 pauldron is drawn beneath the forearm and hand while it shows, open-hand frames keep the first frame's arm/hand draw
 order (the cuff no longer covers the palm at the end of the clip), and the dark elbow under-sleeve is hidden while the
 cuff drawing shows (nothing covers it then);
-painted finger meshes get two extra knuckle weight-smoothing passes. It refuses to overwrite existing corrections
+painted finger meshes get two extra knuckle weight-smoothing passes. The `grip` fix covers every clip that holds the detonator
+(`press_detonator`, `contact_detonator_2d`): draw-order correction keys give every frame palm → device → fingers →
+thumb (the auto keys put the device over the fingers at the start/end of `press_detonator` and throughout
+`contact_detonator_2d`), and in `press_detonator` the thumb is held at its ready-on-button pose while carrying (the
+press itself is as animated). `--only=grip` applies just that fix to a project the earlier fixes are already saved
+in. It refuses to overwrite existing corrections
 on those tracks, reports every changed JSON path, and fails if any image byte or bake track changed. Then rebuild
 the player/runtime from the fixed ZIP with `node scripts/build-painted-knight.mjs --from=<fixed.zip>` (as saved: the
 editable project is written back unchanged). Previews: `node scripts/preview-2d.mjs` (contact sheets, optional
 `--zip2` side by side, `--follow=<bone>`) and `node scripts/record-before-after.mjs` (side-by-side WebM from two
-runtime packages).
+runtime packages; `--speed=0.5` for half speed).
 
 ## Hands, props, contacts
 

@@ -2,7 +2,7 @@
 // meshes of other pieces, other clips and saved corrections are untouched; every changed JSON path is reported
 // and image bytes are verified identical.
 //   node scripts/fix-painted-project.mjs --in=<saved.character2d.zip> --out=<fixed.character2d.zip> [--report=fixes.json]
-// Fixes (each can be disabled with --skip=detonator,feet,salute,fingers):
+// Fixes (each can be disabled with --skip=detonator,feet,salute,fingers,grip):
 //   detonator  press_detonator: the remote is held at the pose its fist drawing was made for (0.9 s): correction keys
 //              hold socket_hand_R_prop and prop_R relative to the hand every frame, so it never slips out of the grip.
 //   feet       hover: correction deform keys keep the painted dark under-boot tucked under the painted shoe plate
@@ -13,11 +13,16 @@
 //              hand while it shows, and open-hand frames keep the first frame's arm/hand order (correction draw-order
 //              keys); the dark elbow under-sleeve is hidden while the cuff drawing shows (nothing covers it then).
 //   fingers    painted finger meshes get two extra weight-smoothing passes at the knuckles (pixels unchanged).
+//   grip       every clip that holds the detonator: draw order palm → device → fingers → thumb at every key, and in
+//              press_detonator the thumb is held at its ready-on-button pose while carrying (the press is untouched).
+// --only=grip applies just the listed fixes (e.g. to a project the earlier fixes were already saved into).
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { startServer, CHROME, CHROME_ARGS } from './serve.mjs';
 const arg = (k, d = null) => { const a = process.argv.find((x) => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
-const IN = arg('in'), OUT = arg('out'), skip = new Set((arg('skip') || '').split(',').filter(Boolean));
+const FIXES = ['detonator', 'feet', 'salute', 'fingers', 'grip'];
+const IN = arg('in'), OUT = arg('out'), only = arg('only') ? arg('only').split(',').filter(Boolean) : null;
+const skip = new Set([...(arg('skip') || '').split(',').filter(Boolean), ...(only ? FIXES.filter((f) => !only.includes(f)) : [])]);
 if (!IN || !OUT) throw new Error('--in and --out are required');
 const server = await startServer(0);
 const browser = await chromium.launch({ executablePath: CHROME, headless: true, args: [...CHROME_ARGS, '--no-sandbox'] });
@@ -157,6 +162,47 @@ const res = await page.evaluate(async ({ zipB64, skip }) => {
       a.weights = mesh.smoothWeights(a.weights, a.triangles, { iterations: 2, amount: 0.5 });
     }
     log.push('fingers: painted finger meshes (10) got 2 more knuckle weight-smoothing passes');
+  }
+  // ---- 5) detonator carrying grip: closed grip, device under the fingers, thumb on the button, in every clip that
+  // holds the detonator. The grip hand/finger drawings ride rigidly on the hand bone (closed around the housing) and the
+  // device is anchored to them (fix 1), but (a) the auto draw-order keys at the start/end of press_detonator, and every
+  // key of contact_detonator_2d, put the device over the fingers, so it read as lying across an open hand; (b) the
+  // thumb bones open out during the carry (thumb hanging straight down). Draw-order correction keys give every frame
+  // palm → device → fingers → thumb; thumb correction keys hold the thumb at its ready-on-button pose (the frame the
+  // grip drawings were made for) while carrying, leaving the press itself as animated.
+  if (!skip.includes('grip')) {
+    const GRIP = ['hand_R', 'prop_R', 'pinky_R', 'ring_R', 'middle_R', 'index_R', 'thumb_R'];
+    const carriers = P.clips.filter((c) => (c.tracks.slots?.prop_R?.attachment?.v || []).some((v) => /Detonator/.test(v || '')));
+    for (const c of carriers) {
+      const L = layer(c), auto = c.tracks.drawOrder, setup = P.slots.map((x) => x.id);
+      if (L.drawOrder.t.length) throw new Error(`${c.name} already has draw-order corrections — refusing to overwrite saved work`);
+      const times = auto?.t?.length ? [...new Set([0, ...auto.t])].sort((a, b) => a - b) : [0], changed = [];
+      for (const t of times) {
+        const o = [...(auto?.t?.length ? auto.v[core.keyIndex(auto.t, t)] ?? setup : setup)];
+        const pos = o.map((id, k) => (GRIP.includes(id) ? k : -1)).filter((k) => k >= 0), seq = GRIP.filter((id) => o.includes(id));
+        if (seq.some((id, j) => o[pos[j]] !== id)) { pos.forEach((k, j) => (o[k] = seq[j])); changed.push(t); }
+        L.drawOrder.t.push(r4(t)); L.drawOrder.v.push(o);
+      }
+      log.push(`grip: ${c.name} draw order palm → device → fingers → thumb at every key (changed at ${changed.join(', ') || 'none'} s; other slots untouched)`);
+      // thumb: only where the clip carries the device with the thumb bones animated (press_detonator)
+      const ev = Object.fromEntries((c.tracks.events || []).map((e) => [e.name, e.t]));
+      const thumbs = ['thumb_01_R', 'thumb_02_R', 'thumb_03_R'].filter((b) => c.tracks.bones[b]?.rotate?.t?.length > 1);
+      if (!thumbs.length || ev.raised == null || ev.released == null) continue;
+      const T0 = 0.9, fps = c.fps || 30;                       // the grip drawings' frame: ready on the button
+      // after the release the thumb is back on the button once its rotation is within 20° of the ready pose again
+      const frames = Array.from({ length: Math.round(c.duration * fps) + 1 }, (_, i) => r4(Math.min(c.duration, i / fps)));
+      const rotAt = (b, t) => sampleField(c.tracks.bones[b].rotate, 'v', t);
+      const back = frames.find((t) => t > ev.released && thumbs.every((b) => Math.abs(rotAt(b, t) - rotAt(b, T0)) < 20)) ?? ev.released + 0.3;
+      const w = (t) => (t <= T0 ? 1 : t < back - 1 / fps ? 0 : t < back ? (t - (back - 1 / fps)) * fps : 1);
+      for (const b of thumbs) {
+        if (L.bones[b]) throw new Error(`${c.name} already has a ${b} correction — refusing to overwrite saved work`);
+        const tr = c.tracks.bones[b], kt = [...new Set([...frames, ...(tr.rotate?.t || []), ...(tr.translate?.t || [])].map(r4))].sort((a, b2) => a - b2);
+        const out = { rotate: { t: kt, v: kt.map((t) => r4(w(t) * (rotAt(b, T0) - rotAt(b, t)))) } };
+        if (tr.translate?.t?.length) { const f = (k, t) => sampleField(tr.translate, k, t); out.translate = { t: kt, x: kt.map((t) => r4(w(t) * (f('x', T0) - f('x', t)))), y: kt.map((t) => r4(w(t) * (f('y', T0) - f('y', t)))) }; }
+        L.bones[b] = out;
+      }
+      log.push(`grip: ${c.name} thumb held at its ${T0} s ready-on-button pose while carrying (0–${T0} s and ${back}–${c.duration} s); press ${ev.contact ?? ''}–${ev.released} s as animated`);
+    }
   }
   computeInverseBindsSafe();
   function computeInverseBindsSafe() { /* bones unchanged: inverse binds stay valid */ }
