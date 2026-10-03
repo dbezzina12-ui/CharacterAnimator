@@ -40,7 +40,9 @@ try {
   const bundle=await build({entryPoints:[path.join(ROOT,'viewer/js/app.js')],bundle:true,write:false,format:'iife',minify:true});
   let html=fs.readFileSync(path.join(ROOT,'viewer/knight.html'),'utf8');
   html=html.replace(/<script type="importmap">[\s\S]*?<\/script>/,'');
-  html=html.replace('<script type="module" src="./js/app.js"></script>',`<script>window.__CB_BASE='';window.__CB_EMBED=${JSON.stringify(embedded)};</script><script>${bundle.outputFiles[0].text.replace(/<\/script/gi,'<\\/script')}</script>`);
+  // replacer function: a replacement STRING would expand `$'`, `$&` etc. found in the minified bundle and splice HTML into it
+  const inline=`<script>window.__CB_BASE='';window.__CB_EMBED=${JSON.stringify(embedded)};</script><script>${bundle.outputFiles[0].text.replace(/<\/script/gi,'<\\/script')}</script>`;
+  html=html.replace('<script type="module" src="./js/app.js"></script>',()=>inline);
   const file=path.join(out,'Aureate-Knight-Playground.html');
   fs.writeFileSync(file,html);
   console.log(JSON.stringify({file,bytes:fs.statSync(file).size,glbBytes:Buffer.from(assets.glb,'base64').length,clips:assets.clips.length}));

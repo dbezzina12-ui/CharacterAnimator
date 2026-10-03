@@ -615,7 +615,7 @@ async function boot() {
     playClip('hover_sword_vigil');
   }
   if ($('knightClips')) {
-    for (const [name,label] of [['hover_sword_vigil','✦ Hovering sword vigil'],['sword_2h_idle','Sword guard'],['sword_2h_slash','Sword slash'],['walk_in_place','Walk cycle'],['knight_salute','Knight salute']]) {
+    for (const [name,label] of [['hover_sword_vigil','✦ Hovering sword vigil'],['sword_2h_idle','Sword guard'],['sword_2h_slash','Sword slash'],['walk_in_place','Walk cycle'],['knight_salute','Knight salute'],['golf_swing','Golf swing']]) {
       const button=document.createElement('button');button.textContent=label;
       button.onclick=()=>{ $('chkLoop').checked=true;playClip(name); };
       $('knightClips').appendChild(button);
