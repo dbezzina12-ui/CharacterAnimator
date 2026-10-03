@@ -2,6 +2,8 @@ import {chromium} from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
 import {startServer,CHROME,CHROME_ARGS} from './serve.mjs';
+// every clip listed in the knight's config must survive export → reload (24 library/knight clips + golf_swing)
+const EXPECTED_CLIPS=JSON.parse(fs.readFileSync(new URL('../characters/aureate_knight/aureate_knight.character.json',import.meta.url),'utf8')).animations.length;
 const offlineDir=process.argv[2] ? path.resolve(process.argv[2]) : null;
 const server=await startServer(0,offlineDir?{'/offline/':offlineDir}:{});
 const browser=await chromium.launch({executablePath:CHROME,headless:true,args:[...CHROME_ARGS,'--no-sandbox','--disable-dev-shm-usage']});
@@ -36,7 +38,7 @@ const checks=await page.evaluate(async()=>{
  const countAfter=v.state.ch.clips.length;
  return {bones,meshCount,morphCount,loopMax,maxContactDrift,minFoot,exportBytes:buf.byteLength,countBefore,countAfter,exportCfgRebuildsArmor:cfg.knightBuild};
 });
-if(errors.length||checks.bones!==63||checks.countAfter!==24||checks.loopMax>.0001||checks.maxContactDrift>.001||checks.minFoot<.1||checks.exportCfgRebuildsArmor)throw new Error(JSON.stringify({errors,checks}));
+if(errors.length||checks.bones!==63||checks.countAfter!==EXPECTED_CLIPS||checks.countBefore!==EXPECTED_CLIPS||checks.loopMax>.0001||checks.maxContactDrift>.001||checks.minFoot<.1||checks.exportCfgRebuildsArmor)throw new Error(JSON.stringify({errors,checks}));
 await page.setViewportSize({width:390,height:844});
 const mobile=await page.evaluate(()=>({fits:document.documentElement.scrollWidth<=innerWidth,canvasWidth:document.querySelector('#main').clientWidth}));
 if(!mobile.fits||mobile.canvasWidth<300)throw new Error('Mobile overflow '+JSON.stringify(mobile));

@@ -5,7 +5,7 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { Character, FINGERS, PART_ORDER, loadGLB, partColor } from './character.js';
 import { CoverageProbe } from './coverage.js';
 import { REF_VIEWS, makeRefCamera } from './refcams.js';
-import { dressKnight, knightSword } from './knight.js';
+import { dressKnight, knightSword, knightGolfClub } from './knight.js';
 import { Illustration } from './illustrated.js';
 
 const $ = (id) => document.getElementById(id);
@@ -121,6 +121,8 @@ async function loadCharacter(glbSrc, cfg = null, propsUrl = null) {
     for (const recipe of recipes) {
       const meta=cfg.animations.find(a=>a.name===recipe.name);
       if (meta && recipe.propTransform) meta.propTransform=recipe.propTransform;
+      // recipes that carry their own metadata (golf_swing: prop, support hand, markers) register it once
+      if (!meta && recipe.meta) cfg.animations.push({name:recipe.name,duration:recipe.duration,frames:recipe.times.length,fps:30,...recipe.meta});
     }
     dressKnight(ch, recipes);
   }
@@ -590,6 +592,8 @@ async function boot() {
     if (old) old.removeFromParent();
     state.weapons ||= new THREE.Group();
     state.weapons.add(knightSword());
+    state.weapons.getObjectByName('GolfClub')?.removeFromParent();
+    state.weapons.add(knightGolfClub());
   }
   if(window.__KNIGHT_PREVIEW&&!params.has('buildKnight')){
     illustration=new Illustration(window.viewer);window.viewer.illustration=illustration;

@@ -25,12 +25,18 @@ local server or external connection is needed. GLB/config export still works.
 - `characters/aureate_knight/aureate_knight.character.json`: rig and clip metadata.
 - `props/aureate-sword.glb`: matching ornamental sword, in the original Sword2H socket frame.
 - `viewer/js/knight.js`: reproducible armor/sword geometry and cape morphs.
-- `tools/knight_motion.py`: two new baked IK recipes using the existing rig helpers.
+- `tools/knight_motion.py`: baked IK recipes using the existing rig helpers (hover, salute, golf swing — the swing itself is in `tools/cbase/golf.py`).
 - `viewer/knight.html`: knight-focused view of the original playground.
 
 **New clips:** `hover_sword_vigil` is a seamless five-second hover with open palms
 supporting a horizontal blade; `knight_salute` is a four-second hand-to-chest salute.
-The other 22 clips come from the existing library. The ornate sword replaces the
+`golf_swing` is a four-second right-handed golf swing that loops: address, takeaway, top of the backswing,
+downswing with lag, impact, release, finish (right heel up, facing the target) and back to address. The club
+(`GolfClub`, built by `knightGolfClub()` in `viewer/js/knight.js`) sits in `socket_hand_R_prop` with the identity
+transform; the left hand holds its `grip_L` marker above the right hand. The club and hands swing in a plane
+through the target line, the spine turns about its own tilted axis and side-bends so the head stays over the
+ball until after impact, and the clubhead returns to within 1 cm of the address position at impact
+(`meta.checks` in the recipe). The other 22 clips come from the existing library. The ornate sword replaces the
 test sword in the knight playground while retaining its grip dimensions.
 
 The hover clip's `propTransform` in the config is applied after parenting the sword

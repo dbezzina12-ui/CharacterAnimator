@@ -16,13 +16,13 @@ function handSlots(s) {
 
 export const SWORD_AXES = { x: [0, 1, 0], y: [-1, 0, 0] };
 export const PROP_AXES = {
-  Sword2H: SWORD_AXES, Staff: SWORD_AXES, Detonator: SWORD_AXES,
+  Sword2H: SWORD_AXES, Staff: SWORD_AXES, Detonator: SWORD_AXES, GolfClub: SWORD_AXES,
   Pistol: { x: [-1, 0, 0], y: [0, 1, 0] }, Rifle: { x: [-1, 0, 0], y: [0, 1, 0] },
 };
 
 /** Clips whose props need the support hand on a named marker (IK keeps it there after edits). */
 export const SUPPORT_CLIPS = { sword_2h_idle: 'grip_L', sword_2h_slash: 'grip_L', rifle_aim: 'grip_L', rifle_fire: 'grip_L',
-  pistol_aim_2h: 'grip_L_2h', pistol_fire_2h: 'grip_L_2h' };
+  pistol_aim_2h: 'grip_L_2h', pistol_fire_2h: 'grip_L_2h', golf_swing: 'grip_L' };
 
 export const KNIGHT = {
   id: 'aureate_knight_2d',
@@ -63,7 +63,10 @@ export const KNIGHT = {
     // armour logic where the plates interpenetrate in 3D: pauldrons are worn over the breastplate
     ['upperarm_L', 'cuirass'], ['upperarm_R', 'cuirass'],
   ],
-  props: ['Sword2H', 'Staff', 'Pistol', 'Rifle', 'Detonator'],
+  props: ['Sword2H', 'Staff', 'Pistol', 'Rifle', 'Detonator', 'GolfClub'],
+  // draw-order hold per clip: by default a whole order must hold 3 frames; 'swing' holds each pair of slots instead
+  // (the golf club and arms pass across the whole body in ~8 frames)
+  orderHold: { golf_swing: 'swing' },
   // pose-specific hand art (view-specific attachments) keyed onto the listed clips
   captures: [
     { name: 'hover', clip: 'hover_sword_vigil', t: 0, sides: ['L', 'R'], clips: ['hover_sword_vigil'], limbs: ['forearm_L', 'forearm_R'],
@@ -95,6 +98,25 @@ export const KNIGHT = {
     // walk: the swinging hands turn palm-back at the ends of the swing; the setup hand mesh folds there
     { name: 'walk_swing_L', clip: 'walk_in_place', t: 0.57, sides: ['L'], clips: ['walk_in_place'], range: [0.38, 0.76] },
     { name: 'walk_swing_R', clip: 'walk_in_place', t: 0.03, sides: ['R'], clips: ['walk_in_place'], range: [[0, 0.24], [0.92, 2]] },
+    // golf: both hands on the club grip (left above right), as seen at address
+    { name: 'grip_golf', clip: 'golf_swing', t: 0, sides: ['L', 'R'], clips: ['golf_swing'] },
+    // golf top of the backswing and finish: the shoulders are turned ~90°, the arms cross the chest — arms,
+    // hands and breastplate as seen in those poses (one view per pose; in between the setup pieces turn in 2D)
+    { name: 'golf_top', clip: 'golf_swing', t: 1.5, sides: ['L', 'R'], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R', 'cuirass'],
+      clips: ['golf_swing'], range: [1.25, 1.75] },
+    // release (hands rolled over after impact) and the way back to address: the address grip / setup arms no
+    // longer match the turned hands there
+    { name: 'golf_release', clip: 'golf_swing', t: 2.13, sides: ['L', 'R'], limbs: ['forearm_L', 'forearm_R'],
+      clips: ['golf_swing'], range: [1.97, 2.25] },
+    { name: 'golf_return', clip: 'golf_swing', t: 3.4, sides: ['L', 'R'], limbs: ['forearm_L', 'forearm_R'],
+      clips: ['golf_swing'], range: [3.2, 3.53] },
+    { name: 'golf_return_low', clip: 'golf_swing', t: 3.62, sides: ['L', 'R'], limbs: ['forearm_L', 'forearm_R'],
+      clips: ['golf_swing'], range: [3.53, 3.8] },
+    { name: 'golf_finish', clip: 'golf_swing', t: 2.47, sides: ['L', 'R'], limbs: ['upperarm_L', 'upperarm_R', 'forearm_L', 'forearm_R', 'cuirass'],
+      clips: ['golf_swing'], range: [2.25, 3.2] },
+    // the right foot pivots onto its toe through the finish (heel up, turned toward the target): the setup foot
+    // would squash to a sliver there
+    { name: 'golf_pivot', clip: 'golf_swing', t: 2.47, sides: [], groups: [], limbs: ['foot_R', 'under_foot_R'], clips: ['golf_swing'], range: [2.03, 3.6] },
     { name: 'fist', curl: 0.95, sides: ['L', 'R'] },
     { name: 'relaxed', curl: 0.3, sides: ['L', 'R'] },
     // the other side of each hand (turned 180° about its length axis); set names come from the measured view

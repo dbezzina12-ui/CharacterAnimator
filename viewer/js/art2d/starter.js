@@ -424,7 +424,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     const originPx = [(-x0) * S - tr.x, (y1) * S - tr.y];      // image px of the prop origin (grip)
     const toImg = (m) => [+(originPx[0] + new THREE.Vector3(...m).dot(X) * ppm * S).toFixed(2), +(originPx[1] - new THREE.Vector3(...m).dot(Y) * ppm * S).toFixed(2)];
     const markers = {};
-    for (const [k, M] of Object.entries(weaponsJson.props?.[pid]?.markers || {})) markers[k] = toImg([M[0][3], M[1][3], M[2][3]]);
+    for (const [k, M] of Object.entries(weaponsJson.props?.[pid]?.markers || src.userData?.markers || {})) markers[k] = toImg([M[0][3], M[1][3], M[2][3]]);
     if (markers.grip_L) markers.support = markers.grip_L;
     const layer = { img: tr.img, x0: 0, yTop: 0, rect: { x0, y1, w, h, tx: tr.x, ty: tr.y } };
     const id = `prop_R.${pid}`, imgId = `prop__${pid}`;
@@ -435,7 +435,7 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
       transform: { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, mirror: false }, registration: { sourceRect: [x0, y1, w, h], trim: [tr.x, tr.y], scale: S },
       vertices: mesh.vertices, triangles: mesh.triangles, weights: null, visible: true, opacity: 1, tint: [1, 1, 1], blend: 'normal', view: 'flat',
       markers, source: { kind: 'render3d', prop: pid, note: 'Flat view of the 3D prop in its own frame (+x = main axis).' } };
-    propsOut[pid] = { id: pid, attachment: id, axes3d: axes, markers: Object.keys(markers), source: pid === 'Sword2H' && spec.source3d === 'aureate_knight' ? 'viewer/js/knight.js knightSword()' : 'props/weapons.glb' };
+    propsOut[pid] = { id: pid, attachment: id, axes3d: axes, markers: Object.keys(markers), source: pid === 'Sword2H' && spec.source3d === 'aureate_knight' ? 'viewer/js/knight.js knightSword()' : pid === 'GolfClub' ? 'viewer/js/knight.js knightGolfClub()' : 'props/weapons.glb' };
     log(`prop ${pid}: ${tr.img.width}x${tr.img.height}`);
   }
 
@@ -661,13 +661,51 @@ export async function buildStarterProject(viewer, spec, { write, log = () => {},
     }
     // single-frame draw-order blips (A → B → A) are removed: an order must hold for at least 2 frames
     const okey = (o) => o.join(',');
-    for (let i = 1; i < orders.length - 1; i++) if (okey(orders[i]) !== okey(orders[i - 1]) && okey(orders[i + 1]) === okey(orders[i - 1])) orders[i] = orders[i - 1];
-    // minimum hold: a depth order shown for fewer than 3 frames (pieces flip-flopping while they cross) keeps the
-    // previous order instead; the last run of the clip is kept so the final pose is drawn correctly
-    for (let changed = true; changed;) {
-      changed = false;
-      const runs = []; orders.forEach((o, i) => { if (!runs.length || okey(o) !== okey(orders[runs[runs.length - 1]])) runs.push(i); });
-      for (let r = 1; r < runs.length - 1; r++) if (runs[r + 1] - runs[r] < 3) { for (let i = runs[r]; i < runs[r + 1]; i++) orders[i] = orders[runs[r] - 1]; changed = true; break; }
+    if (spec.orderHold?.[name] === 'swing') {
+      // fast swings (golf_swing: club and arms pass across the whole body in ~8 frames): the hold works per PAIR of
+      // slots — a pair that flips for fewer than 3 frames and flips back is a flicker and is reverted, a lasting flip
+      // (the club now in front of the legs, the arms now in front of the breastplate) is kept — and each frame's order
+      // is rebuilt from the cleaned pairs (stable, seeded with the raw order). A whole-order hold would drop every
+      // intermediate order of the sweep and leave the club/arms behind the body.
+      // repeated: where the cleaned pairs form a cycle the rebuild falls back to the raw order, so clean again
+      for (let iter = 0; iter < 4; iter++) {
+      const ids = orders[0], nI = ids.length, pos = orders.map((o) => new Map(o.map((id, i) => [id, i])));
+      const over = new Map();                                   // 'a|b' -> [bool per frame] (a drawn over b)
+      for (let x = 0; x < nI; x++) for (let y = x + 1; y < nI; y++) {
+        const A = ids[x], B = ids[y], ser = pos.map((m) => m.get(A) > m.get(B));
+        for (let changed = true; changed;) {
+          changed = false;
+          const runs = []; ser.forEach((v, i) => { if (!runs.length || v !== ser[runs[runs.length - 1]]) runs.push(i); });
+          for (let r = 1; r < runs.length - 1; r++) if (runs[r + 1] - runs[r] < 3) { for (let i = runs[r]; i < runs[r + 1]; i++) ser[i] = !ser[i]; changed = true; break; }
+        }
+        over.set(A + '|' + B, ser);
+      }
+      for (let i = 0; i < orders.length; i++) {
+        const raw = orders[i], before = new Map(raw.map((id) => [id, new Set()]));
+        for (let x = 0; x < nI; x++) for (let y = x + 1; y < nI; y++) {
+          const A = ids[x], B = ids[y]; if (over.get(A + '|' + B)[i]) before.get(A).add(B); else before.get(B).add(A);
+        }
+        const out = [], placed = new Set(), rest = raw.slice();
+        while (rest.length) {
+          let k = rest.findIndex((id) => [...before.get(id)].every((z) => placed.has(z)));
+          if (k < 0) {                                          // cycle: the slot that breaks the fewest pairs
+            let best = Infinity;
+            rest.forEach((id, j) => { const miss = [...before.get(id)].filter((z) => !placed.has(z)).length; if (miss < best) { best = miss; k = j; } });
+          }
+          const id = rest.splice(k, 1)[0]; out.push(id); placed.add(id);
+        }
+        orders[i] = out;
+      }
+      }
+    } else {
+      for (let i = 1; i < orders.length - 1; i++) if (okey(orders[i]) !== okey(orders[i - 1]) && okey(orders[i + 1]) === okey(orders[i - 1])) orders[i] = orders[i - 1];
+      // minimum hold: a depth order shown for fewer than 3 frames (pieces flip-flopping while they cross) keeps the
+      // previous order instead; the last run of the clip is kept so the final pose is drawn correctly
+      for (let changed = true; changed;) {
+        changed = false;
+        const runs = []; orders.forEach((o, i) => { if (!runs.length || okey(o) !== okey(orders[runs[runs.length - 1]])) runs.push(i); });
+        for (let r = 1; r < runs.length - 1; r++) if (runs[r + 1] - runs[r] < 3) { for (let i = runs[r]; i < runs[r + 1]; i++) orders[i] = orders[runs[r] - 1]; changed = true; break; }
+      }
     }
     // ---- tracks
     const tracks = { bones: {}, slots: {}, drawOrder: { t: [], v: [] }, deform: {}, hands: {}, constraints: {}, events: [] };

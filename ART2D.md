@@ -278,6 +278,28 @@ editable project is written back unchanged). Previews: `node scripts/preview-2d.
 `--zip2` side by side, `--follow=<bone>`) and `node scripts/record-before-after.mjs` (side-by-side WebM from two
 runtime packages; `--speed=0.5` for half speed).
 
+## Adding a new clip to an existing project (golf swing)
+
+`golf_swing` (3D: `tools/cbase/golf.py`, club `knightGolfClub()`) is baked into 2D like the other knight clips, with
+pose-specific drawings captured from the 3D model where the setup pieces cannot show the pose: the two-handed grip
+(`grip_golf`), the top of the backswing and the finish (arms, hands and the turned breastplate: `golf_top`,
+`golf_finish`), the release and the way back (`golf_release`, `golf_return`, `golf_return_low`) and the right foot
+pivoting onto its toe (`golf_pivot`). These are rendered from 3D in the starter style — a painted project needs them
+painted (they are listed in `ART-REQUESTS.txt` after a rebuild). Draw order: the club and arms cross the whole body in
+~8 frames, so `spec.orderHold.golf_swing = 'swing'` holds each *pair* of slots for 3 frames (a pair that flips and flips
+back is a flicker; a lasting flip is kept) instead of holding the whole order, which would leave the club behind the body.
+
+To add a baked clip to a project without rebuilding or rebasing it:
+
+```bash
+node scripts/build-2d-knight.mjs --clips=golf_swing --out=<scratch dir>          # bake only that clip
+node scripts/merge-2d-clip.mjs --from=<scratch dir> --to=<project dir or saved .zip> --clips=golf_swing [--out=<new zip>]
+```
+
+The merge refuses a different rig (bones/slots), an existing clip of that name, or any change to existing
+attachments, images, hand sets or props; it only adds the clip, its new attachments/images, hand sets and prop.
+`node scripts/sheet-3d.mjs <clip> out.png --views=art,front,side` renders a 3D contact sheet for checking the motion.
+
 ## Hands, props, contacts
 
 * Finger chains stay 3-bone per finger on both sides; 2D-only `<finger>_tip_<side>` bones mark the pads.

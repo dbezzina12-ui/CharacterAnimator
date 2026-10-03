@@ -174,6 +174,42 @@
     "attachment": "hand_L.walk_swing_L",
     "wristGapPx": 0.24,
     "ok": true
+   },
+   {
+    "set": "grip_golf",
+    "attachment": "hand_L.grip_golf",
+    "wristGapPx": 0.04,
+    "ok": true
+   },
+   {
+    "set": "golf_top",
+    "attachment": "hand_L.golf_top",
+    "wristGapPx": 0.1,
+    "ok": true
+   },
+   {
+    "set": "golf_release",
+    "attachment": "hand_L.golf_release",
+    "wristGapPx": 0.27,
+    "ok": true
+   },
+   {
+    "set": "golf_return",
+    "attachment": "hand_L.golf_return",
+    "wristGapPx": 0.11,
+    "ok": true
+   },
+   {
+    "set": "golf_return_low",
+    "attachment": "hand_L.golf_return_low",
+    "wristGapPx": 0.27,
+    "ok": true
+   },
+   {
+    "set": "golf_finish",
+    "attachment": "hand_L.golf_finish",
+    "wristGapPx": 0.04,
+    "ok": true
    }
   ],
   "R": [
@@ -278,6 +314,42 @@
     "attachment": "hand_R.walk_swing_R",
     "wristGapPx": 4.03,
     "ok": true
+   },
+   {
+    "set": "grip_golf",
+    "attachment": "hand_R.grip_golf",
+    "wristGapPx": 0.23,
+    "ok": true
+   },
+   {
+    "set": "golf_top",
+    "attachment": "hand_R.golf_top",
+    "wristGapPx": 0.28,
+    "ok": true
+   },
+   {
+    "set": "golf_release",
+    "attachment": "hand_R.golf_release",
+    "wristGapPx": 0.16,
+    "ok": true
+   },
+   {
+    "set": "golf_return",
+    "attachment": "hand_R.golf_return",
+    "wristGapPx": 1.99,
+    "ok": true
+   },
+   {
+    "set": "golf_return_low",
+    "attachment": "hand_R.golf_return_low",
+    "wristGapPx": 0.16,
+    "ok": true
+   },
+   {
+    "set": "golf_finish",
+    "attachment": "hand_R.golf_finish",
+    "wristGapPx": 0.2,
+    "ok": true
    }
   ]
  },
@@ -296,7 +368,13 @@
    "grip_sword (back/grip)",
    "grip_pistol_2h (back/grip)",
    "grip_rifle (palm/grip)",
-   "walk_swing_L (back/grip)"
+   "walk_swing_L (back/grip)",
+   "grip_golf (back/grip)",
+   "golf_top (back/grip)",
+   "golf_release (back/grip)",
+   "golf_return (back/grip)",
+   "golf_return_low (back/grip)",
+   "golf_finish (back/grip)"
   ],
   "R": [
    "open_palm (palm/open)",
@@ -315,7 +393,13 @@
    "salute (back/grip)",
    "salute_mid (back/grip)",
    "salute_open (back/grip)",
-   "walk_swing_R (palm/grip)"
+   "walk_swing_R (palm/grip)",
+   "grip_golf (palm/grip)",
+   "golf_top (back/grip)",
+   "golf_release (back/grip)",
+   "golf_return (side/grip)",
+   "golf_return_low (back/grip)",
+   "golf_finish (palm/grip)"
   ]
  }
 }

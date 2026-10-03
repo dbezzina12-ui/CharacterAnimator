@@ -1,5 +1,5 @@
 {
- "date": "2026-10-01T17:05:32.086Z",
+ "date": "2026-10-03T02:31:22.919Z",
  "passed": 15,
  "failed": 0,
  "results": [
@@ -156,7 +156,7 @@
    "pass": true,
    "details": {
     "keyed": true,
-    "paintedMovedPx": 24.64
+    "paintedMovedPx": 24.65
    }
   },
   {
@@ -191,10 +191,10 @@
   },
   {
    "id": "pack-placement-roundtrip",
-   "title": "Template-pack layers.json placement equals the piece footprint for all 213 pieces (centre, rotation, displayed scale incl. props and hand captures)",
+   "title": "Template-pack layers.json placement equals the piece footprint for all 304 pieces (centre, rotation, displayed scale incl. props and hand captures)",
    "pass": true,
    "details": {
-    "pieces": 213,
+    "pieces": 304,
     "worst": {
      "px": 0.003456251955445141,
      "deg": 0.0004999999999881766,
@@ -208,7 +208,7 @@
    "pass": true,
    "details": {
     "pack": {
-     "pieces": 213,
+     "pieces": 304,
      "worst": {
       "px": 0.003456251955445141,
       "deg": 0.0004999999999881766,

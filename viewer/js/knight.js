@@ -240,3 +240,36 @@ export function knightSword() {
   }
   return group;
 }
+
+// Golf club for golf_swing (tools/cbase/golf.py uses the same prop frame and constants): +Y = shaft from the
+// right-hand grip origin toward the head, the head's sole runs heel → toe at the lie angle in the X-Y plane,
+// +Z = face normal. Markers (prop-local, row-major 4×4) are read by the 2D bake like props/weapons.json.
+export const GOLF = { lie: 60, hoselY: 0.87, gripLY: -0.088, buttY: -0.175 };
+export function knightGolfClub() {
+  const group=new THREE.Group();group.name='GolfClub';
+  const steel=new THREE.MeshStandardMaterial({color:0xc9d3dc,metalness:.92,roughness:.22});
+  const face=new THREE.MeshStandardMaterial({color:0xaeb9c3,metalness:.88,roughness:.32});
+  const rubber=new THREE.MeshStandardMaterial({color:0x171d35,roughness:.82});
+  const gold=new THREE.MeshStandardMaterial({color:0xd7a957,metalness:.85,roughness:.25});
+  const add=(g,m,p=[0,0,0])=>{const o=new THREE.Mesh(g,m);o.position.copy(V(p));o.castShadow=true;group.add(o);return o;};
+  const L=GOLF.lie*Math.PI/180, sole=V([Math.sin(L),Math.cos(L),0]), up=V([Math.cos(L),-Math.sin(L),0]);
+  // grip (tapered), gold ferrule and end cap, shaft, hosel
+  add(new THREE.CylinderGeometry(.0128,.0142,.27,18),rubber,[0,(GOLF.buttY+.095)/2,0]);
+  add(new THREE.SphereGeometry(.0142,16,10,0,Math.PI*2,0,Math.PI/2),rubber,[0,GOLF.buttY,0]).rotation.x=Math.PI;
+  for(const y of [GOLF.buttY+.004,.093])add(new THREE.CylinderGeometry(.0146,.0146,.008,18),gold,[0,y,0]);
+  add(new THREE.CylinderGeometry(.0078,.0062,GOLF.hoselY-.04-.095,12),steel,[0,(.095+GOLF.hoselY-.04)/2,0]);   // a little thicker than real so it reads in 2D
+  add(new THREE.CylinderGeometry(.0086,.0068,.045,12),steel,[0,GOLF.hoselY-.0175,0]);
+  // iron head: outline in (along the sole, up the face) coordinates, extruded behind the face
+  const sh=new THREE.Shape();
+  [[-.006,0],[.03,-.002],[.066,.002],[.078,.012],[.08,.034],[.074,.048],[.062,.051],[.02,.036],[.004,.032],[-.006,.02]].forEach(([u,v],i)=>i?sh.lineTo(u,v):sh.moveTo(u,v));
+  const hg=new THREE.ExtrudeGeometry(sh,{depth:.02,bevelEnabled:true,bevelThickness:.002,bevelSize:.002,bevelSegments:2,curveSegments:6});
+  const M=new THREE.Matrix4().makeBasis(sole,up,V([0,0,1]));M.setPosition(0,GOLF.hoselY,-.017);hg.applyMatrix4(M);hg.computeVertexNormals();
+  add(hg,steel);
+  // face grooves (thin gold lines would read as decoration; steel-dark grooves keep it a club)
+  for(let i=0;i<5;i++){const v=.009+i*.0072,u0=.008+i*.002,u1=.07-i*.001;const g=new THREE.BoxGeometry(u1-u0,.0011,.0012);
+    const o=add(g,face);const c=sole.clone().multiplyScalar((u0+u1)/2).add(up.clone().multiplyScalar(v));o.position.set(c.x,GOLF.hoselY+c.y,.0052);o.rotation.z=Math.atan2(sole.y,sole.x);}
+  const T=(x,y,z)=>[[1,0,0,x],[0,1,0,y],[0,0,1,z],[0,0,0,1]];
+  const sweet=sole.clone().multiplyScalar(.034).add(up.clone().multiplyScalar(.019));
+  group.userData.markers={grip_L:T(0,GOLF.gripLY,0),head:T(sweet.x,GOLF.hoselY+sweet.y,0),butt:T(0,GOLF.buttY,0)};
+  return group;
+}

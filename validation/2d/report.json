@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-01T17:08:50.208Z",
+  "date": "2026-10-03T02:46:59.480Z",
   "passed": 27,
   "failed": 0,
   "info": 3,
@@ -10,15 +10,26 @@
       "pass": true,
       "details": {
         "bones": 63,
-        "clips": 24,
+        "clips": 25,
         "loopMax": 0
       }
     },
     {
       "id": "frozen-untouched",
-      "title": "3D character data, props and frozen builds are not rewritten by the 2D work",
+      "title": "3D character data, props and frozen builds are not rewritten (only the knight's golf_swing clip is added, additively)",
       "pass": true,
-      "details": "no changes under characters/ props/ tools/"
+      "details": {
+        "unexpected": [],
+        "glb": {
+          "ok": true,
+          "existingChannelsIdentical": 4312,
+          "changedChannels": 0,
+          "added": [
+            "golf_swing"
+          ],
+          "structureSame": true
+        }
+      }
     },
     {
       "id": "3d-default",
@@ -36,8 +47,8 @@
       "pass": true,
       "details": {
         "slots": 37,
-        "attachments": 213,
-        "images": 213
+        "attachments": 304,
+        "images": 304
       }
     },
     {
@@ -67,10 +78,10 @@
     },
     {
       "id": "finite",
-      "title": "All 26 clips evaluate to finite meshes at 30 fps",
+      "title": "All 27 clips evaluate to finite meshes at 30 fps",
       "pass": true,
       "details": {
-        "frames": 2211,
+        "frames": 2332,
         "nonFinite": 0
       }
     },
@@ -87,7 +98,7 @@
       "title": "Every 2D joint/socket within 2 px of the projected 3D joint (1024 px reference height), all bridged clips",
       "pass": true,
       "details": {
-        "worstPx": 0.883
+        "worstPx": 1.451
       }
     },
     {
@@ -122,6 +133,11 @@
         },
         "contact_detonator_2d": {
           "frames": 25,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "golf_swing": {
+          "frames": 121,
           "maxErrorPx": 0,
           "unreachableFrames": 0
         }
@@ -191,6 +207,10 @@
             "jump3d": 0
           },
           "contact_detonator_2d": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "golf_swing": {
             "jump2d": 0,
             "jump3d": 0
           }
@@ -294,7 +314,7 @@
       "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
       "pass": true,
       "details": {
-        "zipKB": 5636,
+        "zipKB": 6808,
         "errors": 0,
         "painted": [
           "forearm_L.painted",
@@ -384,10 +404,10 @@
       "pass": null,
       "info": true,
       "details": {
-        "evalMs": 0.047,
-        "editorFrameMs": 1.87,
-        "attachments": 213,
-        "vertices": 11699,
+        "evalMs": 0.069,
+        "editorFrameMs": 1.67,
+        "attachments": 304,
+        "vertices": 16297,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
       }
     },
@@ -500,6 +520,10 @@
     "knight_salute": {
       "max": 0.429,
       "at": "middle_03_R@3.47"
+    },
+    "golf_swing": {
+      "max": 1.451,
+      "at": "forearm_L@1.63"
     }
   },
   "contacts": {
@@ -530,6 +554,11 @@
     },
     "contact_detonator_2d": {
       "frames": 25,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "golf_swing": {
+      "frames": 121,
       "maxErrorPx": 0,
       "unreachableFrames": 0
     }
@@ -586,6 +615,10 @@
     "contact_detonator_2d": {
       "jump2d": 0,
       "jump3d": 0
+    },
+    "golf_swing": {
+      "jump2d": 0,
+      "jump3d": 0
     }
   },
   "stress": {
@@ -599,10 +632,10 @@
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.047,
-    "editorFrameMs": 1.87,
-    "attachments": 213,
-    "vertices": 11699,
+    "evalMs": 0.069,
+    "editorFrameMs": 1.67,
+    "attachments": 304,
+    "vertices": 16297,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
   }
 }
