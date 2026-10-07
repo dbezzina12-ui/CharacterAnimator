@@ -16,13 +16,13 @@ const check = (id, title, pass, details) => { results.push({ id, title, pass: !!
 let knight3d = null;
 try { execSync('node scripts/knight-check.mjs', { stdio: 'pipe', timeout: 240000 }); knight3d = JSON.parse(fs.readFileSync('validation/knight/checks.json', 'utf8')); } catch (e) { knight3d = { error: String(e.stdout || e.message).slice(-400) }; }
 const knightClips = JSON.parse(fs.readFileSync('characters/aureate_knight/aureate_knight.character.json', 'utf8')).animations.length;
-check('3d-works', '3D knight still loads, exports, reloads (scripts/knight-check.mjs)', knight3d && !knight3d.error && knight3d.checks?.countAfter === knightClips && knightClips === 25, knight3d?.checks ? { bones: knight3d.checks.bones, clips: knight3d.checks.countAfter, loopMax: knight3d.checks.loopMax } : knight3d);
-// The only 3D change since the 2D work began is the knight's golf_swing clip (tools/cbase/golf.py, baked by
+check('3d-works', '3D knight still loads, exports, reloads (scripts/knight-check.mjs)', knight3d && !knight3d.error && knight3d.checks?.countAfter === knightClips && knightClips === 27, knight3d?.checks ? { bones: knight3d.checks.bones, clips: knight3d.checks.countAfter, loopMax: knight3d.checks.loopMax } : knight3d);
+// The only 3D changes since the 2D work began are the knight's golf_swing and sword_raise_2h/1h clips (tools/cbase/golf.py, baked by
 // tools/knight_motion.py): those files may change, and the knight GLB must be ADDITIVE — every animation channel of
 // 03cf633 byte-identical, same meshes/nodes/skins, only golf_swing added. Anything else under characters/ props/
 // tools/ blender/ textures/ fails.
 const GOLF_FILES = new Set(['characters/aureate_knight/aureate_knight.glb', 'characters/aureate_knight/aureate_knight.character.json',
-  'characters/aureate_knight/knight-motion.json', 'tools/knight_motion.py', 'tools/cbase/golf.py']);
+  'characters/aureate_knight/knight-motion.json', 'tools/knight_motion.py', 'tools/cbase/golf.py', 'tools/cbase/sword_raise.py']);
 const changed3d = execSync('git diff --name-only 03cf633 -- characters props tools blender textures 2>/dev/null || true').toString().trim().split('\n').filter(Boolean);
 const untracked3d = execSync('git ls-files --others --exclude-standard -- characters props tools blender textures 2>/dev/null || true').toString().trim().split('\n').filter(Boolean);
 const unexpected3d = [...changed3d, ...untracked3d].filter((f) => !GOLF_FILES.has(f));
@@ -39,9 +39,9 @@ try {
       if (accBytes(A, sa.input).equals(accBytes(B, sb.input)) && accBytes(A, sa.output).equals(accBytes(B, sb.output))) same++; else diff++; });
   }
   const struct = A.j.meshes.length === B.j.meshes.length && A.j.nodes.length === B.j.nodes.length && JSON.stringify(A.j.skins) === JSON.stringify(B.j.skins);
-  glbAdditive = { ok: diff === 0 && struct && JSON.stringify(added) === JSON.stringify(['golf_swing']), existingChannelsIdentical: same, changedChannels: diff, added, structureSame: struct };
+  glbAdditive = { ok: diff === 0 && struct && JSON.stringify(added) === JSON.stringify(['golf_swing', 'sword_raise_2h', 'sword_raise_1h']), existingChannelsIdentical: same, changedChannels: diff, added, structureSame: struct };
 } catch (e) { glbAdditive = { ok: false, error: String(e.message).slice(0, 200) }; }
-check('frozen-untouched', '3D character data, props and frozen builds are not rewritten (only the knight\'s golf_swing clip is added, additively)',
+check('frozen-untouched', '3D character data, props and frozen builds are not rewritten (only the knight\'s golf swing and sword raises are added, additively)',
   unexpected3d.length === 0 && glbAdditive.ok, { unexpected: unexpected3d, glb: glbAdditive });
 
 const server = await startServer(0);

@@ -1,5 +1,5 @@
 {
- "date": "2026-10-03T02:43:44.142Z",
+ "date": "2026-10-07T03:59:12.501Z",
  "passed": 7,
  "failed": 0,
  "results": [
@@ -18,7 +18,7 @@
     },
     "customClip": true,
     "valid": 0,
-    "clips": 28
+    "clips": 30
    }
   },
   {
@@ -28,8 +28,8 @@
    "details": {
     "mode": "as saved",
     "clips": [
-     28,
-     28
+     30,
+     30
     ],
     "customKept": true,
     "correctionKept": true,
@@ -81,7 +81,7 @@
     "artRequestsStatus": [
      "  finished: 1 (helmet.default)",
      "  provisional: 1",
-     "  missing: 302 pieces — they currently show the starter (3D-captured) art"
+     "  missing: 320 pieces — they currently show the starter (3D-captured) art"
     ]
    }
   },
@@ -94,9 +94,9 @@
     "identicalAsSaved": true,
     "identicalRebasedTwice": true,
     "clips": [
-     28,
-     28,
-     28
+     30,
+     30,
+     30
     ]
    }
   },

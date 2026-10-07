@@ -6,9 +6,9 @@
     "loopMax": 0,
     "maxContactDrift": 1.594950897290976e-7,
     "minFoot": 0.4175469950668769,
-    "exportBytes": 13768696,
-    "countBefore": 25,
-    "countAfter": 25,
+    "exportBytes": 14115524,
+    "countBefore": 27,
+    "countAfter": 27,
     "exportCfgRebuildsArmor": false
   },
   "mobile": {

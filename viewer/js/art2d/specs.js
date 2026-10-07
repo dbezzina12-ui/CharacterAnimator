@@ -22,7 +22,7 @@ export const PROP_AXES = {
 
 /** Clips whose props need the support hand on a named marker (IK keeps it there after edits). */
 export const SUPPORT_CLIPS = { sword_2h_idle: 'grip_L', sword_2h_slash: 'grip_L', rifle_aim: 'grip_L', rifle_fire: 'grip_L',
-  pistol_aim_2h: 'grip_L_2h', pistol_fire_2h: 'grip_L_2h', golf_swing: 'grip_L' };
+  pistol_aim_2h: 'grip_L_2h', pistol_fire_2h: 'grip_L_2h', golf_swing: 'grip_L', sword_raise_2h: 'grip_L' };
 
 export const KNIGHT = {
   id: 'aureate_knight_2d',
@@ -72,6 +72,10 @@ export const KNIGHT = {
     { name: 'hover', clip: 'hover_sword_vigil', t: 0, sides: ['L', 'R'], clips: ['hover_sword_vigil'], limbs: ['forearm_L', 'forearm_R'],
       propMarker: { marker: 'support_L_hover', socket: 'socket_hand_L_prop' } },
     { name: 'grip_sword', clip: 'sword_2h_idle', t: 0, sides: ['L', 'R'], clips: ['sword_2h_idle', 'sword_2h_slash'] },
+    // sword raises (2D effects: lightning on the two-handed raise, fire on the one-handed raise): both hands on the
+    // hilt overhead; for the one-handed thrust the right hand's grip as seen with the arm up
+    { name: 'grip_sword_up', clip: 'sword_raise_2h', t: 1.5, sides: ['L', 'R'], clips: ['sword_raise_2h'], range: [0.7, 2.7] },
+    { name: 'grip_sword_1h', clip: 'sword_raise_1h', t: 1.5, sides: ['R'], clips: ['sword_raise_1h'], range: [0.7, 2.7] },
     { name: 'grip_staff', clip: 'staff_idle', t: 0, sides: ['R'], clips: ['staff_idle', 'staff_stomp'] },
     { name: 'grip_pistol', clip: 'pistol_aim', t: 0, sides: ['R'], clips: ['pistol_aim', 'pistol_fire'] },
     { name: 'grip_pistol_2h', clip: 'pistol_aim_2h', t: 0, sides: ['L', 'R'], clips: ['pistol_aim_2h', 'pistol_fire_2h'] },

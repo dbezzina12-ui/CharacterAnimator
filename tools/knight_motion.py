@@ -9,6 +9,7 @@ from cbase.poses import Rig,Pose,rx,ry,rz,quat_from_matrix,curl_fingers
 from cbase.library import reach,pelvis_offset,plant_legs,raise_arm
 from cbase.clips import socket_matrix
 from cbase.golf import golf_swing
+from cbase.sword_raise import sword_raise_2h,sword_raise_1h
 ROOT=Path(__file__).resolve().parents[1]
 rig=Rig(build_skeleton(resolve()))
 socks=socket_defs(rig.sk)
@@ -74,5 +75,9 @@ def recipe(name,frames,meta):
 gf,gm=golf_swing(rig,socks)
 clips.append(recipe('golf_swing',gf,gm))
 print('golf_swing checks',gm['checks'])
+# sword raises for the 2D effects (lightning on the two-handed raise, fire on the one-handed raise)
+for nm,fn in (('sword_raise_2h',sword_raise_2h),('sword_raise_1h',sword_raise_1h)):
+ fr,mt=fn(rig,socks,str(ROOT));mt={k:v for k,v in mt.items() if k!='grip'} if mt.get('support') is None else mt
+ clips.append(recipe(nm,fr,mt))
 (ROOT/'characters/aureate_knight/knight-motion.json').write_text(json.dumps(clips,separators=(',',':')))
 print('Baked',[(x['name'],x['duration']) for x in clips])

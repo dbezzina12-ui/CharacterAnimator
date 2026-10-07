@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-03T02:46:59.480Z",
+  "date": "2026-10-07T03:25:35.752Z",
   "passed": 27,
   "failed": 0,
   "info": 3,
@@ -10,13 +10,13 @@
       "pass": true,
       "details": {
         "bones": 63,
-        "clips": 25,
+        "clips": 27,
         "loopMax": 0
       }
     },
     {
       "id": "frozen-untouched",
-      "title": "3D character data, props and frozen builds are not rewritten (only the knight's golf_swing clip is added, additively)",
+      "title": "3D character data, props and frozen builds are not rewritten (only the knight's golf swing and sword raises are added, additively)",
       "pass": true,
       "details": {
         "unexpected": [],
@@ -25,7 +25,9 @@
           "existingChannelsIdentical": 4312,
           "changedChannels": 0,
           "added": [
-            "golf_swing"
+            "golf_swing",
+            "sword_raise_2h",
+            "sword_raise_1h"
           ],
           "structureSame": true
         }
@@ -47,8 +49,8 @@
       "pass": true,
       "details": {
         "slots": 37,
-        "attachments": 304,
-        "images": 304
+        "attachments": 322,
+        "images": 322
       }
     },
     {
@@ -78,10 +80,10 @@
     },
     {
       "id": "finite",
-      "title": "All 27 clips evaluate to finite meshes at 30 fps",
+      "title": "All 29 clips evaluate to finite meshes at 30 fps",
       "pass": true,
       "details": {
-        "frames": 2332,
+        "frames": 2544,
         "nonFinite": 0
       }
     },
@@ -138,6 +140,11 @@
         },
         "golf_swing": {
           "frames": 121,
+          "maxErrorPx": 0,
+          "unreachableFrames": 0
+        },
+        "sword_raise_2h": {
+          "frames": 106,
           "maxErrorPx": 0,
           "unreachableFrames": 0
         }
@@ -211,6 +218,14 @@
             "jump3d": 0
           },
           "golf_swing": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "sword_raise_2h": {
+            "jump2d": 0,
+            "jump3d": 0
+          },
+          "sword_raise_1h": {
             "jump2d": 0,
             "jump3d": 0
           }
@@ -314,7 +329,7 @@
       "title": "Save → reopen in a fresh page from the ZIP alone: valid, identical poses, edits kept",
       "pass": true,
       "details": {
-        "zipKB": 6808,
+        "zipKB": 7074,
         "errors": 0,
         "painted": [
           "forearm_L.painted",
@@ -354,7 +369,6 @@
         ],
         "foreign": [],
         "events": [
-          "contact_detonator_2d 1.90s  button_up",
           "contact_detonator_2d 1.10s  button_down"
         ]
       }
@@ -404,10 +418,10 @@
       "pass": null,
       "info": true,
       "details": {
-        "evalMs": 0.069,
-        "editorFrameMs": 1.67,
-        "attachments": 304,
-        "vertices": 16297,
+        "evalMs": 0.307,
+        "editorFrameMs": 2.56,
+        "attachments": 322,
+        "vertices": 17009,
         "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
       }
     },
@@ -524,6 +538,14 @@
     "golf_swing": {
       "max": 1.451,
       "at": "forearm_L@1.63"
+    },
+    "sword_raise_2h": {
+      "max": 1.338,
+      "at": "forearm_L@2.77"
+    },
+    "sword_raise_1h": {
+      "max": 0.634,
+      "at": "middle_02_R@0.93"
     }
   },
   "contacts": {
@@ -559,6 +581,11 @@
     },
     "golf_swing": {
       "frames": 121,
+      "maxErrorPx": 0,
+      "unreachableFrames": 0
+    },
+    "sword_raise_2h": {
+      "frames": 106,
       "maxErrorPx": 0,
       "unreachableFrames": 0
     }
@@ -619,6 +646,14 @@
     "golf_swing": {
       "jump2d": 0,
       "jump3d": 0
+    },
+    "sword_raise_2h": {
+      "jump2d": 0,
+      "jump3d": 0
+    },
+    "sword_raise_1h": {
+      "jump2d": 0,
+      "jump3d": 0
     }
   },
   "stress": {
@@ -632,10 +667,10 @@
     "slash_windup": 1.39
   },
   "perf": {
-    "evalMs": 0.069,
-    "editorFrameMs": 1.67,
-    "attachments": 304,
-    "vertices": 16297,
+    "evalMs": 0.307,
+    "editorFrameMs": 2.56,
+    "attachments": 322,
+    "vertices": 17009,
     "renderer": "headless Chromium + SwiftShader (CPU WebGL)"
   }
 }

@@ -1,0 +1,19 @@
+{
+  "schema": "gamboligy.character2d-fx/1.0",
+  "note": "Procedural 2D effects per clip, drawn by runtime/gamboligy-fx.js on an overlay canvas. Anchors are markers of the attachment shown in `slot` (so starter and painted art both work); `on`/`off` are clip event names or seconds.",
+  "clips": {
+    "sword_raise_2h": [
+      { "type": "skyLightning", "slot": "prop_R", "to": "tip", "guard": 0.08, "on": "raised", "off": "lower",
+        "charge": 0.6, "fadeOut": 0.35, "strikeEvery": [0.35, 0.75], "strikeLength": 0.16, "color": "#8fd3ff" }
+    ],
+    "sword_raise_1h": [
+      { "type": "bladeFire", "slot": "prop_R", "to": "tip", "guard": 0.08, "on": "raised", "off": "lower",
+        "heat": 0.5, "ignite": 0.35, "fadeOut": 0.4, "particles": 170, "embers": 30, "spread": 46, "size": 58, "rise": 170,
+        "colors": ["#fff4c2", "#ffc23a", "#ff6a1c", "#c8260f"] }
+    ],
+    "staff_stomp": [
+      { "type": "groundSnake", "slot": "prop_R", "base": "butt", "top": "tip", "charge": "lift", "on": "impact",
+        "climb": 0.3, "hold": 0.25, "fadeOut": 0.18, "turns": 3, "radius": 55, "color": "#a7e4ff" }
+    ]
+  }
+}

@@ -1392,6 +1392,58 @@
         "lowestHeadZ_m": 0.0269,
         "maxReachSlide_m": 0.1259
       }
+    },
+    {
+      "name": "sword_raise_2h",
+      "duration": 3.5,
+      "frames": 106,
+      "fps": 30,
+      "loop": true,
+      "prop": "Sword2H",
+      "attach": "socket_hand_R_prop",
+      "support": {
+        "hand": "L",
+        "marker": "grip_L",
+        "gripRadius": 0.016
+      },
+      "grip": {
+        "R": {
+          "index": 0.42500000000000004,
+          "middle": 0.675,
+          "ring": 0.6625000000000001,
+          "pinky": 0.5750000000000001,
+          "thumb": [
+            0,
+            50,
+            1
+          ]
+        }
+      },
+      "markers": {
+        "raise": 8,
+        "raised": 30,
+        "lower": 72,
+        "end": 105
+      },
+      "note": "Both hands lift the sword overhead, tip to the sky (2D effect: lightning)."
+    },
+    {
+      "name": "sword_raise_1h",
+      "duration": 3.5,
+      "frames": 106,
+      "fps": 30,
+      "loop": true,
+      "prop": "Sword2H",
+      "attach": "socket_hand_R_prop",
+      "support": null,
+      "markers": {
+        "release": 8,
+        "raised": 30,
+        "lower": 72,
+        "regrip": 96,
+        "end": 105
+      },
+      "note": "The left hand lets go; the right hand thrusts the sword skyward (2D effect: fire)."
     }
   ],
   "testProps": {

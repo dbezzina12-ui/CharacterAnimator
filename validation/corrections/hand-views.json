@@ -210,6 +210,12 @@
     "attachment": "hand_L.golf_finish",
     "wristGapPx": 0.04,
     "ok": true
+   },
+   {
+    "set": "grip_sword_up",
+    "attachment": "hand_L.grip_sword_up",
+    "wristGapPx": 0.15,
+    "ok": true
    }
   ],
   "R": [
@@ -350,6 +356,18 @@
     "attachment": "hand_R.golf_finish",
     "wristGapPx": 0.2,
     "ok": true
+   },
+   {
+    "set": "grip_sword_up",
+    "attachment": "hand_R.grip_sword_up",
+    "wristGapPx": 0.17,
+    "ok": true
+   },
+   {
+    "set": "grip_sword_1h",
+    "attachment": "hand_R.grip_sword_1h",
+    "wristGapPx": 0.27,
+    "ok": true
    }
   ]
  },
@@ -374,7 +392,8 @@
    "golf_release (back/grip)",
    "golf_return (back/grip)",
    "golf_return_low (back/grip)",
-   "golf_finish (back/grip)"
+   "golf_finish (back/grip)",
+   "grip_sword_up (back/grip)"
   ],
   "R": [
    "open_palm (palm/open)",
@@ -399,7 +418,9 @@
    "golf_release (back/grip)",
    "golf_return (side/grip)",
    "golf_return_low (back/grip)",
-   "golf_finish (palm/grip)"
+   "golf_finish (palm/grip)",
+   "grip_sword_up (palm/grip)",
+   "grip_sword_1h (palm/grip)"
   ]
  }
 }

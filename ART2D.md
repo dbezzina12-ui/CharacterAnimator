@@ -300,6 +300,26 @@ The merge refuses a different rig (bones/slots), an existing clip of that name, 
 attachments, images, hand sets or props; it only adds the clip, its new attachments/images, hand sets and prop.
 `node scripts/sheet-3d.mjs <clip> out.png --views=art,front,side` renders a 3D contact sheet for checking the motion.
 
+## Effects (lightning, fire, staff bolt)
+
+`runtime/gamboligy-fx.js` draws procedural 2D effects on an overlay canvas above the character, listed per clip in
+`characters2d/aureate_knight/effects.json`:
+
+| clip | effect | timing |
+|---|---|---|
+| `sword_raise_2h` (both hands raise the sword overhead) | `skyLightning`: sparks gather at the tip, lightning strikes the raised sword from the sky (first strike flashes the screen), then strikes on a fixed schedule while arcs crawl the blade | charge from 0.4 s, strike at `raised` (1.0 s), fades after `lower` (2.4 s) |
+| `sword_raise_1h` (left hand lets go, right hand thrusts the sword up) | `bladeFire`: the blade heats, ignites from the guard to the tip and burns with rising embers; dies back toward the guard | heats from 0.5 s, ignites at `raised`, out after `lower` |
+| `staff_stomp` | `groundSnake`: the staff head crackles while lifted; at `impact` ground cracks and a shockwave, then a bolt coils up the staff like a snake from the butt to the tip and bursts | `lift` → `impact` (0.6 s) → tip burst ~0.9 s |
+
+Effects are anchored to markers of whatever attachment the slot shows (`prop_R` `tip`, `butt`, `origin`), so they follow
+the starter and the painted art alike, and they are a pure function of (clip, time): scrubbing and frame-stepping show
+the same frames as playback. Usage: `const fx = new CharacterFX(character, overlayCanvas, effectsJson);` then call
+`fx.draw(view, { dpr })` after `character.draw(view)` every frame. New effects are new entries in effects.json (same
+types with other colours/markers) or a new `_type` method in the module.
+
+The two raise clips come from `tools/cbase/sword_raise.py` (baked by `tools/knight_motion.py`) and were added to the
+starter and to the saved painted project with `scripts/merge-2d-clip.mjs`.
+
 ## Hands, props, contacts
 
 * Finger chains stay 3-bone per finger on both sides; 2D-only `<finger>_tip_<side>` bones mark the pads.

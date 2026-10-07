@@ -1,5 +1,5 @@
 {
- "date": "2026-10-03T02:32:06.840Z",
+ "date": "2026-10-07T03:40:45.297Z",
  "passed": 14,
  "failed": 0,
  "results": [
@@ -79,7 +79,7 @@
      400
     ],
     "characterPixels": "29.3%",
-    "meanMaxChannelDiff": 0.005,
+    "meanMaxChannelDiff": 0.004,
     "pixelsOver24": "0%"
    }
   },
@@ -169,7 +169,7 @@
    "title": "Every hand-set palm has art at the wrist joint (≤6 px), so set swaps never open a cuff gap",
    "pass": true,
    "details": {
-    "sets": 40,
+    "sets": 43,
     "worst": 4.03,
     "failing": []
    }

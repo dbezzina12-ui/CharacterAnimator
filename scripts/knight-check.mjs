@@ -2,7 +2,7 @@ import {chromium} from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
 import {startServer,CHROME,CHROME_ARGS} from './serve.mjs';
-// every clip listed in the knight's config must survive export → reload (24 library/knight clips + golf_swing)
+// every clip listed in the knight's config must survive export → reload (24 library/knight clips + golf_swing + two sword raises)
 const EXPECTED_CLIPS=JSON.parse(fs.readFileSync(new URL('../characters/aureate_knight/aureate_knight.character.json',import.meta.url),'utf8')).animations.length;
 const offlineDir=process.argv[2] ? path.resolve(process.argv[2]) : null;
 const server=await startServer(0,offlineDir?{'/offline/':offlineDir}:{});
