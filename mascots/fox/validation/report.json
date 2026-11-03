@@ -1,0 +1,664 @@
+{
+ "generated": "2026-11-03T02:38:39.499Z",
+ "failures": 0,
+ "checks": [
+  {
+   "name": "idle: bone lengths constant",
+   "ok": true,
+   "detail": "max error 2.84e-14 px over 361 frames"
+  },
+  {
+   "name": "idle: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "idle: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "idle: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "idle: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: follow-through bounded",
+   "ok": true,
+   "detail": "max 0.0°"
+  },
+  {
+   "name": "idle: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: seamless loop (pose at 0 == pose at duration)",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "idle_breathe: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 289 frames"
+  },
+  {
+   "name": "idle_breathe: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle_breathe: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "idle_breathe: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "idle_breathe: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "idle_breathe: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle_breathe: follow-through bounded",
+   "ok": true,
+   "detail": "max 1.2°"
+  },
+  {
+   "name": "idle_breathe: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle_breathe: seamless loop (pose at 0 == pose at duration)",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "wave: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 170 frames"
+  },
+  {
+   "name": "wave: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "wave: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "wave: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "wave: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "wave: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "wave: follow-through bounded",
+   "ok": true,
+   "detail": "max 3.1°"
+  },
+  {
+   "name": "wave: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 55 frames"
+  },
+  {
+   "name": "walk: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "walk: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "walk: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "walk: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: follow-through bounded",
+   "ok": true,
+   "detail": "max 9.3°"
+  },
+  {
+   "name": "walk: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: seamless loop (pose at 0 == pose at duration)",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "run: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 35 frames"
+  },
+  {
+   "name": "run: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "run: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "run: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "run: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 0.00 px (fist radius 18)"
+  },
+  {
+   "name": "run: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "run: follow-through bounded",
+   "ok": true,
+   "detail": "max 23.4°"
+  },
+  {
+   "name": "run: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "run: seamless loop (pose at 0 == pose at duration)",
+   "ok": true,
+   "detail": "max joint gap 4.26e-14 px"
+  },
+  {
+   "name": "jump: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 106 frames"
+  },
+  {
+   "name": "jump: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "jump: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "jump: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 0.00 px (fist radius 18)"
+  },
+  {
+   "name": "jump: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: follow-through bounded",
+   "ok": true,
+   "detail": "max 38.0°"
+  },
+  {
+   "name": "jump: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 183 frames"
+  },
+  {
+   "name": "celebrate: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 8.67e-14 px"
+  },
+  {
+   "name": "celebrate: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "celebrate: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "celebrate: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: follow-through bounded",
+   "ok": true,
+   "detail": "max 37.2°"
+  },
+  {
+   "name": "celebrate: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "address: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 86 frames"
+  },
+  {
+   "name": "address: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "address: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 7.65e-14 px"
+  },
+  {
+   "name": "address: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "address: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "address: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "address: follow-through bounded",
+   "ok": true,
+   "detail": "max 4.7°"
+  },
+  {
+   "name": "address: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "swing: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 208 frames"
+  },
+  {
+   "name": "swing: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "swing: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 1.11e-13 px"
+  },
+  {
+   "name": "swing: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "swing: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "swing: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "swing: follow-through bounded",
+   "ok": true,
+   "detail": "max 23.4°"
+  },
+  {
+   "name": "swing: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "drive: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 256 frames"
+  },
+  {
+   "name": "drive: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "drive: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 1.08e-13 px"
+  },
+  {
+   "name": "drive: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "drive: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.277 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "drive: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "drive: follow-through bounded",
+   "ok": true,
+   "detail": "max 38.0°"
+  },
+  {
+   "name": "drive: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "miss: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 181 frames"
+  },
+  {
+   "name": "miss: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "miss: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "miss: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 8.00 px above ground"
+  },
+  {
+   "name": "miss: hands reach the club grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px (fist radius 18)"
+  },
+  {
+   "name": "miss: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "miss: follow-through bounded",
+   "ok": true,
+   "detail": "max 6.3°"
+  },
+  {
+   "name": "miss: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: no bone moves (stationary pose)",
+   "ok": true,
+   "detail": "0 moved samples"
+  },
+  {
+   "name": "idle: only the eyelid channels change",
+   "ok": true,
+   "detail": "changed: blink_L, blink_R"
+  },
+  {
+   "name": "idle: blinks per 6 s loop",
+   "ok": true,
+   "detail": "3 eyelid closures (one single + one double blink)"
+  },
+  {
+   "name": "swing: club head at the ball on the contact marker",
+   "ok": true,
+   "detail": "13.3 px from the ball at t=1.42s"
+  },
+  {
+   "name": "swing: club head moving toward the target at contact",
+   "ok": true,
+   "detail": "1129 px/s"
+  },
+  {
+   "name": "swing: club head behind the head at the top of the backswing",
+   "ok": true,
+   "detail": "(-159, -538)"
+  },
+  {
+   "name": "drive: club head at the ball on the contact marker",
+   "ok": true,
+   "detail": "13.3 px from the ball at t=1.8s"
+  },
+  {
+   "name": "drive: club head moving toward the target at contact",
+   "ok": true,
+   "detail": "1217 px/s"
+  },
+  {
+   "name": "drive: club head behind the head at the top of the backswing",
+   "ok": true,
+   "detail": "(-105, -571)"
+  },
+  {
+   "name": "address: club head rests behind the ball",
+   "ok": true,
+   "detail": "(86, -12) vs ball (105, -8)"
+  },
+  {
+   "name": "player: markers fire exactly once at 60 fps",
+   "ok": true,
+   "detail": "top,contact,finish,end"
+  },
+  {
+   "name": "player: skipped frames (0.45 s steps) still fire every marker once",
+   "ok": true,
+   "detail": "top,contact,finish,end"
+  },
+  {
+   "name": "player: turbo (3×) fires the same markers once",
+   "ok": true,
+   "detail": "top,contact,finish,end"
+  },
+  {
+   "name": "player: scrubbing never fires markers",
+   "ok": true,
+   "detail": "0 fired"
+  },
+  {
+   "name": "player: play(\"swing\") resolves at the contact marker",
+   "ok": true,
+   "detail": "{\"clip\":\"swing\",\"marker\":\"contact\",\"time\":1.42}"
+  }
+ ],
+ "perClip": {
+  "idle": {
+   "frames": 361,
+   "maxBoneLengthError": 2.842170943040401e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999993,
+   "maxWristToGripDistance": 17.999999999999996,
+   "maxFollowThroughDeg": 0
+  },
+  "idle_breathe": {
+   "frames": 289,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999993,
+   "maxWristToGripDistance": 18.000000000000085,
+   "maxFollowThroughDeg": 1.2175170109650428
+  },
+  "wave": {
+   "frames": 170,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999993,
+   "maxWristToGripDistance": 18.000000000000064,
+   "maxFollowThroughDeg": 3.1446476858383097
+  },
+  "walk": {
+   "frames": 55,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 4.026261550737388,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999922,
+   "maxWristToGripDistance": 18.000000000000036,
+   "maxFollowThroughDeg": 9.290996616587037
+  },
+  "run": {
+   "frames": 35,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.9999999999999964,
+   "maxWristToGripDistance": 0,
+   "maxFollowThroughDeg": 23.44324895078803
+  },
+  "jump": {
+   "frames": 106,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 3.0558020182055827,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999911,
+   "maxWristToGripDistance": 0,
+   "maxFollowThroughDeg": 38
+  },
+  "celebrate": {
+   "frames": 183,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 40.2207556417751,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 8.673279421411239e-14,
+   "minToeHeightAboveGround": 7.999999999999922,
+   "maxWristToGripDistance": 18.000000000000057,
+   "maxFollowThroughDeg": 37.20135688076696
+  },
+  "address": {
+   "frames": 86,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 7.652779469160726e-14,
+   "minToeHeightAboveGround": 7.999999999999925,
+   "maxWristToGripDistance": 18.000000000000064,
+   "maxFollowThroughDeg": 4.741845683760596
+  },
+  "swing": {
+   "frames": 208,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 1.1121753006547784e-13,
+   "minToeHeightAboveGround": 7.999999999999893,
+   "maxWristToGripDistance": 18.000000000000078,
+   "maxFollowThroughDeg": 23.383530108355707
+  },
+  "drive": {
+   "frames": 256,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0.27690073931093817,
+   "maxGripReachError": 0.27690073931093817,
+   "maxPlantedFootDrift": 1.0822664515137473e-13,
+   "minToeHeightAboveGround": 7.999999999999893,
+   "maxWristToGripDistance": 18.000000000000075,
+   "maxFollowThroughDeg": 38
+  },
+  "miss": {
+   "frames": 181,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxIkReachError": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 7.999999999999993,
+   "maxWristToGripDistance": 18.00000000000007,
+   "maxFollowThroughDeg": 6.300075556679083
+  }
+ }
+}

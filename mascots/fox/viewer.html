@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Birdie the Fox — rig viewer</title>
+<style>
+:root{--bg:#1b1d22;--panel:#24272e;--line:#3a3f49;--ink:#e8e9ec;--mute:#9aa0ab;--accent:#f08a2e}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,sans-serif}
+#app{display:grid;grid-template-columns:1fr 300px;grid-template-rows:1fr auto;height:100%}
+#stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 80%,#2a2f38,#15171b)}
+#stage.light{background:radial-gradient(ellipse at 50% 80%,#f3efe6,#cfd6dd)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#side{background:var(--panel);border-left:1px solid var(--line);padding:12px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#timeline{grid-column:1/3;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;display:grid;gap:8px}
+h1{font-size:15px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:8px 0 2px}
+button,select,input[type=number]{background:#2f333c;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 9px;font:inherit}
+button.primary{background:var(--accent);color:#1b1d22;border-color:transparent;font-weight:600}
+button:active{transform:translateY(1px)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+label.chk{display:inline-flex;gap:5px;align-items:center;color:var(--ink);padding:2px 0}
+#scrub{width:100%;margin:0}
+#marks{position:relative;height:14px}
+#marks span{position:absolute;top:0;transform:translateX(-50%);font-size:10px;color:var(--accent);white-space:nowrap}
+#marks span::before{content:"";display:block;width:2px;height:6px;background:var(--accent);margin:0 auto 1px}
+#parts{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
+#info{font-family:ui-monospace,monospace;font-size:12px;color:var(--mute);white-space:pre-wrap}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;background:#343945;color:var(--mute);font-size:11px}
+#events{max-height:90px;overflow:auto;font-family:ui-monospace,monospace;font-size:11px;color:var(--mute)}
+input[type=range]{accent-color:var(--accent)}
+@media (max-width:760px){#app{grid-template-columns:1fr;grid-template-rows:55vh auto auto}#side{border-left:0;border-top:1px solid var(--line);max-height:35vh}#timeline{grid-column:1}}
+</style></head>
+<body>
+<div id="app">
+  <div id="stage"><canvas id="c"></canvas></div>
+  <aside id="side">
+    <h1>Birdie the Fox <span class="pill">2D skeletal rig</span></h1>
+    <div class="row"><select id="clip"></select><button id="playBtn" class="primary">Play</button><button id="restart">⟲</button></div>
+    <div id="desc" style="color:var(--mute);font-size:12px"></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="loop"> loop</label><label class="chk"><input type="checkbox" id="mirror"> mirror</label><label class="chk"><input type="checkbox" id="light"> light bg</label></div>
+    <div class="row">speed <input type="range" id="speed" min="0.05" max="3" step="0.05" value="1" style="flex:1"><span id="speedv">1.00×</span></div>
+    <h2>Overlays</h2>
+    <div class="row"><label class="chk"><input type="checkbox" id="skeleton"> skeleton</label><label class="chk"><input type="checkbox" id="onion"> onion skin</label><label class="chk"><input type="checkbox" id="ball" checked> ball on tee</label></div>
+    <h2>Parts</h2><div id="parts"></div>
+    <h2>Pose layer (live FK offset)</h2>
+    <div class="row"><select id="bone"></select><input type="range" id="boneRot" min="-90" max="90" step="1" value="0" style="flex:1"><span id="boneRotv">0°</span><button id="boneReset">reset</button></div>
+    <div style="color:var(--mute);font-size:12px">Additive offset on top of the clip for the selected bone (click a joint on the stage to select). Not saved.</div>
+    <h2>Export</h2>
+    <div class="row"><button id="png">Frame PNG</button><button id="sheet">Clip sprite sheet</button><button id="json">Clip JSON</button></div>
+    <h2>Marker events</h2><div id="events"></div>
+    <h2>Info</h2><div id="info"></div>
+  </aside>
+  <div id="timeline">
+    <div id="marks"></div>
+    <input type="range" id="scrub" min="0" max="1" step="0.001" value="0">
+    <div class="row"><button id="prev">◀ frame</button><button id="next">frame ▶</button><span id="time" style="font-family:ui-monospace,monospace"></span><span style="flex:1"></span><span class="pill">30 fps steps · scrubbing never fires markers</span></div>
+  </div>
+</div>
+<script type="module" src="./viewer.js"></script>
+</body></html>

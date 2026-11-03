@@ -10,7 +10,12 @@
     "vendor": "node scripts/vendor-three.mjs",
     "refs": "node scripts/render-references.mjs",
     "validate": "node scripts/validate.mjs && python tools/make_report.py",
-    "report": "python tools/make_report.py"
+    "report": "python tools/make_report.py",
+    "fox:validate": "node mascots/fox/scripts/validate.mjs",
+    "fox:sheets": "node mascots/fox/scripts/sheets.mjs",
+    "fox:preview": "node mascots/fox/scripts/preview.mjs",
+    "fox:atlas": "node mascots/fox/scripts/export-atlas.mjs",
+    "fox:viewer-test": "node mascots/fox/scripts/viewer-shot.mjs"
   },
   "devDependencies": {
     "playwright-core": "1.56.1",

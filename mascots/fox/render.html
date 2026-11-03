@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Fox render harness</title>
+<style>html,body{margin:0;background:#fff}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+import { solvePose } from './src/solver.js';
+import { drawPose, drawSkeleton } from './src/renderer.js';
+import { CLIPS } from './src/clips.js';
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+window.FoxRender = {
+  ready: true, CLIPS, solvePose, drawPose, drawSkeleton,
+  /** draw a strip of the clip at the given times; each cell is `cell` px wide */
+  sheet(clipName, times, { cell = 420, height = 760, scale = 1, skeleton = false, mirror = false, background = '#ffffff' } = {}) {
+    const clip = CLIPS[clipName]; if (!clip) throw new Error('no clip ' + clipName);
+    canvas.width = cell * times.length; canvas.height = height;
+    ctx.fillStyle = background; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    times.forEach((t, i) => {
+      const pose = solvePose(clip, t);
+      const view = { x: cell * i + cell / 2, y: height - 60, scale, mirror };
+      drawPose(ctx, pose, view);
+      if (skeleton) drawSkeleton(ctx, pose, view);
+      ctx.fillStyle = '#333'; ctx.font = '14px sans-serif'; ctx.fillText(`${clipName} t=${t.toFixed(2)}s`, cell * i + 10, 20);
+    });
+  },
+  /** single transparent frame for atlas export: returns the frame's data URL */
+  frame(clipName, t, { size = 512, scale = 0.58, mirror = false, groundY = 0.92, skeleton = false, background = null } = {}) {
+    const clip = CLIPS[clipName];
+    canvas.width = size; canvas.height = size;
+    ctx.clearRect(0, 0, size, size);
+    if (background) { ctx.fillStyle = background; ctx.fillRect(0, 0, size, size); }
+    const pose = solvePose(clip, t);
+    const view = { x: size / 2, y: size * groundY, scale, mirror };
+    drawPose(ctx, pose, view);
+    if (skeleton) drawSkeleton(ctx, pose, view);
+    return canvas.toDataURL('image/png');
+  },
+};
+</script></body></html>

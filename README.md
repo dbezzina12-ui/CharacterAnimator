@@ -13,6 +13,10 @@ so the base can be rebuilt, versioned and extended instead of repaired per game.
 > This project is self-contained in `character-base/`. It does not touch any slot-game code. It lives in this
 > repository only because it was the repository available to the session — it can be moved as-is to its own repo.
 
+> **Mascot rig (2D):** `mascots/fox/` holds *Birdie the Fox*, a fully rigged code-drawn 2D mascot (skeletal
+> cut-out rig for Canvas 2D: FK/IK, two-hand club grip, follow-through, 11 clips, viewer, atlas export,
+> validation). See `mascots/fox/README.md`; `npm run viewer` then open `/mascots/fox/viewer.html`.
+
 ---
 
 ## What is in here
