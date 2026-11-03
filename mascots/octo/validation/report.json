@@ -1,0 +1,603 @@
+{
+ "generated": "2026-11-03T21:27:59.784Z",
+ "failures": 0,
+ "checks": [
+  {
+   "name": "idle: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.42e-14 px over 361 frames"
+  },
+  {
+   "name": "idle: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: follow-through bounded",
+   "ok": true,
+   "detail": "max 0.0°"
+  },
+  {
+   "name": "idle: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 75.7°"
+  },
+  {
+   "name": "idle: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -34.0 px (positive = below ground)"
+  },
+  {
+   "name": "idle: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "hover: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 241 frames"
+  },
+  {
+   "name": "hover: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: follow-through bounded",
+   "ok": true,
+   "detail": "max 5.8°"
+  },
+  {
+   "name": "hover: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 82.9°"
+  },
+  {
+   "name": "hover: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -23.2 px (positive = below ground)"
+  },
+  {
+   "name": "hover: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 5.68e-14 px"
+  },
+  {
+   "name": "wave: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 170 frames"
+  },
+  {
+   "name": "wave: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "wave: follow-through bounded",
+   "ok": true,
+   "detail": "max 0.0°"
+  },
+  {
+   "name": "wave: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 112.1°"
+  },
+  {
+   "name": "wave: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -34.0 px (positive = below ground)"
+  },
+  {
+   "name": "wave: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "wave: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: bone lengths constant",
+   "ok": true,
+   "detail": "max error 4.26e-14 px over 158 frames"
+  },
+  {
+   "name": "taunt: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: follow-through bounded",
+   "ok": true,
+   "detail": "max 27.7°"
+  },
+  {
+   "name": "taunt: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 90.0°"
+  },
+  {
+   "name": "taunt: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -16.3 px (positive = below ground)"
+  },
+  {
+   "name": "taunt: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slam: bone lengths constant",
+   "ok": true,
+   "detail": "max error 4.97e-14 px over 142 frames"
+  },
+  {
+   "name": "slam: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slam: follow-through bounded",
+   "ok": true,
+   "detail": "max 30.0°"
+  },
+  {
+   "name": "slam: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 108.1°"
+  },
+  {
+   "name": "slam: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -6.0 px (positive = below ground)"
+  },
+  {
+   "name": "slam: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slam: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "grab: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 197 frames"
+  },
+  {
+   "name": "grab: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "grab: follow-through bounded",
+   "ok": true,
+   "detail": "max 19.5°"
+  },
+  {
+   "name": "grab: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 92.0°"
+  },
+  {
+   "name": "grab: IK-coiled tentacle never folds flat",
+   "ok": true,
+   "detail": "max coil bend 158.2°"
+  },
+  {
+   "name": "grab: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -24.9 px (positive = below ground)"
+  },
+  {
+   "name": "grab: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "grab: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 112 frames"
+  },
+  {
+   "name": "jump: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: follow-through bounded",
+   "ok": true,
+   "detail": "max 30.0°"
+  },
+  {
+   "name": "jump: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 113.5°"
+  },
+  {
+   "name": "jump: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -2.6 px (positive = below ground)"
+  },
+  {
+   "name": "jump: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 183 frames"
+  },
+  {
+   "name": "celebrate: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: follow-through bounded",
+   "ok": true,
+   "detail": "max 30.0°"
+  },
+  {
+   "name": "celebrate: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 115.5°"
+  },
+  {
+   "name": "celebrate: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -6.0 px (positive = below ground)"
+  },
+  {
+   "name": "celebrate: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "celebrate: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 135 frames"
+  },
+  {
+   "name": "hurt: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: follow-through bounded",
+   "ok": true,
+   "detail": "max 30.0°"
+  },
+  {
+   "name": "hurt: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 105.7°"
+  },
+  {
+   "name": "hurt: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -4.9 px (positive = below ground)"
+  },
+  {
+   "name": "hurt: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "crawl: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 61 frames"
+  },
+  {
+   "name": "crawl: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "crawl: follow-through bounded",
+   "ok": true,
+   "detail": "max 24.1°"
+  },
+  {
+   "name": "crawl: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 91.3°"
+  },
+  {
+   "name": "crawl: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -14.4 px (positive = below ground)"
+  },
+  {
+   "name": "crawl: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "crawl: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "crawl: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 3.18e-14 px"
+  },
+  {
+   "name": "charge: bone lengths constant",
+   "ok": true,
+   "detail": "max error 5.68e-14 px over 158 frames"
+  },
+  {
+   "name": "charge: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "charge: follow-through bounded",
+   "ok": true,
+   "detail": "max 30.0°"
+  },
+  {
+   "name": "charge: tentacle links never kink past 140°",
+   "ok": true,
+   "detail": "max link bend 90.9°"
+  },
+  {
+   "name": "charge: tentacle tips stay above the ground",
+   "ok": true,
+   "detail": "lowest tip -10.9 px (positive = below ground)"
+  },
+  {
+   "name": "charge: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "charge: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: no bone moves (stationary pose)",
+   "ok": true,
+   "detail": "0 moved samples"
+  },
+  {
+   "name": "idle: only the shutter channels change",
+   "ok": true,
+   "detail": "changed: blink_L, blink_R"
+  },
+  {
+   "name": "idle: blinks per 6 s loop",
+   "ok": true,
+   "detail": "3 shutter closures"
+  },
+  {
+   "name": "grab: effector on target at 'reach'",
+   "ok": true,
+   "detail": "error 0.00 px (tolerance 3; the wrapped tip coils around the object)"
+  },
+  {
+   "name": "grab: effector on target at 'wrap'",
+   "ok": true,
+   "detail": "error 0.00 px (tolerance 4; the wrapped tip coils around the object)"
+  },
+  {
+   "name": "grab: effector on target at 'lift'",
+   "ok": true,
+   "detail": "error 0.04 px (tolerance 4; the wrapped tip coils around the object)"
+  },
+  {
+   "name": "grab: tip coils around the object (tip link bent > 70° at `wrap`)",
+   "ok": true,
+   "detail": "158°"
+  },
+  {
+   "name": "grab: object lifted to visor height",
+   "ok": true,
+   "detail": "tip at (72, -253)"
+  },
+  {
+   "name": "slam: tent_ML tip on the ground at the marker after a fast drop",
+   "ok": true,
+   "detail": "tip y -6, peak 6795 px/s downward in the 0.36 s before impact"
+  },
+  {
+   "name": "slam: tent_MR tip on the ground at the marker after a fast drop",
+   "ok": true,
+   "detail": "tip y -6, peak 6795 px/s downward in the 0.36 s before impact"
+  },
+  {
+   "name": "slam: tentacles raised above the dome at the windup",
+   "ok": true,
+   "detail": "tip y -486"
+  },
+  {
+   "name": "player: markers fire exactly once at 60 fps",
+   "ok": true,
+   "detail": "windup,slam,recover,end"
+  },
+  {
+   "name": "player: skipped frames (0.45 s steps) still fire every marker once",
+   "ok": true,
+   "detail": "windup,slam,recover,end"
+  },
+  {
+   "name": "player: turbo (3×) fires the same markers once",
+   "ok": true,
+   "detail": "windup,slam,recover,end"
+  },
+  {
+   "name": "player: scrubbing never fires markers",
+   "ok": true,
+   "detail": "0 fired"
+  },
+  {
+   "name": "player: play(\"slam\") resolves at the slam marker",
+   "ok": true,
+   "detail": "{\"clip\":\"slam\",\"marker\":\"slam\",\"time\":1}"
+  }
+ ],
+ "perClip": {
+  "idle": {
+   "frames": 361,
+   "maxBoneLengthError": 1.4210854715202004e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 0,
+   "maxLinkBendDeg": 75.72748661559969,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -33.99999999999998
+  },
+  "hover": {
+   "frames": 241,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 5.793418171816273,
+   "maxLinkBendDeg": 82.8680580232723,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -23.215325960097125
+  },
+  "wave": {
+   "frames": 170,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 0,
+   "maxLinkBendDeg": 112.09015054406588,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -33.99999999999998
+  },
+  "taunt": {
+   "frames": 158,
+   "maxBoneLengthError": 4.263256414560601e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 27.693764739878667,
+   "maxLinkBendDeg": 89.99486346574993,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -16.34438104126746
+  },
+  "slam": {
+   "frames": 142,
+   "maxBoneLengthError": 4.973799150320701e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 30.000000000000014,
+   "maxLinkBendDeg": 108.05898075622471,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -5.999312910342191
+  },
+  "grab": {
+   "frames": 197,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 19.488142607900958,
+   "maxLinkBendDeg": 92.00380086396014,
+   "maxCoilBendDeg": 158.22748661559973,
+   "maxIkTipError": 20.319187665281188,
+   "lowestTipRelRoot": -24.911779779105395
+  },
+  "jump": {
+   "frames": 112,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 30.000000000000014,
+   "maxLinkBendDeg": 113.52481171848038,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -2.6288132650014973
+  },
+  "celebrate": {
+   "frames": 183,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 30.000000000000014,
+   "maxLinkBendDeg": 115.54334846512,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -5.999955260300496
+  },
+  "hurt": {
+   "frames": 135,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 30.000000000000014,
+   "maxLinkBendDeg": 105.6718487555174,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -4.8503350021845835
+  },
+  "crawl": {
+   "frames": 61,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 24.087647115081968,
+   "maxLinkBendDeg": 91.3417878261154,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -14.387834949246514
+  },
+  "charge": {
+   "frames": 158,
+   "maxBoneLengthError": 5.684341886080802e-14,
+   "nonFinite": 0,
+   "maxFollowThroughDeg": 30.000000000000014,
+   "maxLinkBendDeg": 90.92840311266316,
+   "maxCoilBendDeg": 0,
+   "maxIkTipError": 0,
+   "lowestTipRelRoot": -10.86403842986681
+  }
+ }
+}

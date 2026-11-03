@@ -16,6 +16,8 @@ so the base can be rebuilt, versioned and extended instead of repaired per game.
 > **Mascot rig (2D):** `mascots/fox/` holds *Birdie the Fox*, a fully rigged code-drawn 2D mascot (skeletal
 > cut-out rig for Canvas 2D: FK/IK, two-hand club grip, follow-through, 11 clips, viewer, atlas export,
 > validation). See `mascots/fox/README.md`; `npm run viewer` then open `/mascots/fox/viewer.html`.
+> `mascots/octo/` holds *Krakenbot*, a mech octopus on the same framework (46 bones, CCD tentacle IK,
+> ripple, floor constraint, 11 clips): `mascots/octo/README.md`, `/mascots/octo/viewer.html`.
 
 ---
 

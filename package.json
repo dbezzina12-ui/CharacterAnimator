@@ -15,7 +15,12 @@
     "fox:sheets": "node mascots/fox/scripts/sheets.mjs",
     "fox:preview": "node mascots/fox/scripts/preview.mjs",
     "fox:atlas": "node mascots/fox/scripts/export-atlas.mjs",
-    "fox:viewer-test": "node mascots/fox/scripts/viewer-shot.mjs"
+    "fox:viewer-test": "node mascots/fox/scripts/viewer-shot.mjs",
+    "octo:validate": "node mascots/octo/scripts/validate.mjs",
+    "octo:sheets": "node mascots/octo/scripts/sheets.mjs",
+    "octo:preview": "node mascots/octo/scripts/preview.mjs",
+    "octo:atlas": "node mascots/octo/scripts/export-atlas.mjs",
+    "octo:viewer-test": "node mascots/octo/scripts/viewer-shot.mjs"
   },
   "devDependencies": {
     "playwright-core": "1.56.1",

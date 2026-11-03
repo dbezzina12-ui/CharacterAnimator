@@ -5,3 +5,4 @@ validation/screens/
 validation/roundtrip/*.glb
 dist-web/
 mascots/fox/output/
+mascots/octo/output/
