@@ -6,12 +6,14 @@ with layered idle motion, without repainting a single frame.
 - `assets/segment.py` cuts the characters out of the source image (texture-guided GrabCut: the
   painted hatching is textured, the backdrop gradient is smooth) and writes feathered RGBA cutouts.
 - `rigs.js` places a 24-bone skeleton on each cutout in pixel coordinates (spine, head, hair/hat,
-  scarf, arms, hands, legs, two-link coat flaps). Vertex weights come from the distance of each mesh
-  vertex to the bone segments, so bones only need to sit roughly on the drawing.
+  scarf, arms, hands, legs, two-link coat flaps). Each bone owns the region where it is the nearest (distance
+  normalised by its radius) with only a narrow blended seam, so armour plates, the mask, gauntlets and
+  the hat move as solid pieces; bones only need to sit roughly on the drawing.
 - `outlaws.js` builds a Three.js `SkinnedMesh` over each cutout (a grid trimmed to the alpha), and
-  `idle()` poses the bones from time alone: a 4.2 s breath (chest swell, shoulders, head), a slow
-  weight shift through pelvis and spine, glances, hair and scarf flutter with wind gusts rolling
-  down the coat flaps, finger flexes, pulsing respirator and eye lights, backdrop glow and dust motes. (A mesh-squash
+  `idleLoop()` poses the bones from time alone, by translation and small rotation only (no scaling, so
+  the painting never smears): a 4 s breath lifting chest, shoulders and then the head, a slow weight
+  shift through the hips with the feet planted, glances, hair and scarf flutter with wind gusts rolling
+  down the coat flaps, pulsing respirator and eye lights, backdrop glow and dust motes. (A mesh-squash
   blink is available by giving a rig an `eyes` region; both rigs leave it off.)
 - `index.html` shows both, with a motion-amount slider, bone and mesh overlays and a pause.
 

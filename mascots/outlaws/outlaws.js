@@ -33,7 +33,7 @@ function segDist(px, py, ax, ay, bx, by) {
   return Math.hypot(px - (ax + dx * t), py - (ay + dy * t));
 }
 
-export function buildPuppet(def, texture, { cols = 44, rows = 80 } = {}) {
+export function buildPuppet(def, texture, { cols = 48, rows = 88, blend = 0.09 } = {}) {
   const W = def.width, H = def.height;
   const alpha = alphaMap(texture.image, W, H);
   const cellW = W / cols, cellH = H / rows;
@@ -54,8 +54,11 @@ export function buildPuppet(def, texture, { cols = 44, rows = 80 } = {}) {
     const i = r * (cols + 1) + c; const px = c * cellW, py = r * cellH;
     pos[i * 3] = (px - W / 2) / PX; pos[i * 3 + 1] = (H - py) / PX; pos[i * 3 + 2] = 0;
     uv[i * 2] = px / W; uv[i * 2 + 1] = 1 - py / H;
-    // weights: gaussian falloff from each bone segment, best four, normalised
-    const ws = bones.map((b, bi) => { const d = segDist(px, py, b[2], b[3], b[4], b[5]); return [Math.exp(-((d / b[6]) ** 2)) + 1e-6 / (1 + d), bi]; }).sort((a, b) => b[0] - a[0]).slice(0, 4);
+    // weights: each bone owns the region where it is the nearest (distance normalised by its radius);
+    // a softmax with a small temperature gives a narrow blend seam, so plates, mask and gauntlets stay rigid
+    const scores = bones.map((b, bi) => [-segDist(px, py, b[2], b[3], b[4], b[5]) / b[6], bi]).sort((a, b) => b[0] - a[0]).slice(0, 4);
+    const best = scores[0][0];
+    const ws = scores.map(([sc, bi]) => [Math.exp((sc - best) / blend), bi]);
     const sum = ws.reduce((s, w) => s + w[0], 0);
     for (let k = 0; k < 4; k++) { sIdx[i * 4 + k] = ws[k][1]; sW[i * 4 + k] = ws[k][0] / sum; }
   }
@@ -152,43 +155,42 @@ export function idle(p, t, amount = 1, seed = 0, L = 0) {
  *  weight shift, one glance, blinks on fixed beats), so frame 0 and frame L are identical. */
 export function idleLoop(p, t, amount, seed, L) {
   const B = p.bones; const s = seed; const u = ((t % L) + L) % L; const ph = u / L;
-  const set = (name, { rot = 0, x = 0, y = 0, sx = 1, sy = 1 } = {}) => {
+  const set = (name, { rot = 0, x = 0, y = 0 } = {}) => {
     const b = B[name]; if (!b) return;
-    b.rotation.z = rot * amount; b.position.set(b.userData.rest.x + x * amount / PX, b.userData.rest.y + y * amount / PX, 0); b.scale.set(mix(1, sx, amount), mix(1, sy, amount), 1);
+    b.rotation.z = rot * amount; b.position.set(b.userData.rest.x + x * amount / PX, b.userData.rest.y + y * amount / PX, 0);
   };
   const breath = Math.sin(2 * Math.PI * 2 * ph + s);                    // two breaths per loop
   const breathIn = (breath + 1) / 2;
-  const shift = Math.sin(2 * Math.PI * ph + s + 0.4) * 0.9;             // one weight shift per loop
-  const glance = pulse(u, L, 2.4, -L * 0.55) * (seed ? -1 : 1);          // one glance, mid-loop
+  const late = (Math.sin(2 * Math.PI * 2 * ph + s - 0.6) + 1) / 2;      // the head follows the chest a beat later
+  const shift = Math.sin(2 * Math.PI * ph + s + 0.4);                   // one weight shift per loop
+  const glance = pulse(u, L, 2.4, -L * 0.55) * (seed ? -1 : 1);
   const gust = Math.max(0, lnoise(u, s + 7, L, [2, 3, 5])) ** 2;
   const n = (sd, ks) => lnoise(u, s + sd, L, ks);
-  set('root', { x: shift * 6 });
-  set('pelvis', { rot: deg(-0.6) * shift, y: Math.abs(shift) * -3 + breathIn * -1.5 });
-  set('spine', { rot: deg(0.8) * shift + deg(0.4) * breath, sy: 1 + 0.012 * breathIn });
-  set('chest', { rot: deg(0.6) * breath - deg(0.4) * shift, y: 4 * breathIn, sx: 1 + 0.018 * breathIn, sy: 1 + 0.02 * breathIn });
-  set('neck', { rot: deg(-1.2) * breath });
-  set('head', { rot: deg(2.2) * n(1, [1, 2]) + deg(4.5) * glance - deg(0.8) * breath, y: -2 * breathIn });
-  set('hair', { rot: deg(3) * n(11, [3, 5, 7]) + deg(4) * gust * n(12, [7, 11]) });
-  set('hat', { rot: deg(0.6) * n(13, [1, 2]), y: 1.5 * breathIn });
-  set('scarf', { rot: deg(2.5) * n(5, [2, 3, 5]) + deg(5) * gust * n(6, [7, 9]) });
+  // feet stay planted; the hips drift a few pixels and the torso counters, like a person standing still
+  set('pelvis', { x: 3 * shift, rot: deg(-0.35) * shift });
+  set('spine', { rot: deg(0.45) * shift, y: 1.5 * breathIn });
+  set('chest', { rot: deg(-0.3) * shift, y: 3 * breathIn });
+  set('neck', { y: 1 * late });
+  set('head', { rot: deg(1.2) * n(1, [1, 2]) + deg(3) * glance, y: 2 * late });
+  set('hair', { rot: deg(3) * n(11, [3, 5, 7]) + deg(5) * gust * n(12, [7, 11]) });
+  set('hat', { rot: deg(0.4) * n(13, [1, 2]) });
+  set('scarf', { rot: deg(2) * n(5, [2, 3, 5]) + deg(4) * gust * n(6, [7, 9]) });
   for (const side of ['L', 'R']) {
     const sg = side === 'L' ? 1 : -1, k = side === 'L' ? 21 : 31;
-    set(`shoulder_${side}`, { y: -5 * breathIn, rot: deg(0.6) * breath * sg });
-    set(`upperarm_${side}`, { rot: deg(1.4) * n(k, [1, 2]) * sg + deg(1.0) * breath * sg });
-    set(`forearm_${side}`, { rot: deg(1.0) * n(k + 1, [1, 3]) * sg });
-    set(`hand_${side}`, { rot: deg(2.0) * n(k + 2, [1, 2]) * sg, sy: 1 - 0.05 * Math.max(0, n(k + 3, [2, 3])) });
-    set(`thigh_${side}`, { rot: deg(-0.5) * shift * sg });
-    set(`coat_${side}1`, { rot: (deg(1.6) * n(k + 4, [2, 3]) + deg(3.5) * gust * n(k + 5, [5, 7])) * sg });
-    set(`coat_${side}2`, { rot: (deg(2.6) * n(k + 6, [2, 3, 5]) + deg(6) * gust * n(k + 7, [7, 9])) * sg });
+    set(`shoulder_${side}`, { y: 3 * breathIn });
+    set(`upperarm_${side}`, { rot: deg(0.9) * n(k, [1, 2]) * sg + deg(0.5) * breath * sg, y: 3 * breathIn });
+    set(`forearm_${side}`, { rot: deg(0.7) * n(k + 1, [1, 3]) * sg });
+    set(`hand_${side}`, { rot: deg(1.4) * n(k + 2, [1, 2]) * sg });
+    set(`thigh_${side}`, { rot: deg(-0.25) * shift * sg });
+    set(`coat_${side}1`, { rot: (deg(1.0) * n(k + 4, [2, 3]) + deg(2.0) * gust * n(k + 5, [5, 7])) * sg });
+    set(`coat_${side}2`, { rot: (deg(1.6) * n(k + 6, [2, 3, 5]) + deg(3.5) * gust * n(k + 7, [7, 9])) * sg });
   }
-  // blinks on fixed beats: a single at 20% and a double at 72% of the loop
-  const blink = p.def.eyes ? Math.max(pulse(u, L, 0.22, -L * 0.2), pulse(u, L, 0.22, -L * 0.72), pulse(u, L, 0.22, -L * 0.72 - 0.3)) : 0;
-  const sh = p.mesh.material.userData.shader; if (sh) sh.uniforms.uBlink.value = blink * amount;
+  const sh = p.mesh.material.userData.shader; if (sh) sh.uniforms.uBlink.value = 0;
   p.lights.forEach((l, i) => { l.material.opacity = 0.55 + 0.3 * (0.5 + 0.5 * Math.sin(2 * Math.PI * 3 * ph + i)) + 0.15 * lnoise(u, s + i, L, [11, 13, 17]); });
 }
 
 // ---------------------------------------------------------------- scene
-export async function createScene(canvas, defs = [RANGER, GUNSLINGER], { loop = 0, exportMode = false } = {}) {
+export async function createScene(canvas, defs = [RANGER, GUNSLINGER], { loop = 8, exportMode = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();

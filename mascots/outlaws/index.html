@@ -40,7 +40,7 @@ input[type=range]{accent-color:var(--ember);width:min(32vw,180px)}input[type=che
 <script type="module">
 let api;
 const q = new URLSearchParams(location.search);
-const loop = Number(q.get('loop') || 0), exportName = q.get('export'), bg = q.get('bg');
+const loop = Number(q.get('loop') ?? 8), exportName = q.get('export'), bg = q.get('bg');
 if (exportName) { document.getElementById('hud').hidden = true; document.getElementById('bar').hidden = true; document.getElementById('stage').style.background = bg === 'green' ? '#00ff00' : bg === 'magenta' ? '#ff00ff' : 'transparent'; document.body.style.background = 'transparent'; }
 try { const { createScene } = await import('./outlaws.js'); api = await createScene(document.getElementById('scene'), undefined, { loop, exportMode: !!exportName }); if (exportName) { api.state.layout = exportName; api.layout(); } }
 catch (e) { document.getElementById('nogl').style.display = 'grid'; console.error(e); }
