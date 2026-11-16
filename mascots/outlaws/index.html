@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wasteland Outlaws Idle</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{--bg:#0d0906;--fg:#efe2cf;--muted:#a3927c;--ember:#ff7a1a;--teal:#2fb8b0;--panel:rgba(14,10,7,.72);--font:"Space Grotesk",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--font);overflow:hidden}
+#stage{position:fixed;inset:0;background:radial-gradient(ellipse 34% 60% at 24% 55%,rgba(255,122,26,.28),transparent 70%),radial-gradient(ellipse 34% 60% at 76% 55%,rgba(47,184,176,.2),transparent 70%),linear-gradient(180deg,#1a110a,#070503 70%)}
+#stage canvas{width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;padding:max(14px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+#hud h1{margin:0;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ember)}
+#hud p{margin:4px 0 0;color:var(--muted);font-size:12px;max-width:46ch}
+#bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--panel);backdrop-filter:blur(8px);border:1px solid rgba(255,122,26,.25);border-radius:999px;padding:8px 14px;color:var(--fg);font:inherit}
+button.pill{cursor:pointer;font-weight:700}
+button.pill[aria-pressed=true]{background:var(--ember);color:#1a0d04;border-color:transparent}
+button.pill:focus-visible,label.pill:focus-within{outline:2px solid #ffd9b0;outline-offset:2px}
+input[type=range]{accent-color:var(--ember);width:min(32vw,180px)}input[type=checkbox]{accent-color:var(--ember)}
+#nogl{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="scene"></canvas></div>
+<div id="hud"><div><h1>Wasteland Outlaws</h1><p>Idle animation on the painted artwork: breathing, weight shifts, coat and scarf in the wind, glances, blinks and glowing eyes.</p></div></div>
+<div id="bar">
+  <button class="pill" id="both" aria-pressed="true" type="button">Both</button>
+  <button class="pill" id="ranger" aria-pressed="false" type="button">Ranger</button>
+  <button class="pill" id="gunslinger" aria-pressed="false" type="button">Gunslinger</button>
+  <label class="pill">motion <input type="range" id="amount" min="0" max="2" step="0.05" value="1" aria-label="Motion amount"></label>
+  <label class="pill"><input type="checkbox" id="bones"> bones</label>
+  <label class="pill"><input type="checkbox" id="mesh"> mesh</label>
+  <button class="pill" id="pause" type="button">Pause</button>
+</div>
+<div id="nogl"><div><h2>WebGL is not available</h2><p>The puppets need WebGL. Try another browser or device.</p></div></div>
+<script type="importmap">{ "imports": { "three": "../../viewer/vendor/three/build/three.module.js" } }</script>
+<script type="module">
+let api;
+try { const { createScene } = await import('./outlaws.js'); api = await createScene(document.getElementById('scene')); }
+catch (e) { document.getElementById('nogl').style.display = 'grid'; console.error(e); }
+if (api) {
+  const $ = (id) => document.getElementById(id);
+  for (const id of ['both', 'ranger', 'gunslinger']) $(id).onclick = () => { api.state.layout = id; for (const o of ['both', 'ranger', 'gunslinger']) $(o).setAttribute('aria-pressed', o === id); api.layout(); };
+  $('amount').oninput = (e) => { api.state.amount = +e.target.value; };
+  $('bones').onchange = (e) => { api.state.showBones = e.target.checked; };
+  $('mesh').onchange = (e) => { api.state.showMesh = e.target.checked; };
+  $('pause').onclick = () => { api.state.playing = !api.state.playing; $('pause').textContent = api.state.playing ? 'Pause' : 'Play'; };
+}
+</script>
+</body>
+</html>
