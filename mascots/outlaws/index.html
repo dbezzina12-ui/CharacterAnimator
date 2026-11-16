@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap">
 <style>
 :root{--bg:#0d0906;--fg:#efe2cf;--muted:#a3927c;--ember:#ff7a1a;--teal:#2fb8b0;--panel:rgba(14,10,7,.72);--font:"Space Grotesk",system-ui,sans-serif;color-scheme:dark}
-*{box-sizing:border-box}html,body{height:100%;margin:0}
+*{box-sizing:border-box}html,body{height:100%;margin:0}[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--font);overflow:hidden}
 #stage{position:fixed;inset:0;background:radial-gradient(ellipse 34% 60% at 24% 55%,rgba(255,122,26,.28),transparent 70%),radial-gradient(ellipse 34% 60% at 76% 55%,rgba(47,184,176,.2),transparent 70%),linear-gradient(180deg,#1a110a,#070503 70%)}
 #stage canvas{width:100%;height:100%;display:block}
@@ -32,13 +32,17 @@ input[type=range]{accent-color:var(--ember);width:min(32vw,180px)}input[type=che
   <label class="pill">motion <input type="range" id="amount" min="0" max="2" step="0.05" value="1" aria-label="Motion amount"></label>
   <label class="pill"><input type="checkbox" id="bones"> bones</label>
   <label class="pill"><input type="checkbox" id="mesh"> mesh</label>
+  <label class="pill"><input type="checkbox" id="loop"> 8 s loop</label>
   <button class="pill" id="pause" type="button">Pause</button>
 </div>
 <div id="nogl"><div><h2>WebGL is not available</h2><p>The puppets need WebGL. Try another browser or device.</p></div></div>
 <script type="importmap">{ "imports": { "three": "../../viewer/vendor/three/build/three.module.js" } }</script>
 <script type="module">
 let api;
-try { const { createScene } = await import('./outlaws.js'); api = await createScene(document.getElementById('scene')); }
+const q = new URLSearchParams(location.search);
+const loop = Number(q.get('loop') || 0), exportName = q.get('export'), bg = q.get('bg');
+if (exportName) { document.getElementById('hud').hidden = true; document.getElementById('bar').hidden = true; document.getElementById('stage').style.background = bg === 'green' ? '#00ff00' : bg === 'magenta' ? '#ff00ff' : 'transparent'; document.body.style.background = 'transparent'; }
+try { const { createScene } = await import('./outlaws.js'); api = await createScene(document.getElementById('scene'), undefined, { loop, exportMode: !!exportName }); if (exportName) { api.state.layout = exportName; api.layout(); } }
 catch (e) { document.getElementById('nogl').style.display = 'grid'; console.error(e); }
 if (api) {
   const $ = (id) => document.getElementById(id);
@@ -46,6 +50,7 @@ if (api) {
   $('amount').oninput = (e) => { api.state.amount = +e.target.value; };
   $('bones').onchange = (e) => { api.state.showBones = e.target.checked; };
   $('mesh').onchange = (e) => { api.state.showMesh = e.target.checked; };
+  $('loop').checked = loop > 0; $('loop').onchange = (e) => { api.state.loop = e.target.checked ? 8 : 0; api.state.time = 0; };
   $('pause').onclick = () => { api.state.playing = !api.state.playing; $('pause').textContent = api.state.playing ? 'Pause' : 'Play'; };
 }
 </script>

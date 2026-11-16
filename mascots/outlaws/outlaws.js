@@ -10,6 +10,8 @@ const smooth = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
 const deg = (d) => d * Math.PI / 180;
 /** Smooth organic noise in [-1,1]: a few incommensurate sines, seeded by phase. */
 const noise = (t, s = 0) => (Math.sin(t * 1.0 + s) * 0.5 + Math.sin(t * 2.3 + s * 1.7 + 1.3) * 0.3 + Math.sin(t * 0.47 + s * 0.9 + 2.1) * 0.2);
+/** Loop-safe noise: harmonics of the loop length L, so the signal repeats exactly every L seconds. */
+const lnoise = (t, s, L, ks = [1, 2, 3]) => ks.reduce((acc, k, i) => acc + Math.sin(2 * Math.PI * k * t / L + s * (1.3 + i) + i * 1.7) / (i + 1), 0) / ks.reduce((a, _, i) => a + 1 / (i + 1), 0);
 /** A periodic "event" envelope: 1 during a short window every `period` seconds, eased. */
 const pulse = (t, period, width, offset = 0) => { const u = ((t + offset) % period + period) % period; return u < width ? Math.sin(Math.PI * u / width) : 0; };
 
@@ -108,8 +110,9 @@ function glowTexture(color) {
 
 // ---------------------------------------------------------------- idle motion
 /** Pose a puppet for time t. amount scales everything (0 = still). */
-export function idle(p, t, amount = 1, seed = 0) {
+export function idle(p, t, amount = 1, seed = 0, L = 0) {
   const B = p.bones; const s = seed;
+  if (L) return idleLoop(p, t, amount, seed, L);
   const set = (name, { rot = 0, x = 0, y = 0, sx = 1, sy = 1 } = {}) => {
     const b = B[name]; if (!b) return;
     b.rotation.z = rot * amount; b.position.set(b.userData.rest.x + x * amount / PX, b.userData.rest.y + y * amount / PX, 0); b.scale.set(mix(1, sx, amount), mix(1, sy, amount), 1);
@@ -145,8 +148,47 @@ export function idle(p, t, amount = 1, seed = 0) {
   p.lights.forEach((l, i) => { l.material.opacity = 0.55 + 0.3 * (0.5 + 0.5 * Math.sin(t * 2.4 + i)) + 0.15 * noise(t * 9, s + i) ; });
 }
 
+/** Perfectly looping idle: every term is a whole number of cycles over L seconds (two breaths, one
+ *  weight shift, one glance, blinks on fixed beats), so frame 0 and frame L are identical. */
+export function idleLoop(p, t, amount, seed, L) {
+  const B = p.bones; const s = seed; const u = ((t % L) + L) % L; const ph = u / L;
+  const set = (name, { rot = 0, x = 0, y = 0, sx = 1, sy = 1 } = {}) => {
+    const b = B[name]; if (!b) return;
+    b.rotation.z = rot * amount; b.position.set(b.userData.rest.x + x * amount / PX, b.userData.rest.y + y * amount / PX, 0); b.scale.set(mix(1, sx, amount), mix(1, sy, amount), 1);
+  };
+  const breath = Math.sin(2 * Math.PI * 2 * ph + s);                    // two breaths per loop
+  const breathIn = (breath + 1) / 2;
+  const shift = Math.sin(2 * Math.PI * ph + s + 0.4) * 0.9;             // one weight shift per loop
+  const glance = pulse(u, L, 2.4, -L * 0.55) * (seed ? -1 : 1);          // one glance, mid-loop
+  const gust = Math.max(0, lnoise(u, s + 7, L, [2, 3, 5])) ** 2;
+  const n = (sd, ks) => lnoise(u, s + sd, L, ks);
+  set('root', { x: shift * 6 });
+  set('pelvis', { rot: deg(-0.6) * shift, y: Math.abs(shift) * -3 + breathIn * -1.5 });
+  set('spine', { rot: deg(0.8) * shift + deg(0.4) * breath, sy: 1 + 0.012 * breathIn });
+  set('chest', { rot: deg(0.6) * breath - deg(0.4) * shift, y: 4 * breathIn, sx: 1 + 0.018 * breathIn, sy: 1 + 0.02 * breathIn });
+  set('neck', { rot: deg(-1.2) * breath });
+  set('head', { rot: deg(2.2) * n(1, [1, 2]) + deg(4.5) * glance - deg(0.8) * breath, y: -2 * breathIn });
+  set('hair', { rot: deg(3) * n(11, [3, 5, 7]) + deg(4) * gust * n(12, [7, 11]) });
+  set('hat', { rot: deg(0.6) * n(13, [1, 2]), y: 1.5 * breathIn });
+  set('scarf', { rot: deg(2.5) * n(5, [2, 3, 5]) + deg(5) * gust * n(6, [7, 9]) });
+  for (const side of ['L', 'R']) {
+    const sg = side === 'L' ? 1 : -1, k = side === 'L' ? 21 : 31;
+    set(`shoulder_${side}`, { y: -5 * breathIn, rot: deg(0.6) * breath * sg });
+    set(`upperarm_${side}`, { rot: deg(1.4) * n(k, [1, 2]) * sg + deg(1.0) * breath * sg });
+    set(`forearm_${side}`, { rot: deg(1.0) * n(k + 1, [1, 3]) * sg });
+    set(`hand_${side}`, { rot: deg(2.0) * n(k + 2, [1, 2]) * sg, sy: 1 - 0.05 * Math.max(0, n(k + 3, [2, 3])) });
+    set(`thigh_${side}`, { rot: deg(-0.5) * shift * sg });
+    set(`coat_${side}1`, { rot: (deg(1.6) * n(k + 4, [2, 3]) + deg(3.5) * gust * n(k + 5, [5, 7])) * sg });
+    set(`coat_${side}2`, { rot: (deg(2.6) * n(k + 6, [2, 3, 5]) + deg(6) * gust * n(k + 7, [7, 9])) * sg });
+  }
+  // blinks on fixed beats: a single at 20% and a double at 72% of the loop
+  const blink = p.def.eyes ? Math.max(pulse(u, L, 0.22, -L * 0.2), pulse(u, L, 0.22, -L * 0.72), pulse(u, L, 0.22, -L * 0.72 - 0.3)) : 0;
+  const sh = p.mesh.material.userData.shader; if (sh) sh.uniforms.uBlink.value = blink * amount;
+  p.lights.forEach((l, i) => { l.material.opacity = 0.55 + 0.3 * (0.5 + 0.5 * Math.sin(2 * Math.PI * 3 * ph + i)) + 0.15 * lnoise(u, s + i, L, [11, 13, 17]); });
+}
+
 // ---------------------------------------------------------------- scene
-export async function createScene(canvas, defs = [RANGER, GUNSLINGER]) {
+export async function createScene(canvas, defs = [RANGER, GUNSLINGER], { loop = 0, exportMode = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();
@@ -167,12 +209,14 @@ export async function createScene(canvas, defs = [RANGER, GUNSLINGER]) {
   const overlay = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x4dff9a, depthTest: false, transparent: true, opacity: 0.9 })); overlay.renderOrder = 10; overlay.visible = false; scene.add(overlay);
   const wire = puppets.map((p) => { const w = new THREE.Mesh(p.mesh.geometry, new THREE.MeshBasicMaterial({ color: 0x66ccff, wireframe: true, transparent: true, opacity: 0.35, depthTest: false })); return w; });
 
-  const state = { time: 0, playing: true, amount: 1, speed: 1, showBones: false, showMesh: false, layout: 'both' };
+  const state = { time: 0, playing: true, amount: 1, speed: 1, showBones: false, showMesh: false, layout: 'both', loop, exportMode };
+  if (exportMode) { dust.visible = false; puppets.forEach((p) => { p.glow.visible = false; }); }
   function layout() {
     const w = canvas.clientWidth, h = canvas.clientHeight; const aspect = w / h;
     const shown = puppets.filter((p) => state.layout === 'both' || p.def.name === state.layout);
-    puppets.forEach((p) => { p.mesh.visible = shown.includes(p); p.glow.visible = p.mesh.visible; });
-    const charH = Math.max(...puppets.map((p) => p.H)) / PX; const gap = 1.2;
+    puppets.forEach((p) => { p.mesh.visible = shown.includes(p); p.glow.visible = p.mesh.visible && !state.exportMode; });
+    const charH = Math.max(...puppets.map((p) => p.H)) / PX; const gap = state.exportMode ? 0 : 1.2;
+    if (state.exportMode && shown.length === 1) { const p = shown[0]; const padX = 0.6, padY = 0.35; const vw = p.W / PX + 2 * padX, vh = p.H / PX + padY; camera.left = -vw / 2; camera.right = vw / 2; camera.top = vh; camera.bottom = -0.02; camera.updateProjectionMatrix(); p.mesh.position.x = 0; renderer.setSize(w, h, false); return; }
     const totalW = shown.reduce((s, p) => s + p.W / PX, 0) + gap * (shown.length - 1);
     const viewH = charH * 1.12, viewW = Math.max(viewH * aspect, totalW * 1.1);
     const scale = Math.min(1, viewH * aspect / (totalW * 1.08));
@@ -184,7 +228,7 @@ export async function createScene(canvas, defs = [RANGER, GUNSLINGER]) {
   new ResizeObserver(layout).observe(canvas); layout();
 
   function render() {
-    puppets.forEach((p, i) => { idle(p, state.time, state.amount, i * 1.37); p.glow.material.opacity = 0.3 + 0.1 * Math.sin(state.time * 0.8 + i); });
+    puppets.forEach((p, i) => { idle(p, state.time, state.amount, i * 1.37, state.loop); p.glow.material.opacity = 0.3 + 0.1 * Math.sin(state.time * 0.8 + i); });
     const dp = dust.geometry.attributes.position; for (let i = 0; i < N; i++) { dp.setY(i, (dpos[i * 3 + 1] + state.time * 0.08 + Math.sin(state.time * 0.3 + i) * 0.1) % 11); dp.setX(i, dpos[i * 3] + Math.sin(state.time * 0.2 + i * 1.3) * 0.3); } dp.needsUpdate = true;
     if (state.showBones) {
       const pts = []; const a = new THREE.Vector3(), b = new THREE.Vector3();
@@ -196,7 +240,7 @@ export async function createScene(canvas, defs = [RANGER, GUNSLINGER]) {
   }
   wire.forEach((w) => scene.add(w));
   let last = performance.now();
-  function tick(now) { const dt = Math.min(0.1, (now - last) / 1000); last = now; if (state.playing) state.time += dt * state.speed; render(); requestAnimationFrame(tick); }
+  function tick(now) { const dt = Math.min(0.1, (now - last) / 1000); last = now; if (state.playing) { state.time += dt * state.speed; if (state.loop) state.time %= state.loop; } render(); requestAnimationFrame(tick); }
   requestAnimationFrame(tick);
   const api = { state, puppets, layout, seek(t) { state.time = t; state.playing = false; render(); }, render };
   window.Outlaws = api; return api;

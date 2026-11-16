@@ -6,8 +6,8 @@
 export const RANGER = {
   name: 'ranger', image: 'assets/ranger.png', width: 550, height: 1002,
   glow: { color: '#ff7a1a' },
-  eyes: { center: [280, 96], radius: [62, 20] },          // mesh-squash blink region
-  lights: [{ at: [255, 150], size: 26, color: '#ff8a2a' }, { at: [309, 150], size: 26, color: '#ff8a2a' }],   // respirator filters
+  eyes: { center: [290, 118], radius: [64, 16] },         // mesh-squash blink region (measured on the cutout)
+  lights: [{ at: [245, 165], size: 22, color: '#ff8a2a' }, { at: [330, 165], size: 22, color: '#ff8a2a' }],   // respirator filter discs
   bones: [
     ['root', null, 280, 1000, 280, 940, 60],
     ['pelvis', 'root', 280, 560, 280, 480, 110],
@@ -39,7 +39,7 @@ export const GUNSLINGER = {
   name: 'gunslinger', image: 'assets/gunslinger.png', width: 557, height: 995,
   glow: { color: '#2fb8b0' },
   eyes: null,
-  lights: [{ at: [222, 92], size: 30, color: '#7af6ff' }, { at: [283, 92], size: 30, color: '#7af6ff' }, { at: [432, 580], size: 22, color: '#7af6ff' }, { at: [66, 700], size: 18, color: '#7af6ff' }, { at: [430, 700], size: 18, color: '#7af6ff' }],
+  lights: [{ at: [252, 108], size: 26, color: '#7af6ff' }, { at: [310, 108], size: 26, color: '#7af6ff' }, { at: [497, 571], size: 18, color: '#7af6ff' }, { at: [107, 706], size: 14, color: '#7af6ff' }, { at: [472, 706], size: 14, color: '#7af6ff' }],
   bones: [
     ['root', null, 250, 995, 250, 940, 60],
     ['pelvis', 'root', 250, 560, 250, 480, 110],
