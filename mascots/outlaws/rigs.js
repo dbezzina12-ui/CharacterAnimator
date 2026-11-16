@@ -6,7 +6,7 @@
 export const RANGER = {
   name: 'ranger', image: 'assets/ranger.png', width: 550, height: 1002,
   glow: { color: '#ff7a1a' },
-  eyes: { center: [290, 118], radius: [64, 16] },         // mesh-squash blink region (measured on the cutout)
+  eyes: null,                                              // no blink (the eyes stay as painted)
   lights: [{ at: [245, 165], size: 22, color: '#ff8a2a' }, { at: [330, 165], size: 22, color: '#ff8a2a' }],   // respirator filter discs
   bones: [
     ['root', null, 280, 1000, 280, 940, 60],
