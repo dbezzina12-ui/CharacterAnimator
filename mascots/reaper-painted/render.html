@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Painted reaper render</title><style>html,body{margin:0;background:#fff}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+import { solvePose } from './src/solver.js';
+import { drawSkeleton } from '../reaper/src/renderer.js';
+import { CLIPS } from './src/clips.js';
+import { buildPuppet, drawPose } from './src/puppet.js';
+const canvas = document.getElementById('c'); const ctx = canvas.getContext('2d');
+const puppet = await buildPuppet(new URL('./assets/parts.png', import.meta.url).href);
+window.PaintedRender = {
+  ready: true, CLIPS, puppet,
+  sheet(clipName, times, { cell = 520, height = 760, scale = 1, skeleton = false, mirror = false, background = '#ffffff' } = {}) {
+    const clip = CLIPS[clipName]; canvas.width = cell * times.length; canvas.height = height; ctx.fillStyle = background; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    times.forEach((t, i) => { const pose = solvePose(clip, t); const view = { x: cell * i + cell / 2, y: height - 60, scale, mirror }; drawPose(ctx, pose, puppet, view); if (skeleton) drawSkeleton(ctx, pose, view); ctx.fillStyle = '#333'; ctx.font = '14px sans-serif'; ctx.fillText(`${clipName} t=${t.toFixed(2)}s`, cell * i + 10, 20); });
+  },
+  frame(clipName, t, { size = 512, scale = 0.6, mirror = false, groundY = 0.92, background = null } = {}) {
+    const clip = CLIPS[clipName]; canvas.width = size; canvas.height = size; ctx.clearRect(0, 0, size, size); if (background) { ctx.fillStyle = background; ctx.fillRect(0, 0, size, size); }
+    drawPose(ctx, solvePose(clip, t), puppet, { x: size / 2, y: size * groundY, scale, mirror }); return canvas.toDataURL('image/png');
+  },
+  partsLayout() {   // debug: every part at its rest placement with its bbox
+    canvas.width = 700; canvas.height = 760; ctx.fillStyle = '#ddd'; ctx.fillRect(0, 0, 700, 760);
+    const pose = solvePose(CLIPS.idle, 0); drawPose(ctx, pose, puppet, { x: 350, y: 700, scale: 1 }); drawSkeleton(ctx, pose, { x: 350, y: 700, scale: 1 });
+  },
+};
+</script></body></html>
