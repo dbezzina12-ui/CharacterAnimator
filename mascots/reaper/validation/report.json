@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-18T16:46:49.167Z",
- "failures": 0,
+ "generated": "2026-11-18T17:01:21.928Z",
+ "failures": 9,
  "checks": [
   {
    "name": "idle: bone lengths constant",
@@ -24,8 +24,8 @@
   },
   {
    "name": "idle: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "idle: draw-order channels are stepped 0/1",
@@ -69,8 +69,8 @@
   },
   {
    "name": "hover: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "hover: draw-order channels are stepped 0/1",
@@ -114,8 +114,8 @@
   },
   {
    "name": "walk: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "walk: draw-order channels are stepped 0/1",
@@ -159,8 +159,8 @@
   },
   {
    "name": "slash: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "slash: draw-order channels are stepped 0/1",
@@ -199,8 +199,8 @@
   },
   {
    "name": "spin: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "spin: draw-order channels are stepped 0/1",
@@ -239,8 +239,8 @@
   },
   {
    "name": "hurt: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "hurt: draw-order channels are stepped 0/1",
@@ -279,8 +279,8 @@
   },
   {
    "name": "taunt: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "taunt: draw-order channels are stepped 0/1",
@@ -319,8 +319,8 @@
   },
   {
    "name": "jump: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "jump: draw-order channels are stepped 0/1",
@@ -359,8 +359,8 @@
   },
   {
    "name": "death: hands stay on the scythe grip",
-   "ok": true,
-   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+   "ok": false,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 22.00 px"
   },
   {
    "name": "death: draw-order channels are stepped 0/1",
@@ -451,7 +451,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 5.728578676879116e-14,
    "minToeHeightAboveGround": 6.000000000000039,
-   "maxWristToGripDistance": 17.999999999999996,
+   "maxWristToGripDistance": 21.999999999999996,
    "maxFollowThroughDeg": 0
   },
   "hover": {
@@ -461,7 +461,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 7.140866117879973e-14,
    "minToeHeightAboveGround": 6.000000000000025,
-   "maxWristToGripDistance": 18.000000000000046,
+   "maxWristToGripDistance": 22.000000000000043,
    "maxFollowThroughDeg": 0.8164115423059026
   },
   "walk": {
@@ -471,7 +471,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 0,
    "minToeHeightAboveGround": 5.999999999999982,
-   "maxWristToGripDistance": 18.00000000000002,
+   "maxWristToGripDistance": 22.00000000000003,
    "maxFollowThroughDeg": 4.451827724198842
   },
   "slash": {
@@ -481,7 +481,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 7.32410687763558e-14,
    "minToeHeightAboveGround": 5.999999999999954,
-   "maxWristToGripDistance": 18.00000000000004,
+   "maxWristToGripDistance": 22.00000000000005,
    "maxFollowThroughDeg": 31.999999999999996
   },
   "spin": {
@@ -491,7 +491,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 5.728578676879116e-14,
    "minToeHeightAboveGround": 6.000000000000039,
-   "maxWristToGripDistance": 18.000000000000046,
+   "maxWristToGripDistance": 22.00000000000006,
    "maxFollowThroughDeg": 3.309888417717449
   },
   "hurt": {
@@ -501,7 +501,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 5.728578676879116e-14,
    "minToeHeightAboveGround": 5.999999999999968,
-   "maxWristToGripDistance": 18.000000000000046,
+   "maxWristToGripDistance": 22.000000000000043,
    "maxFollowThroughDeg": 32
   },
   "taunt": {
@@ -511,7 +511,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 5.728578676879116e-14,
    "minToeHeightAboveGround": 5.999999999999968,
-   "maxWristToGripDistance": 18.000000000000053,
+   "maxWristToGripDistance": 22.00000000000004,
    "maxFollowThroughDeg": 6.89392206376996
   },
   "jump": {
@@ -521,7 +521,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 0,
    "minToeHeightAboveGround": 5.999999999999975,
-   "maxWristToGripDistance": 18.000000000000032,
+   "maxWristToGripDistance": 22.000000000000007,
    "maxFollowThroughDeg": 31.999999999999996
   },
   "death": {
@@ -531,7 +531,7 @@
    "maxGripReachError": 0,
    "maxPlantedFootDrift": 5.728578676879116e-14,
    "minToeHeightAboveGround": 5.999999999999961,
-   "maxWristToGripDistance": 18.000000000000032,
+   "maxWristToGripDistance": 22.00000000000004,
    "maxFollowThroughDeg": 31.999999999999996
   }
  }

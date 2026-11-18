@@ -74,7 +74,7 @@ export const CHANNEL_DEFAULTS = {
   hand_L: 0.35, hand_R: 0.35,   // bony fingers 0 open .. 1 gripping
   hourglassSpin: 0,
   trail: 0,                     // blade motion trail intensity
-  armLFront: 0, armRFront: 1, propBehind: 0, propVisible: 1,
+  armLFront: 1, armRFront: 1, propBehind: 0, propVisible: 1,
   tailFollow: 1, earFollow: 1,  // follow-through gains (hood / tassel)
   hoverShadow: 1,
 };

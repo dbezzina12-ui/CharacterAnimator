@@ -185,7 +185,7 @@ export function solvePrimary(clip, t) {
       const shoulder = world.get(`upperarm_${side}`).head;
       const d = sub(gripPt, shoulder); const L = Math.max(1e-6, len(d));
       // the fist centre sits ~18 px past the wrist along the arm, so pull the wrist back a little
-      target = sub(gripPt, scale(d, 18 / L));
+      target = sub(gripPt, scale(d, 22 / L));
       s.ch[`hand_${side}`] = 1;
     }
     if (target) ikErrors[`arm_${side}`] = applyIK(`arm_${side}`, target, world, s, overrides);

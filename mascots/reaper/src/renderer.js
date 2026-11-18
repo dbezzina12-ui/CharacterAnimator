@@ -8,12 +8,14 @@ export function partOrder(pose) {
   if (behind) parts.push(['scythe', (c) => art.drawScythe(c, pose)]);
   parts.push(['boot_L', (c) => art.drawBoot(c, pose, 'L')], ['boot_R', (c) => art.drawBoot(c, pose, 'R')]);
   if (ch.armLFront < 0.5) parts.push(['sleeve_L', (c) => art.drawSleeve(c, pose, 'L')]);
-  if (ch.armRFront < 0.5) parts.push(['sleeve_R', (c) => art.drawSleeve(c, pose, 'R')], ['hand_R', (c) => art.drawHand(c, pose, 'R')]);
+  if (ch.armRFront < 0.5) parts.push(['sleeve_R', (c) => art.drawSleeve(c, pose, 'R')]);
   parts.push(['robe', (c) => art.drawRobe(c, pose)], ['neck', (c) => art.drawNeck(c, pose)], ['hood_back', (c) => art.drawHoodBack(c, pose)], ['skull', (c) => art.drawSkull(c, pose)], ['hood', (c) => art.drawHoodFront(c, pose)], ['mantle', (c) => art.drawMantle(c, pose)]);
   if (ch.armLFront >= 0.5) parts.push(['sleeve_L', (c) => art.drawSleeve(c, pose, 'L')]);
+  if (ch.armRFront >= 0.5) parts.push(['sleeve_R', (c) => art.drawSleeve(c, pose, 'R')]);
+  // gripping hands: palms behind the shaft, fingers over it; free hands draw whole
+  parts.push(['palm_L', (c) => art.drawGripHand(c, pose, 'L', 'back')], ['palm_R', (c) => art.drawGripHand(c, pose, 'R', 'back')]);
   if (!behind) parts.push(['scythe', (c) => art.drawScythe(c, pose)]);
-  parts.push(['hand_L', (c) => art.drawHand(c, pose, 'L')]);
-  if (ch.armRFront >= 0.5) parts.push(['sleeve_R', (c) => art.drawSleeve(c, pose, 'R')], ['hand_R', (c) => art.drawHand(c, pose, 'R')]);
+  parts.push(['hand_L', (c) => { art.drawHand(c, pose, 'L'); art.drawGripHand(c, pose, 'L', 'front'); }], ['hand_R', (c) => { art.drawHand(c, pose, 'R'); art.drawGripHand(c, pose, 'R', 'front'); }]);
   return parts;
 }
 export function drawPose(ctx, pose, view = { x: 0, y: 0, scale: 1 }, hidden = null) {
