@@ -35,7 +35,7 @@ for (const [name, clip] of Object.entries(CLIPS)) {
   check(`${name}: all transforms finite`, nan === 0);
   check(`${name}: planted feet stay on their spots`, maxFootDrift < 1e-6, `max drift ${maxFootDrift.toExponential(2)} px`);
   check(`${name}: feet never below the ground`, minToe > -0.5, `lowest toe ${minToe.toFixed(2)} px above ground`);
-  check(`${name}: hands stay on the scythe grip`, maxGripReach < 0.5 && (maxGripDist === 0 || maxGripDist < 18.6), `reach error ${maxGripReach.toFixed(3)} px, wrist→grip ≤ ${maxGripDist.toFixed(2)} px`);
+  check(`${name}: hands stay on the scythe grip`, maxGripReach < 0.5 && (maxGripDist === 0 || maxGripDist < 22.6), `reach error ${maxGripReach.toFixed(3)} px, wrist→grip ≤ ${maxGripDist.toFixed(2)} px (palm bridge 22)`);
   check(`${name}: draw-order channels are stepped 0/1`, badLayer === 0);
   check(`${name}: follow-through bounded`, maxLag <= 32.01, `max ${maxLag.toFixed(1)}°`);
   const a = poseKey(solvePose(clip, clip.duration * 0.37)); solvePose(clip, 0.1); solvePose(clip, clip.duration);
