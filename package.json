@@ -20,7 +20,11 @@
     "octo:sheets": "node mascots/octo/scripts/sheets.mjs",
     "octo:preview": "node mascots/octo/scripts/preview.mjs",
     "octo:atlas": "node mascots/octo/scripts/export-atlas.mjs",
-    "octo:viewer-test": "node mascots/octo/scripts/viewer-shot.mjs"
+    "octo:viewer-test": "node mascots/octo/scripts/viewer-shot.mjs",
+    "reaper:validate": "node mascots/reaper/scripts/validate.mjs",
+    "reaper:sheets": "node mascots/reaper/scripts/sheets.mjs",
+    "reaper:preview": "node mascots/reaper/scripts/preview.mjs",
+    "reaper:export": "node mascots/reaper/scripts/export-game.mjs"
   },
   "devDependencies": {
     "playwright-core": "1.56.1",

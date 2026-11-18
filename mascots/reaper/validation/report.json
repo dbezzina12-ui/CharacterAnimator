@@ -1,0 +1,538 @@
+{
+ "generated": "2026-11-18T16:46:49.167Z",
+ "failures": 0,
+ "checks": [
+  {
+   "name": "idle: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.42e-14 px over 361 frames"
+  },
+  {
+   "name": "idle: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 5.73e-14 px"
+  },
+  {
+   "name": "idle: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "idle: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "idle: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: follow-through bounded",
+   "ok": true,
+   "detail": "max 0.0°"
+  },
+  {
+   "name": "idle: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "hover: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 241 frames"
+  },
+  {
+   "name": "hover: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 7.14e-14 px"
+  },
+  {
+   "name": "hover: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "hover: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "hover: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: follow-through bounded",
+   "ok": true,
+   "detail": "max 0.8°"
+  },
+  {
+   "name": "hover: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hover: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 0.00e+0 px"
+  },
+  {
+   "name": "walk: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 55 frames"
+  },
+  {
+   "name": "walk: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "walk: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "walk: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "walk: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: follow-through bounded",
+   "ok": true,
+   "detail": "max 4.5°"
+  },
+  {
+   "name": "walk: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "walk: seamless loop",
+   "ok": true,
+   "detail": "max joint gap 7.11e-15 px"
+  },
+  {
+   "name": "slash: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 106 frames"
+  },
+  {
+   "name": "slash: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slash: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 7.32e-14 px"
+  },
+  {
+   "name": "slash: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "slash: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "slash: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slash: follow-through bounded",
+   "ok": true,
+   "detail": "max 32.0°"
+  },
+  {
+   "name": "slash: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "spin: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 93 frames"
+  },
+  {
+   "name": "spin: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "spin: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 5.73e-14 px"
+  },
+  {
+   "name": "spin: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "spin: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "spin: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "spin: follow-through bounded",
+   "ok": true,
+   "detail": "max 3.3°"
+  },
+  {
+   "name": "spin: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 74 frames"
+  },
+  {
+   "name": "hurt: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 5.73e-14 px"
+  },
+  {
+   "name": "hurt: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "hurt: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "hurt: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "hurt: follow-through bounded",
+   "ok": true,
+   "detail": "max 32.0°"
+  },
+  {
+   "name": "hurt: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 134 frames"
+  },
+  {
+   "name": "taunt: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 5.73e-14 px"
+  },
+  {
+   "name": "taunt: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "taunt: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "taunt: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "taunt: follow-through bounded",
+   "ok": true,
+   "detail": "max 6.9°"
+  },
+  {
+   "name": "taunt: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: bone lengths constant",
+   "ok": true,
+   "detail": "max error 8.53e-14 px over 94 frames"
+  },
+  {
+   "name": "jump: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 0.00e+0 px"
+  },
+  {
+   "name": "jump: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "jump: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "jump: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "jump: follow-through bounded",
+   "ok": true,
+   "detail": "max 32.0°"
+  },
+  {
+   "name": "jump: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "death: bone lengths constant",
+   "ok": true,
+   "detail": "max error 1.14e-13 px over 123 frames"
+  },
+  {
+   "name": "death: all transforms finite",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "death: planted feet stay on their spots",
+   "ok": true,
+   "detail": "max drift 5.73e-14 px"
+  },
+  {
+   "name": "death: feet never below the ground",
+   "ok": true,
+   "detail": "lowest toe 6.00 px above ground"
+  },
+  {
+   "name": "death: hands stay on the scythe grip",
+   "ok": true,
+   "detail": "reach error 0.000 px, wrist→grip ≤ 18.00 px"
+  },
+  {
+   "name": "death: draw-order channels are stepped 0/1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "death: follow-through bounded",
+   "ok": true,
+   "detail": "max 32.0°"
+  },
+  {
+   "name": "death: deterministic (same time → same pose)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "idle: no bone moves (stationary pose)",
+   "ok": true,
+   "detail": "0 moved samples"
+  },
+  {
+   "name": "idle: only the eye-glow channel changes",
+   "ok": true,
+   "detail": "changed: eyeGlow"
+  },
+  {
+   "name": "slash: blade high behind the shoulder at the wind-up",
+   "ok": true,
+   "detail": "blade at (-50, -443)"
+  },
+  {
+   "name": "slash: blade sweeps low in front at the hit marker",
+   "ok": true,
+   "detail": "blade at (153, -102)"
+  },
+  {
+   "name": "slash: blade tip speed > 2000 px/s through the cut",
+   "ok": true,
+   "detail": "2248 px/s"
+  },
+  {
+   "name": "death: scythe released and on the ground",
+   "ok": true,
+   "detail": "butt y -14, blade y -72"
+  },
+  {
+   "name": "death: glints out",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "death: robe collapsed (pelvis dropped > 90 px)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "player: markers fire exactly once at 60 fps",
+   "ok": true,
+   "detail": "windup,hit,recover,end"
+  },
+  {
+   "name": "player: skipped frames (0.45 s steps) still fire every marker once",
+   "ok": true,
+   "detail": "windup,hit,recover,end"
+  },
+  {
+   "name": "player: turbo (3×) fires the same markers once",
+   "ok": true,
+   "detail": "windup,hit,recover,end"
+  },
+  {
+   "name": "player: scrubbing never fires markers",
+   "ok": true,
+   "detail": "0 fired"
+  },
+  {
+   "name": "player: play(\"slash\") resolves at the hit marker",
+   "ok": true,
+   "detail": "{\"clip\":\"slash\",\"marker\":\"hit\",\"time\":0.62}"
+  }
+ ],
+ "perClip": {
+  "idle": {
+   "frames": 361,
+   "maxBoneLengthError": 1.4210854715202004e-14,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 5.728578676879116e-14,
+   "minToeHeightAboveGround": 6.000000000000039,
+   "maxWristToGripDistance": 17.999999999999996,
+   "maxFollowThroughDeg": 0
+  },
+  "hover": {
+   "frames": 241,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 7.140866117879973e-14,
+   "minToeHeightAboveGround": 6.000000000000025,
+   "maxWristToGripDistance": 18.000000000000046,
+   "maxFollowThroughDeg": 0.8164115423059026
+  },
+  "walk": {
+   "frames": 55,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 5.999999999999982,
+   "maxWristToGripDistance": 18.00000000000002,
+   "maxFollowThroughDeg": 4.451827724198842
+  },
+  "slash": {
+   "frames": 106,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 7.32410687763558e-14,
+   "minToeHeightAboveGround": 5.999999999999954,
+   "maxWristToGripDistance": 18.00000000000004,
+   "maxFollowThroughDeg": 31.999999999999996
+  },
+  "spin": {
+   "frames": 93,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 5.728578676879116e-14,
+   "minToeHeightAboveGround": 6.000000000000039,
+   "maxWristToGripDistance": 18.000000000000046,
+   "maxFollowThroughDeg": 3.309888417717449
+  },
+  "hurt": {
+   "frames": 74,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 5.728578676879116e-14,
+   "minToeHeightAboveGround": 5.999999999999968,
+   "maxWristToGripDistance": 18.000000000000046,
+   "maxFollowThroughDeg": 32
+  },
+  "taunt": {
+   "frames": 134,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 5.728578676879116e-14,
+   "minToeHeightAboveGround": 5.999999999999968,
+   "maxWristToGripDistance": 18.000000000000053,
+   "maxFollowThroughDeg": 6.89392206376996
+  },
+  "jump": {
+   "frames": 94,
+   "maxBoneLengthError": 8.526512829121202e-14,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 0,
+   "minToeHeightAboveGround": 5.999999999999975,
+   "maxWristToGripDistance": 18.000000000000032,
+   "maxFollowThroughDeg": 31.999999999999996
+  },
+  "death": {
+   "frames": 123,
+   "maxBoneLengthError": 1.1368683772161603e-13,
+   "nonFinite": 0,
+   "maxGripReachError": 0,
+   "maxPlantedFootDrift": 5.728578676879116e-14,
+   "minToeHeightAboveGround": 5.999999999999961,
+   "maxWristToGripDistance": 18.000000000000032,
+   "maxFollowThroughDeg": 31.999999999999996
+  }
+ }
+}
