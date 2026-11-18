@@ -1,0 +1,17 @@
+import path from 'node:path'; import { fileURLToPath } from 'node:url'; import { createRequire } from 'node:module';
+import { startServer } from '../../../scripts/serve.mjs';
+const { chromium } = createRequire(import.meta.url)('playwright');
+const here = path.dirname(fileURLToPath(import.meta.url));
+const args = process.argv.slice(2); const layout = args.includes('--layout'); const skeleton = args.includes('--skeleton');
+const zi = args.indexOf('--scale'); const scale = zi >= 0 ? Number(args[zi + 1]) : 1;
+const pos = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--scale');
+const [clip = 'idle', timesArg = '0', out = path.join(here, '..', 'output', 'snap.png')] = pos;
+const times = timesArg.split(',').map(Number);
+const server = await startServer(0); const port = server.address().port;
+const browser = await chromium.launch(); const cell = Math.round(560 * scale), height = Math.round(720 * scale) + 60;
+const page = await browser.newPage({ viewport: { width: layout ? 700 : cell * times.length, height: layout ? 760 : height } });
+page.on('pageerror', (e) => console.error('PAGE ERROR', e));
+await page.goto(`http://127.0.0.1:${port}/mascots/reaper-painted/render.html`); await page.waitForFunction(() => window.PaintedRender?.ready, null, { timeout: 60000 });
+if (layout) await page.evaluate(() => window.PaintedRender.partsLayout());
+else await page.evaluate(({ clip, times, skeleton, cell, height, scale }) => window.PaintedRender.sheet(clip, times, { cell, height, skeleton, scale }), { clip, times, skeleton, cell, height, scale });
+await page.screenshot({ path: out }); await browser.close(); server.close(); console.log('wrote', out);

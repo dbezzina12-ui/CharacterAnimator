@@ -10,16 +10,17 @@ const S = 0.377;   // sheet px -> rig px
 export const PARTS = [
   { name: 'boot_R', rect: [170, 1345, 360, 1510], anchor: [265, 1370], bone: 'foot_R', bones: ['foot_R'], offset: [0, -6] },
   { name: 'boot_L', rect: [410, 1345, 600, 1510], anchor: [505, 1370], bone: 'foot_L', bones: ['foot_L'], offset: [0, -6] },
-  { name: 'torso', rect: [185, 540, 630, 1370], anchor: [405, 560], bone: 'chest', bones: ['chest', 'spine', 'pelvis', 'skirt_F', 'skirt_R', 'skirt_L', 'tassel_01', 'tassel_02'], offset: [0, -6], mesh: [18, 30], blend: 0.1 },
+  { name: 'torso', rect: [185, 540, 630, 1370], anchor: [405, 560], bone: 'chest', bones: ['chest', 'spine', 'pelvis', 'skirt_F', 'skirt_R', 'skirt_L', 'tassel_01', 'tassel_02'], offset: [0, -6], mesh: [10, 18], blend: 0.1 },
   { name: 'mantle', rect: [180, 330, 625, 548], anchor: [400, 342], bone: 'mantle', bones: ['mantle'], offset: [0, -6] },
-  { name: 'head', rect: [175, 5, 595, 340], anchor: [405, 328], bone: 'head', bones: ['head', 'hood_01', 'hood_02'], offset: [0, 0], mesh: [14, 12], blend: 0.12 },
+  { name: 'head', rect: [175, 5, 595, 340], anchor: [405, 328], bone: 'head', bones: ['head', 'hood_01', 'hood_02'], offset: [0, 0], mesh: [8, 7], blend: 0.12 },
   { name: 'upper_L', rect: [565, 510, 725, 700], anchor: [645, 525], bone: 'upperarm_L', bones: ['upperarm_L'], offset: [0, -4] },
   { name: 'upper_R', rect: [85, 510, 245, 700], anchor: [165, 525], bone: 'upperarm_R', bones: ['upperarm_R'], offset: [0, -4] },
   { name: 'lower_L', rect: [565, 698, 760, 910], anchor: [660, 710], bone: 'forearm_L', bones: ['forearm_L'], offset: [0, -8] },
   { name: 'lower_R', rect: [30, 698, 240, 910], anchor: [135, 710], bone: 'forearm_R', bones: ['forearm_R'], offset: [0, -8] },
   { name: 'scythe', rect: [690, 245, 1024, 1435], anchor: [810, 850], bone: 'scythe', bones: ['scythe'], offset: [0, 0], alongBone: true },
-  { name: 'hand_L', rect: [610, 875, 765, 1190], anchor: [690, 895], bone: 'hand_L', bones: ['hand_L'], offset: [0, -6] },
-  { name: 'hand_R', rect: [40, 875, 190, 1190], anchor: [115, 895], bone: 'hand_R', bones: ['hand_R'], offset: [0, -6] },
+  // hands: the wrist (top of the carpals) sits on the hand bone's head; the grip ring is GRIP_OFFSET px further along
+  { name: 'hand_L', rect: [610, 875, 765, 1190], anchor: [690, 900], bone: 'hand_L', bones: ['hand_L'], offset: [0, 0], scale: 0.82 },
+  { name: 'hand_R', rect: [40, 875, 190, 1190], anchor: [115, 900], bone: 'hand_R', bones: ['hand_R'], offset: [0, 0], scale: 0.82 },
 ];
 
 function keyWhite(data, n) {   // white background -> alpha, with a soft edge
@@ -27,7 +28,7 @@ function keyWhite(data, n) {   // white background -> alpha, with a soft edge
     const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
     const lum = (r + g + b) / 3, sat = Math.max(r, g, b) - Math.min(r, g, b);
     const bg = clamp((lum - 225) / 22) * clamp((18 - sat) / 10);
-    data[i * 4 + 3] = Math.round(255 * (1 - bg));
+    data[i * 4 + 3] = Math.min(data[i * 4 + 3], Math.round(255 * (1 - bg)));
   }
 }
 function largestBlob(alpha, w, h) {
@@ -61,7 +62,8 @@ export async function buildPuppet(sheetUrl) {
     const bone = SKELETON.bones.get(def.bone);
     const part = { ...def, canvas: c, w, h, ox: x0, oy: y0, bboxSheet: [x0 + blob.minx, y0 + blob.miny, x0 + blob.maxx, y0 + blob.maxy] };
     // placement: sheet px -> root space.  p_root = boneRestHead + offset + (p_sheet - anchor) * S
-    part.toRoot = (sx, sy) => ({ x: bone.restHead.x + def.offset[0] + (sx - def.anchor[0]) * S, y: bone.restHead.y + def.offset[1] + (sy - def.anchor[1]) * S });
+    const ps = S * (def.scale || 1);
+    part.toRoot = (sx, sy) => ({ x: bone.restHead.x + def.offset[0] + (sx - def.anchor[0]) * ps, y: bone.restHead.y + def.offset[1] + (sy - def.anchor[1]) * ps });
     if (def.alongBone) {
       // the scythe sheet is vertical (blade up); the bone runs butt -> blade along +x at restAngle.
       // Map sheet y (down) onto -x along the shaft and sheet x onto +y across it, then rotate by the rest angle.
@@ -99,7 +101,8 @@ function boneMap(bone, p) {
 }
 function drawTriangle(ctx, canvas, s0, s1, s2, d0, d1, d2) {
   // affine map (s -> d), clip to the destination triangle (slightly expanded to hide seams)
-  const cx = (d0.x + d1.x + d2.x) / 3, cy = (d0.y + d1.y + d2.y) / 3; const g = (p) => ({ x: p.x + (p.x - cx) * 0.03, y: p.y + (p.y - cy) * 0.03 });
+  // expand the clip ~2.5 px past the triangle so antialiased clip edges overlap instead of leaving seams
+  const cx = (d0.x + d1.x + d2.x) / 3, cy = (d0.y + d1.y + d2.y) / 3; const g = (p) => { const dx = p.x - cx, dy = p.y - cy, l = Math.hypot(dx, dy) || 1; const k = 2.5 / l; return { x: p.x + dx * k, y: p.y + dy * k }; };
   const e0 = g(d0), e1 = g(d1), e2 = g(d2);
   ctx.save(); ctx.beginPath(); ctx.moveTo(e0.x, e0.y); ctx.lineTo(e1.x, e1.y); ctx.lineTo(e2.x, e2.y); ctx.closePath(); ctx.clip();
   const sx1 = s1[0] - s0[0], sy1 = s1[1] - s0[1], sx2 = s2[0] - s0[0], sy2 = s2[1] - s0[1];

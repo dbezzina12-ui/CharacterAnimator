@@ -8,6 +8,7 @@ import { SKELETON, IK_CHAINS, PROP, CHANNEL_DEFAULTS } from './skeleton.js';
 import { EASE, clamp, deg, rot, add, sub, scale, len, angleOf, normAngle, mixAngle, twoBoneIK, hash } from './math.js';
 
 const { bones: REST, order: ORDER } = SKELETON;
+export const GRIP_OFFSET = 58;   // wrist sits this far from the grip marker (the painted hand's ring is 185 sheet px * 0.377 * 0.82 below the wrist)
 
 // ---------------------------------------------------------------- track sampling
 function lerpValue(a, b, f, angular) {
@@ -166,8 +167,10 @@ export function solvePrimary(clip, t) {
         const gripPt = propPoint(world, side === 'L' ? PROP.gripTop : PROP.gripLow);
         const shoulder = world.get(`upperarm_${side}`).head;
         const l1 = REST.get(`upperarm_${side}`).length, l2 = REST.get(`forearm_${side}`).length;
-        const reach = l1 + l2 - 20, minReach = Math.abs(l1 - l2) + 24;   // fist offset + margin on both ends
-        const d = sub(gripPt, shoulder); const L = len(d) || 1e-6;
+        const reach = l1 + l2 - 4, minReach = Math.abs(l1 - l2) + 8;   // fist offset + margin on both ends
+        const ha = world.get('scythe').angle + (side === 'L' ? -0.15 : 0.1);
+        const wrist = sub(gripPt, { x: Math.cos(ha) * GRIP_OFFSET, y: Math.sin(ha) * GRIP_OFFSET });
+        const d = sub(wrist, shoulder); const L = len(d) || 1e-6;
         if (L > reach) { shift = add(shift, scale(d, -(L - reach) / L)); moved = true; }
         else if (L < minReach) { shift = add(shift, scale(d, (minReach - L) / L)); moved = true; }
       }
@@ -182,10 +185,10 @@ export function solvePrimary(clip, t) {
     let target = s.ik[`hand_${side}`] ? resolveTarget(s.ik[`hand_${side}`], world) : null;
     if (gripSides.includes(side)) {
       const gripPt = propPoint(world, side === 'L' ? PROP.gripTop : PROP.gripLow);
-      const shoulder = world.get(`upperarm_${side}`).head;
-      const d = sub(gripPt, shoulder); const L = Math.max(1e-6, len(d));
-      // the fist centre sits ~18 px past the wrist along the arm, so pull the wrist back a little
-      target = sub(gripPt, scale(d, 22 / L));
+      // the painted hand's grip ring hangs GRIP_OFFSET px along the hand bone (which follows the shaft),
+      // so the wrist goes that far back along the hand's own direction and the ring lands on the marker
+      const handAngle = world.get('scythe').angle + (side === 'L' ? -0.15 : 0.1);
+      target = sub(gripPt, { x: Math.cos(handAngle) * GRIP_OFFSET, y: Math.sin(handAngle) * GRIP_OFFSET });
       s.ch[`hand_${side}`] = 1;
     }
     if (target) ikErrors[`arm_${side}`] = applyIK(`arm_${side}`, target, world, s, overrides);
