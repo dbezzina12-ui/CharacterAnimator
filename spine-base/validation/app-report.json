@@ -1,0 +1,86 @@
+{
+ "generated": "2026-11-19T03:16:31.363Z",
+ "failures": 0,
+ "checks": [
+  {
+   "name": "app starts and builds the human in the Spine runtime",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "in-app checks all pass for the human",
+   "ok": true,
+   "detail": "Staff stays in the far hand · Two-handed slam connects · Staff lands on the ground at impact · Gun stays in the near hand · Feet stay planted"
+  },
+  {
+   "name": "a full rebuild is fast enough to follow a slider",
+   "ok": true,
+   "detail": "57 ms"
+  },
+  {
+   "name": "dwarf preset: grips and feet hold",
+   "ok": true,
+   "detail": "Base-Dwarf: all five checks pass"
+  },
+  {
+   "name": "tall and lean: grips and feet hold",
+   "ok": true,
+   "detail": "Tall: all five checks pass"
+  },
+  {
+   "name": "short and broad: grips and feet hold",
+   "ok": true,
+   "detail": "Squat: all five checks pass"
+  },
+  {
+   "name": "long arms, wide stance: grips and feet hold",
+   "ok": true,
+   "detail": "Ape: all five checks pass"
+  },
+  {
+   "name": "short arms, wide stance: grips and feet hold",
+   "ok": true,
+   "detail": "Stub: all five checks pass"
+  },
+  {
+   "name": "kit zip contains the Spine files, part images, sheets, brief and settings",
+   "ok": true,
+   "detail": "30 files, 1673 KB"
+  },
+  {
+   "name": "zip written by the app reads back byte for byte",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "opening a saved kit restores the same skeleton",
+   "ok": true,
+   "detail": "RoundTrip"
+  },
+  {
+   "name": "paint sheet: every part is cut out and lands on its placeholder",
+   "ok": true,
+   "detail": "21 parts, worst centre offset 0.38 units (upper-near); sheet 2400×1600 at 1.84 px/unit"
+  },
+  {
+   "name": "paint sheet returned at 1536×1024 still lands on the placeholders",
+   "ok": true,
+   "detail": "21 parts, worst centre offset 0.95 units (torso)"
+  },
+  {
+   "name": "rig checks still pass with art from the sheet",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone width: no sideways scroll",
+   "ok": true,
+   "detail": "0px"
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

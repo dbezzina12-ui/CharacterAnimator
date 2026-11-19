@@ -8,34 +8,59 @@ const r2 = (v) => Math.round(v * 100) / 100;
 const hyp = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
 const norm = (d) => { while (d > 180) d -= 360; while (d <= -180) d += 360; return d; };
 
-export const HUMAN = {
-  id: 'human', file: 'Base-Human', height: 722,
-  J: {
-    hip: [0, 378], waist: [4, 452], neck: [16, 598], headTop: [26, 722],
-    shoulderN: [-44, 570], elbowN: [-58, 452], wristN: [-44, 346],
-    shoulderF: [52, 574], elbowF: [62, 458], wristF: [82, 356],
-    hipN: [-24, 372], kneeN: [-10, 206], ankleN: [-44, 44], toeN: [36, 8],
-    hipF: [28, 374], kneeF: [52, 210], ankleF: [50, 46], toeF: [126, 10],
-  },
-  hand: { len: 44, w: 40, grip: 24 },
-  limb: { upperArm: [38, 32], forearm: [32, 25], thigh: [60, 46], shin: [46, 31] },
-  torso: { chestHalf: 68, waistHalf: 50, neckW: 32 },
-  head: { w: 100, h: 126 },
+/** Proportion presets. Every value except height is a ratio, so height alone scales the whole character.
+ *  head: head height / height · headWidth: head width / head height · legs: hip height / height · arms: shoulder-to-wrist / height
+ *  shoulders: shoulder joint span / height · build: limb and trunk thickness (1 = average adult) · hands: fist length / height
+ *  stance: half the distance between the ankles / height · cape: show the cape in the setup pose */
+export const PRESETS = {
+  human: { name: 'Human', height: 722, head: 0.172, headWidth: 0.8, legs: 0.5235, arms: 0.313, shoulders: 0.14, build: 1, hands: 0.061, stance: 0.061, cape: false },
+  dwarf: { name: 'Dwarf', height: 468, head: 0.3, headWidth: 0.94, legs: 0.3675, arms: 0.327, shoulders: 0.245, build: 1.9, hands: 0.107, stance: 0.09, cape: false },
 };
-export const DWARF = {
-  id: 'dwarf', file: 'Base-Dwarf', height: 468,
-  J: {
-    hip: [0, 172], waist: [4, 224], neck: [14, 326], headTop: [22, 468],
-    shoulderN: [-54, 302], elbowN: [-70, 224], wristN: [-58, 152],
-    shoulderF: [58, 306], elbowF: [72, 230], wristF: [90, 162],
-    hipN: [-28, 166], kneeN: [-28, 100], ankleN: [-42, 34], toeN: [32, 8],
-    hipF: [30, 168], kneeF: [44, 103], ankleF: [48, 36], toeF: [118, 10],
-  },
-  hand: { len: 50, w: 48, grip: 27 },
-  limb: { upperArm: [48, 42], forearm: [44, 36], thigh: [58, 50], shin: [50, 42] },
-  torso: { chestHalf: 82, waistHalf: 64, neckW: 44 },
-  head: { w: 132, h: 140 },
+export const LIMITS = {
+  height: [300, 1000, 1], head: [0.12, 0.36, 0.002], headWidth: [0.65, 1.1, 0.01], legs: [0.3, 0.58, 0.0025], arms: [0.24, 0.4, 0.001],
+  shoulders: [0.1, 0.3, 0.001], build: [0.7, 2.4, 0.01], hands: [0.045, 0.13, 0.001], stance: [0.03, 0.14, 0.001],
 };
+const clampTo = (v, [lo, hi]) => Math.min(hi, Math.max(lo, v));
+const pascal = (s) => String(s).replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('') || 'Character';
+
+/** Turn a handful of proportion ratios into the full joint table the rig is built from. */
+export function proportions(params = {}) {
+  const base = PRESETS[String(params.preset || '').toLowerCase()] || PRESETS.human; const q = { ...base, ...params };
+  for (const k of Object.keys(LIMITS)) q[k] = clampTo(Number.isFinite(+q[k]) ? +q[k] : base[k], LIMITS[k]);
+  q.cape = !!q.cape; q.name = String(q.name || 'Character').slice(0, 40);
+  const H = q.height, s = H / 722, bs = q.build * s, e = Math.min(0.5, Math.max(-0.15, (q.build - 1) * 0.31));
+  const pol = (o, deg, len) => [o[0] + Math.cos(deg * D2R) * len, o[1] + Math.sin(deg * D2R) * len];
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const headH = q.head * H, hipY = q.legs * H, neckY = H - headH * 0.985, T = neckY - hipY;
+  const hip = [0, hipY], waist = [0.02 * T, hipY + 0.336 * T], neck = [0.075 * T, neckY], headTop = [neck[0] + 0.08 * headH, H];
+  const span = q.shoulders * H, drop = 0.11 * T + 4 * bs;
+  const shoulderN = [neck[0] - 0.62 * span, neckY - drop], shoulderF = [neck[0] + 0.38 * span, neckY - drop + 4 * s];
+  const A = q.arms * H;
+  const elbowN = pol(shoulderN, -97 - 16 * e, 0.525 * A), wristN = pol(elbowN, -82 + 5 * e, 0.475 * A);
+  const elbowF = pol(shoulderF, -85 + 19 * e, 0.525 * A), wristF = pol(elbowF, -79 + 13 * e, 0.475 * A);
+  const handLen = q.hands * H, foot = 0.9 * handLen + 0.055 * H, ankleY = 0.028 * H + 0.3 * foot;
+  const legLen = hipY - ankleY, thighLen = legLen * 0.5;
+  const thighR = Math.min(26 * bs, 0.45 * thighLen), kneeR = Math.min(21 * bs, thighR * 0.86, 0.38 * thighLen), ankleR = Math.min(14.5 * bs, kneeR * 0.84);
+  const chestHalf = 0.5 * span, waistHalf = span * (0.335 + 0.085 * q.build), hipHalf = Math.max(0.47 * span * (0.92 + 0.08 * q.build), thighR * 1.55);
+  const hipN = [-(hipHalf - thighR), hipY - 6 * s], hipF = [hipHalf - thighR + 4 * s, hipY - 4 * s];
+  const back = 0.028 * H;   // the feet sit a little behind the hips' ground point so the weight reads as centred, not leaning back
+  const ankleN = [-q.stance * H - back, ankleY], ankleF = [q.stance * H + 6 * s - back, ankleY + 2 * s];
+  const mN = mid(hipN, ankleN), mF = mid(hipF, ankleF);
+  const kneeN = [mN[0] + 0.07 * legLen, mN[1] - 0.006 * legLen], kneeF = [mF[0] + 0.04 * legLen, mF[1]];
+  const toeN = [ankleN[0] + foot, 8 * s], toeF = [ankleF[0] + foot * 0.95, 10 * s];
+  const r1 = (p) => p.map((v) => Math.round(v * 10) / 10);
+  const J = Object.fromEntries(Object.entries({ hip, waist, neck, headTop, shoulderN, elbowN, wristN, shoulderF, elbowF, wristF, hipN, kneeN, ankleN, toeN, hipF, kneeF, ankleF, toeF }).map(([k, v]) => [k, r1(v)]));
+  const id = String(q.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'character';
+  return {
+    id, file: params.file || (PRESETS[id] ? 'Base-' + pascal(q.name) : pascal(q.name)), height: H, cape: q.cape, params: q, J,
+    hand: { len: r2(handLen), w: r2(0.92 * handLen), grip: r2(0.545 * handLen) },
+    limb: { upperArm: [38 * bs, 32 * bs].map(r2), forearm: [32 * bs, 25 * bs].map(r2), thigh: [2 * thighR, 2 * kneeR].map(r2), shin: [2 * kneeR, 2 * ankleR].map(r2) },
+    torso: { chestHalf: r2(chestHalf), waistHalf: r2(waistHalf), hipHalf: r2(hipHalf), neckW: r2(32 * bs) },
+    head: { w: r2(q.headWidth * headH), h: r2(headH) },
+  };
+}
+export const HUMAN = proportions(PRESETS.human);
+export const DWARF = proportions(PRESETS.dwarf);
 
 // ---- curves: CSS-style cubic bezier per segment -> Spine absolute control points
 const EASE = { ease: [0.4, 0, 0.6, 1], in: [0.5, 0, 0.9, 0.55], out: [0.1, 0.5, 0.4, 1], snap: [0.05, 0.75, 0.25, 1], soft: [0.3, 0, 0.7, 1] };
@@ -102,7 +127,8 @@ export function buildRig(P) {
   // Convention: hand local +x = toward the knuckles, +y = the grip axis (the shaft runs along it), grip point = hand.grip px from the wrist.
   const RN = hyp(J.shoulderN, J.elbowN) + hyp(J.elbowN, J.wristN), RF = hyp(J.shoulderF, J.elbowF) + hyp(J.elbowF, J.wristF);
   const g = P.hand.grip;
-  const staff = { x: J.toeF[0] - 20, gripY: J.shoulderF[1] - 0.72 * RF, nearUp: 0.26 * RN, lift: 0.33 * RF, top: 1.07 * P.height };
+  // the staff stands just behind the far toe, pulled in when the arms are too short to reach it there with either hand
+  const staff = { x: Math.min(J.toeF[0] - 20, J.shoulderF[0] + g + 0.55 * RF, J.shoulderN[0] + g + 0.72 * RN), gripY: J.shoulderF[1] - 0.72 * RF, nearUp: 0.26 * RN, lift: 0.33 * RF, top: 1.07 * P.height };
   bone('staff', 'root', [staff.x, staff.gripY], null, { length: 60, rot: 90, color: '3fd0ffff' });   // +x up the shaft
   // staff bone points UP the shaft, so its local frame is rotated 90°: hand +y (grip axis) = staff +x. The grip targets undo that.
   bone('staff-grip-far', 'staff', [staff.x - g, staff.gripY], null, { rot: 0, length: 14, color: '3fd0ffff' });
@@ -117,8 +143,17 @@ export function buildRig(P) {
   bone('gun-grip-near', 'gun', gunRest.wrist, null, { rot: gunRest.rot, length: 14, color: 'ff9f3fff' });
   { const a = gunRest.rot * D2R, o = gripOf(gunRest), mx = 74 * k, my = 20 * k; bone('gun-muzzle', 'gun', [o[0] + Math.cos(a) * mx - Math.sin(a) * my, o[1] + Math.sin(a) * mx + Math.cos(a) * my], null, { rot: gunRest.rot, color: 'ff9f3fff' }); }
 
+  // ---- cape: a four-bone chain hanging from the upper back. One mesh image is weighted across it; physics makes it sway.
+  const T = J.neck[1] - J.hip[1];
+  const capeTop = [J.neck[0] - 0.3 * (J.neck[0] - J.shoulderN[0]), J.neck[1] - 0.05 * T];
+  const capeEndY = J.ankleN[1] + 0.4 * (J.kneeN[1] - J.ankleN[1]); const capeLen = capeTop[1] - capeEndY;
+  const capeEnd = [capeTop[0] - 0.1 * capeLen, capeEndY]; const CAPE_N = 4;
+  const capePt = (i) => [capeTop[0] + (capeEnd[0] - capeTop[0]) * i / CAPE_N, capeTop[1] + (capeEnd[1] - capeTop[1]) * i / CAPE_N];
+  for (let i = 0; i < CAPE_N; i++) bone(`cape-${i + 1}`, i ? `cape-${i}` : 'chest', capePt(i), capePt(i + 1), { color: 'c77dffff' });
+
   // ---- slots, back to front
   const slots = [
+    ['cape', 'cape-1', P.cape ? 'cape' : null],
     ['upper-far', 'upper-far'], ['forearm-far', 'forearm-far'], ['hand-far-back', 'hand-far'], ['weapon-far', 'staff', 'staff'], ['hand-far-front', 'hand-far'],
     ['thigh-far', 'thigh-far'], ['shin-far', 'shin-far'], ['foot-far', 'foot-far'], ['pelvis', 'hip'],
     ['thigh-near', 'thigh-near'], ['shin-near', 'shin-near'], ['foot-near', 'foot-near'], ['torso', 'chest'], ['head', 'head'], ['eyelids', 'head', null],
@@ -142,6 +177,15 @@ export function buildRig(P) {
     { name: 'gun/near-hand-rot', order: 9, skin: true, bones: ['hand-near'], target: 'gun-grip-near', mixRotate: 1, ...T0 },
   ];
 
+  // Spine 4.2 physics: each cape bone lags behind the body, swings past and settles; lower bones are looser and heavier under gravity.
+  const phys = (i, o) => ({ name: `cape/${i}`, order: 9 + i, bone: `cape-${i}`, rotate: 1, mass: 1, wind: 0, mix: 1, ...o });
+  const physics = [
+    phys(1, { inertia: 0.45, strength: 70, damping: 0.55, gravity: 8 }),
+    phys(2, { inertia: 0.6, strength: 50, damping: 0.45, gravity: 16 }),
+    phys(3, { inertia: 0.75, strength: 36, damping: 0.4, gravity: 24, mass: 0.8 }),
+    phys(4, { inertia: 0.85, strength: 28, damping: 0.35, gravity: 30, mass: 0.6 }),
+  ];
+
   // ---- animations (values are offsets from the setup pose). u scales body moves with the character's size.
   // body moves scale with LEG length (a short-legged character crouches less in absolute terms), reach moves with arm length
   const u = (J.hip[1] - J.ankleN[1]) / 334; const L = staff.lift;
@@ -149,6 +193,10 @@ export function buildRig(P) {
     hip: { translate: tr([[0, 0, 0], [d / 2, 0, -3 * u], [d, 0, 0]]) },
     chest: { rotate: rot([[0, 0], [d / 2, -1.2], [d, 0]]) },
     head: { rotate: rot([[0, 0], [d / 2, 1.4], [d, 0]]) },
+    // a slow breeze through the cape; physics adds the reaction to body movement on top
+    'cape-2': { rotate: rot([[0, 0], [d / 2, 1.6], [d, 0]]) },
+    'cape-3': { rotate: rot([[0, 1.2], [d / 2, -1.8], [d, 1.2]]) },
+    'cape-4': { rotate: rot([[0, -2], [d / 2, 2.4], [d, -2]]) },
   });
   const animations = {};
   animations.idle = { bones: { ...breathe(), 'upper-near': { rotate: rot([[0, 0], [1, 2.5], [2, 0]]) }, 'upper-far': { rotate: rot([[0, 0], [1, -2], [2, 0]]) } } };
@@ -208,8 +256,8 @@ export function buildRig(P) {
   animations.blink = { slots: { eyelids: { attachment: [{ time: 0, name: null }, { time: 2.2, name: 'eyes-closed' }, { time: 2.32, name: null }, { time: 3.6, name: null }] } } };
 
   return {
-    P, bones, world, slots, ik, transform, animations,
+    P, bones, world, slots, ik, transform, physics, animations,
     events: { impact: {}, fire: {}, hit: {}, land: {} },
-    geo: { staff, gunRest, gunAim, RN, RF, k, grip: g },
+    geo: { staff, gunRest, gunAim, RN, RF, k, grip: g, cape: { top: capeTop, end: capeEnd, bones: Array.from({ length: CAPE_N }, (_, i) => `cape-${i + 1}`) } },
   };
 }

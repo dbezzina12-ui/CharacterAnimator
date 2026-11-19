@@ -1,0 +1,17 @@
+{
+ "format": "slot-character-kit/1",
+ "settings": {
+  "name": "Dwarf",
+  "height": 468,
+  "head": 0.3,
+  "headWidth": 0.94,
+  "legs": 0.3675,
+  "arms": 0.327,
+  "shoulders": 0.245,
+  "build": 1.9,
+  "hands": 0.107,
+  "stance": 0.09,
+  "cape": false
+ },
+ "art": {}
+}

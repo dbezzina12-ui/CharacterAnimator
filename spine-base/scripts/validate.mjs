@@ -30,7 +30,7 @@ async function run(weapon, anim, seconds, opts = {}) {
     V.setWeapon(weapon); for (let i = 0; i < 30; i++) V.step(1 / 60);     // settle into idle
     const events = []; const offs = V.chars.map((ch) => ch.onEvent((ev, a, t) => events.push({ id: ch.id, ev, anim: a, t })));
     if (anim) V.chars.forEach((ch) => { const e = ch.state.setAnimation(0, anim, !!opts.loop); if (!opts.loop) ch.state.addAnimation(0, ch.idle, true, 0); void e; });
-    const names = ['hand-near', 'hand-far', 'staff', 'staff-grip-far', 'staff-grip-near', 'staff-foot', 'gun', 'gun-grip-near', 'foot-near', 'foot-far', 'foot-near-target', 'foot-far-target', 'hip', 'head', 'forearm-near', 'forearm-far', 'shin-near', 'shin-far'];
+    const names = ['cape-1', 'cape-4', 'chest', 'hand-near', 'hand-far', 'staff', 'staff-grip-far', 'staff-grip-near', 'staff-foot', 'gun', 'gun-grip-near', 'foot-near', 'foot-far', 'foot-near-target', 'foot-far-target', 'hip', 'head', 'forearm-near', 'forearm-far', 'shin-near', 'shin-far'];
     const frames = [];
     for (let i = 0; i <= Math.round(seconds * 60); i++) {
       const f = { t: i / 60 }; for (const ch of V.chars) { f[ch.id] = {}; for (const n of names) f[ch.id][n] = V.bone(ch.id, n);
@@ -95,6 +95,23 @@ for (const id of ['human', 'dwarf']) {
     check(`${id} win: jumps and lands`, up > 8 && Math.abs(frames[frames.length - 1][id]['foot-near'].y - frames[0][id]['foot-near'].y) < 0.5 && events.some((e) => e.id === id && e.ev === 'land'), `feet leave the ground by ${up.toFixed(0)} units`); }
 }
 
+// ---- cape: one mesh on a four-bone chain with Spine physics
+{
+  const cape = await page.evaluate(() => window.Viewer.chars.map((ch) => { const sl = ch.skeleton.findSlot('cape'); const off = !sl.getAttachment(); ch.setCape(true); const a = sl.getAttachment(); ch.setWeapon('gun'); const kept = !!sl.getAttachment(); ch.setCape(false); const hidden = !sl.getAttachment(); return { id: ch.id, off, type: a && a.constructor.name, bonesUsed: a && a.bones ? new Set(a.bones.filter((_, i, arr) => { let k = 0, j = 0; while (j < i) { j += arr[j] + 1; k = j; } return i !== k && false; })).size : 0, verts: a ? a.worldVerticesLength / 2 : 0, kept, hidden, physics: ch.skeleton.physicsConstraints.length }; }));
+  for (const c of cape) check(`${c.id} cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again`, c.off && c.type === 'MeshAttachment' && c.verts >= 10 && c.kept && c.hidden && c.physics === 4, `${c.type}, ${c.verts} vertices, ${c.physics} physics constraints`);
+  await page.evaluate(() => window.Viewer.setCape(true));
+  const REST = { human: null, dwarf: null };   // angles are measured from the first sample so they never straddle the ±180° seam
+  const rel = (f, id) => { let x = f[id]['cape-4'].rot - f[id].chest.rot; REST[id] ??= x; x -= REST[id]; while (x > 180) x -= 360; while (x < -180) x += 360; return x; };
+  for (const id of ['human', 'dwarf']) {
+    const slam = await run('staff', 'staff/slam', 1.3); const a = slam.frames.map((f) => rel(f, id)); const swing = Math.max(...a) - Math.min(...a);
+    const settle = await run('staff', null, 4.0); const s0 = settle.frames.slice(120, 240).map((f) => rel(f, id)), s1 = settle.frames.slice(120).map((f) => f[id]['cape-4']);
+    check(`${id} cape: swings during the slam`, swing > 6 && swing < 120, `cape tip sweeps ${swing.toFixed(1)}° relative to the chest`);
+    check(`${id} cape: settles into a small idle sway and stays finite`, Math.max(...s0) - Math.min(...s0) < 14 && s1.every((b) => Number.isFinite(b.x) && Number.isFinite(b.rot)), `idle sway ${(Math.max(...s0) - Math.min(...s0)).toFixed(1)}°`);
+    const win = await run('none', 'win', 1.6); const w = win.frames.map((f) => rel(f, id)); check(`${id} cape: reacts to the jump`, Math.max(...w) - Math.min(...w) > 4, `${(Math.max(...w) - Math.min(...w)).toFixed(1)}°`);
+  }
+  await page.evaluate(() => window.Viewer.setCape(false));
+}
+
 // ---- pose strips for eyeballing
 async function strip(file, weapon, anim, times, bones = false) {
   const shots = [];
@@ -114,6 +131,9 @@ await strip('win-hit.png', 'gun', 'win', [0.15, 0.38, 0.7]);
 await page.setViewportSize({ width: 1500, height: 1000 });
 await strip('closeup-staff.png', 'staff', 'staff/slam', [0.02, 0.4, 0.57]);
 await strip('closeup-gun.png', 'gun', 'gun/fire', [0, 0.22]);
+await page.setViewportSize({ width: 1100, height: 760 }); await page.evaluate(() => window.Viewer.setCape(true));
+await strip('cape-slam.png', 'staff', 'staff/slam', [0, 0.4, 0.58, 0.8, 1.2]);
+await strip('cape-win.png', 'none', 'win', [0.3, 0.45, 0.7]);
 await browser.close(); server.close();
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify({ generated: new Date().toISOString(), failures, checks: results, pageErrors: errors }, null, 1));
 console.log(`\n${results.length - failures}/${results.length} checks passed${errors.length ? '\npage errors: ' + errors.join(' | ') : ''}`);

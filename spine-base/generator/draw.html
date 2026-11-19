@@ -1,63 +1,13 @@
-<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}</style></head><body>
+<!doctype html><html><head><meta charset="utf-8"><title>kit builder (headless)</title><style>html,body{margin:0;background:#fff}</style></head><body>
 <script type="module">
-import { PIECES, PIECE_INFO, C } from './pieces.js';
-const D2R = Math.PI / 180;
-/** Render one piece on a big canvas, crop to its alpha bounds, return the image and its rect in units (y up). */
-function renderPiece(name, R, S) {
-  const info = PIECE_INFO[name]; const local = info.frame === 'bone';
-  const X0 = local ? -200 : -320, X1 = local ? 320 : 460, Y0 = local ? -200 : -60, Y1 = local ? 200 : R.P.height * 1.12 + 80;
-  const c = document.createElement('canvas'); c.width = Math.ceil((X1 - X0) * S); c.height = Math.ceil((Y1 - Y0) * S);
-  const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.setTransform(S, 0, 0, -S, -X0 * S, Y1 * S);
-  PIECES[name](ctx, R);
-  const d = ctx.getImageData(0, 0, c.width, c.height).data; let minx = c.width, maxx = -1, miny = c.height, maxy = -1;
-  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] > 0) { if (x < minx) minx = x; if (x > maxx) maxx = x; if (y < miny) miny = y; if (y > maxy) maxy = y; }
-  const pad = 2; minx = Math.max(0, minx - pad); miny = Math.max(0, miny - pad); maxx = Math.min(c.width - 1, maxx + pad); maxy = Math.min(c.height - 1, maxy + pad);
-  const w = maxx - minx + 1, h = maxy - miny + 1; const o = document.createElement('canvas'); o.width = w; o.height = h; o.getContext('2d').drawImage(c, minx, miny, w, h, 0, 0, w, h);
-  return { name, canvas: o, px: [w, h], rect: { x: X0 + minx / S, y: Y1 - (maxy + 1) / S, w: w / S, h: h / S } };   // rect: left, bottom, size (units, y up)
-}
-window.buildCharacter = (R, S = 2) => {
-  R.J = R.P.J;
-  const pieces = Object.keys(PIECE_INFO).map((n) => renderPiece(n, R, S));
-  // shelf pack
-  const W = 2048; const order = [...pieces].sort((a, b) => b.px[1] - a.px[1]); let x = 2, y = 2, rowH = 0;
-  for (const p of order) { if (x + p.px[0] + 2 > W) { x = 2; y += rowH + 2; rowH = 0; } p.atlas = [x, y]; x += p.px[0] + 2; rowH = Math.max(rowH, p.px[1]); }
-  const Hh = y + rowH + 2; const a = document.createElement('canvas'); a.width = W; a.height = Hh; const ag = a.getContext('2d'); for (const p of pieces) ag.drawImage(p.canvas, p.atlas[0], p.atlas[1]);
-  window.__last = { R, S, pieces };
-  return { atlas: { png: a.toDataURL('image/png'), w: W, h: Hh }, pieces: pieces.map((p) => ({ name: p.name, px: p.px, rect: p.rect, atlas: p.atlas, png: p.canvas.toDataURL('image/png'), ...PIECE_INFO[p.name] })) };
-};
-/** Template sheet: assembled setup pose with bones, plus every piece exploded with its pivot and size. */
-window.buildSheet = () => {
-  const { R, S, pieces } = window.__last; const by = Object.fromEntries(pieces.map((p) => [p.name, p]));
-  const Wc = 2600, Hc = Math.max(1500, Math.round(R.P.height * 1.25 * 1.6) + 200); const c = document.createElement('canvas'); c.width = Wc; c.height = Hc; const g = c.getContext('2d');
-  g.fillStyle = '#eef1f5'; g.fillRect(0, 0, Wc, Hc);
-  g.fillStyle = C.line; g.font = '700 34px system-ui, sans-serif'; g.fillText(`${R.P.file} — template sheet`, 40, 56);
-  g.font = '18px system-ui, sans-serif'; g.fillStyle = '#44506a'; g.fillText('Left: setup pose (three-quarter, facing right) with the skeleton. Right: every piece at export size with its pivot (the bone it hangs on) marked. Paint over each piece without moving it.', 40, 88);
-  // assembled
-  const z = 1.6; const ox = 420, oy = Hc - 110; const X = (x) => ox + x * z, Y = (y) => oy - y * z;
-  g.strokeStyle = '#b8c0cc'; g.lineWidth = 2; g.beginPath(); g.moveTo(60, oy); g.lineTo(820, oy); g.stroke();
-  const order = ['upper-far', 'forearm-far', 'hand-far-back', 'staff', 'hand-far-front', 'thigh-far', 'shin-far', 'foot-far', 'pelvis', 'thigh-near', 'shin-near', 'foot-near', 'torso', 'head', 'upper-near', 'forearm-near', 'hand-near'];
-  for (const n of order) { const p = by[n]; g.drawImage(p.canvas, X(p.rect.x), Y(p.rect.y + p.rect.h), p.rect.w * z, p.rect.h * z); }
-  for (const [name, w] of Object.entries(R.world)) {
-    if (name === 'root' || name.startsWith('gun')) continue; const len = w.len || 0; const ex = w.x + Math.cos(w.rot * D2R) * len, ey = w.y + Math.sin(w.rot * D2R) * len;
-    g.strokeStyle = name.includes('target') || name.startsWith('staff') ? '#e2463f' : '#1fae6b'; g.lineWidth = 3; g.beginPath(); g.moveTo(X(w.x), Y(w.y)); g.lineTo(X(ex), Y(ey)); g.stroke();
-    g.fillStyle = '#fff'; g.beginPath(); g.arc(X(w.x), Y(w.y), 4.5, 0, 7); g.fill(); g.strokeStyle = '#111'; g.lineWidth = 1.5; g.stroke();
-  }
-  g.fillStyle = '#44506a'; g.font = '16px system-ui, sans-serif'; g.fillText(`height ${R.P.height} units · green = bones · red = IK targets and staff grips`, 60, oy + 40);
-  // exploded
-  let x = 900, y = 140, rowH = 0; const k = 0.62; const staffH = Hc - 220;
-  const list = ['head', 'torso', 'pelvis', 'upper-near', 'forearm-near', 'hand-near', 'upper-far', 'forearm-far', 'hand-far-back', 'hand-far-front', 'thigh-near', 'shin-near', 'foot-near', 'thigh-far', 'shin-far', 'foot-far', 'eyes-closed', 'gun', 'muzzle-flash', 'staff'];
-  for (const n of list) {
-    const p = by[n]; const kk = n === 'staff' ? Math.min(k, staffH / p.px[1]) : k; const w = p.px[0] * kk, h = p.px[1] * kk; if (n !== 'staff' && x + Math.max(w, 150) + 30 > Wc) { x = 900; y += rowH + 70; rowH = 0; }
-    if (n === 'staff') { x = Wc - 150; y = 140; }
-    g.fillStyle = '#fff'; g.fillRect(x - 6, y - 6, w + 12, h + 12); g.strokeStyle = '#c3cad6'; g.lineWidth = 1; g.strokeRect(x - 6, y - 6, w + 12, h + 12);
-    g.drawImage(p.canvas, x, y, w, h);
-    const info = PIECE_INFO[n]; const bw = R.world[info.bone]; let px, py;
-    if (info.frame === 'bone') { px = (0 - p.rect.x) * S * kk; py = (p.rect.y + p.rect.h - 0) * S * kk; } else { px = (bw.x - p.rect.x) * S * kk; py = (p.rect.y + p.rect.h - bw.y) * S * kk; }
-    if (px > -40 && px < w + 40 && py > -40 && py < h + 40) { g.strokeStyle = '#e2463f'; g.lineWidth = 2; g.beginPath(); g.moveTo(x + px - 9, y + py); g.lineTo(x + px + 9, y + py); g.moveTo(x + px, y + py - 9); g.lineTo(x + px, y + py + 9); g.stroke(); }
-    g.fillStyle = C.line; g.font = '600 15px system-ui, sans-serif'; g.fillText(n, x - 6, y + h + 26); g.font = '13px system-ui, sans-serif'; g.fillStyle = '#5b6780'; g.fillText(`${p.px[0]}×${p.px[1]} px · ${info.bone}`, x - 6, y + h + 44);
-    x += Math.max(w, 150) + 36; rowH = Math.max(rowH, h);
-  }
-  return c.toDataURL('image/png');
+// Headless entry used by generator/build.mjs: builds a kit and hands every file back as base64.
+import { buildKit, kitFiles } from './kit.js';
+const b64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('could not read an art image')); i.src = src; });
+window.buildFiles = async (config, scale = 2, artIn = {}) => {
+  const art = {}; for (const [n, a] of Object.entries(artIn)) art[n] = { ...a, image: await load(a.dataUrl) };
+  const kit = buildKit(config, { scale, art }); const files = await kitFiles(kit, { art });
+  return { file: kit.file, id: kit.P.id, summary: { bones: kit.json.bones.length, slots: kit.json.slots.length, pieces: kit.pieces.length, atlas: [kit.atlas.w, kit.atlas.h], animations: Object.keys(kit.json.animations).length }, files: files.map((f) => ({ name: f.name, b64: b64(f.bytes) })) };
 };
 window.ready = true;
 </script></body></html>

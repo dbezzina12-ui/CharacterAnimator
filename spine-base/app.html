@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Character Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="./app/app.css">
+</head>
+<body>
+<!--APP-->
+<header class="top">
+  <div class="brand"><span class="key" aria-hidden="true">&#9670;</span><h1>Character Kit</h1><small>rigged base for Spine 4.2</small></div>
+  <div class="who">
+    <span class="lbl">Start from</span><span class="grp" id="presets"></span>
+    <label for="name">Name</label><input id="name" type="text" maxlength="40" autocomplete="off" spellcheck="false">
+  </div>
+</header>
+<main>
+  <section class="stage" aria-label="Live preview">
+    <div class="view">
+      <canvas id="gl"></canvas>
+      <div class="checks" id="checks" aria-live="polite"></div>
+      <div id="log" aria-hidden="true"></div>
+      <div id="fatal" hidden></div>
+    </div>
+    <div class="transport">
+      <div class="grp"><span class="lbl">Weapon</span><button class="btn" data-weapon="staff">Staff</button><button class="btn" data-weapon="gun">Gun</button><button class="btn" data-weapon="none">Unarmed</button></div>
+      <div class="grp"><span class="lbl">Play</span><span class="grp" id="actions"></span></div>
+      <div class="grp"><label class="tick"><input type="checkbox" id="cape"> Cape</label><label class="tick"><input type="checkbox" id="bones"> Bones</label><label class="tick"><input type="checkbox" id="slow"> Slow motion</label></div>
+    </div>
+  </section>
+  <aside class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t-shape" data-tab="shape" aria-selected="true">Shape</button>
+      <button role="tab" id="t-art" data-tab="art" aria-selected="false">Art</button>
+      <button role="tab" id="t-export" data-tab="export" aria-selected="false">Export</button>
+    </div>
+    <div class="pane" id="pane-shape" role="tabpanel" aria-labelledby="t-shape">
+      <p>Set the proportions here. The skeleton, the grips on the staff and gun, and every animation follow, so the hands stay on the weapon at any size.</p>
+      <div class="block" id="sliders"></div>
+    </div>
+    <div class="pane" id="pane-art" role="tabpanel" aria-labelledby="t-art" hidden>
+      <div class="block">
+        <h2>Paint the whole character on one sheet</h2>
+        <p>Save the paint sheet, paint over every part inside its box (yourself, or hand it to an image AI with the art brief from the Export tab), then load the painted sheet. Parts are cut out by position and placed on the rig.</p>
+        <div class="row"><button class="btn" id="dl-sheet">Save paint sheet</button><span class="btn file">Load painted sheet<input type="file" id="up-sheet" accept="image/png,image/webp,image/jpeg"></span></div>
+      </div>
+      <div class="block">
+        <h2>Or replace one part at a time</h2>
+        <div class="pieces" id="pieces"></div>
+        <div class="editor" id="editor"></div>
+      </div>
+      <div class="row"><button class="btn" id="clear-art">Back to placeholder art</button></div>
+    </div>
+    <div class="pane" id="pane-export" role="tabpanel" aria-labelledby="t-export" hidden>
+      <div class="block">
+        <h2>Spine kit for the game</h2>
+        <p>Skeleton JSON, atlas and texture for the Spine 4.2 runtime, each part as its own PNG for the Spine editor, the sheets, and a settings file that reopens this character here.</p>
+        <div class="row"><button class="btn primary" id="dl-kit">Save kit (.zip)</button><button class="btn" id="dl-template">Save template sheet</button></div>
+        <div class="row"><span class="btn file">Open a saved kit<input type="file" id="up-kit" accept=".zip,application/zip"></span></div>
+      </div>
+      <div class="block">
+        <h2>Hand off to another AI</h2>
+        <p>The art brief explains the parts, the fist rules and the sheet layout in plain words. Give it to ChatGPT together with the paint sheet. It also explains the settings below, so another AI can design a body shape and send the settings back.</p>
+        <div class="row"><button class="btn" id="copy-brief">Copy art brief</button><button class="btn" id="dl-brief">Save brief (.md)</button></div>
+      </div>
+      <div class="block">
+        <h2>Character settings</h2>
+        <p>Copy these to keep or share a shape. Paste settings here and apply them to load one.</p>
+        <textarea id="settings" spellcheck="false" aria-label="Character settings as JSON"></textarea>
+        <div class="row"><button class="btn" id="apply-settings">Apply</button><button class="btn" id="copy-settings">Copy</button></div>
+      </div>
+      <div class="block" id="manual" hidden>
+        <h2>Save by hand</h2>
+        <p id="manual-msg"></p>
+        <img id="manual-img" alt="File to save" hidden>
+        <details><summary>Skeleton JSON</summary><textarea id="manual-json" readonly></textarea></details>
+        <details><summary>Atlas text</summary><textarea id="manual-atlas" readonly></textarea></details>
+      </div>
+    </div>
+  </aside>
+</main>
+<div id="toast" role="status" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@esotericsoftware/spine-webgl@4.2.73/dist/iife/spine-webgl.js"></script>
+<script type="module" src="./app/app.js"></script>
+<!--/APP-->
+</body>
+</html>

@@ -8,7 +8,7 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const page = await browser.newPage({ viewport: { width: 1000, height: 720 } });
 if (process.env.SPINE_WEBGL) await page.route('**/spine-webgl.js', (r) => r.fulfill({ path: process.env.SPINE_WEBGL, contentType: 'text/javascript' }));
 await page.goto(`http://127.0.0.1:${port}/spine-base/runtime/viewer.html`); await page.waitForFunction(() => window.Viewer || window.ViewerError, null, { timeout: 60000 });
-await page.evaluate(() => { window.Viewer.state.paused = true; document.getElementById('title').hidden = true; });
+await page.evaluate(() => { window.Viewer.state.paused = true; document.getElementById('title').hidden = true; window.Viewer.setCape(true); });
 // script: [weapon, animation or null, seconds]
 const reel = [['staff', null, 1.0], ['staff', 'staff/slam', 1.5], ['staff', 'hit', 0.9], ['gun', null, 1.0], ['gun', 'gun/fire', 1.3], ['gun', 'gun/fire', 1.3], ['gun', 'win', 1.6], ['staff', 'win', 1.6]];
 let n = 0; let weapon = null; const FPS = 30;

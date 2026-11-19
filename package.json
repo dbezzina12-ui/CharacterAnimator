@@ -26,7 +26,8 @@
     "reaper:preview": "node mascots/reaper/scripts/preview.mjs",
     "reaper:export": "node mascots/reaper/scripts/export-game.mjs",
     "base:build": "node spine-base/generator/build.mjs",
-    "base:validate": "node spine-base/scripts/validate.mjs"
+    "base:validate": "node spine-base/scripts/validate.mjs",
+    "base:app-test": "node spine-base/scripts/app-test.mjs"
   },
   "devDependencies": {
     "playwright-core": "1.56.1",

@@ -3,11 +3,13 @@
  "unitsToPixels": 2,
  "heightUnits": 722,
  "hand": {
-  "len": 44,
-  "w": 40,
+  "len": 44.04,
+  "w": 40.52,
   "grip": 24
  },
+ "cape": false,
  "drawOrderBackToFront": [
+  "cape",
   "upper-far",
   "forearm-far",
   "hand-far-back",
@@ -31,23 +33,45 @@
  ],
  "parts": [
   {
+   "piece": "cape",
+   "slot": "cape",
+   "bone": "cape-1",
+   "skin": "default",
+   "image": "images/cape.png",
+   "sizePx": [
+    354,
+    1000
+   ],
+   "sizeUnits": [
+    177,
+    500
+   ],
+   "pivotPx": [
+    259.04,
+    27.33
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"
+  },
+  {
    "piece": "upper-far",
    "slot": "upper-far",
    "bone": "upper-far",
    "skin": "default",
    "image": "images/upper-far.png",
    "sizePx": [
-    96,
-    309
+    102,
+    317
    ],
    "sizeUnits": [
-    48,
-    154.5
+    51,
+    158.5
    ],
    "pivotPx": [
-    41,
-    41.28
+    43.4,
+    42.96
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -57,17 +81,18 @@
    "skin": "default",
    "image": "images/forearm-far.png",
    "sizePx": [
-    105,
-    275
+    110,
+    281
    ],
    "sizeUnits": [
-    52.5,
-    137.5
+    55,
+    140.5
    ],
    "pivotPx": [
-    35,
-    35.28
+    37.2,
+    34.36
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -77,17 +102,18 @@
    "skin": "default",
    "image": "images/hand-far-back.png",
    "sizePx": [
-    107,
-    110
+    102,
+    111
    ],
    "sizeUnits": [
-    53.5,
-    55
+    51,
+    55.5
    ],
    "pivotPx": [
-    47,
-    19.28
+    41.2,
+    20.16
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -97,17 +123,18 @@
    "skin": "default",
    "image": "images/hand-far-front.png",
    "sizePx": [
-    105,
-    92
+    104,
+    93
    ],
    "sizeUnits": [
-    52.5,
-    46
+    52,
+    46.5
    ],
    "pivotPx": [
-    40,
-    -8.72
+    38.2,
+    -7.84
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -117,17 +144,18 @@
    "skin": "default",
    "image": "images/thigh-far.png",
    "sizePx": [
-    160,
-    441
+    136,
+    433
    ],
    "sizeUnits": [
-    80,
-    220.5
+    68,
+    216.5
    ],
    "pivotPx": [
-    63,
-    63.28
+    57.4,
+    57.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -137,17 +165,18 @@
    "skin": "default",
    "image": "images/shin-far.png",
    "sizePx": [
-    98,
-    412
+    106,
+    407
    ],
    "sizeUnits": [
-    49,
-    206
+    53,
+    203.5
    ],
    "pivotPx": [
-    49,
-    49.28
+    58.4,
+    44.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -157,17 +186,18 @@
    "skin": "default",
    "image": "images/foot-far.png",
    "sizePx": [
-    248,
-    140
+    229,
+    130
    ],
    "sizeUnits": [
-    124,
-    70
+    114.5,
+    65
    ],
    "pivotPx": [
-    62,
-    38.28
+    52,
+    32.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -177,17 +207,18 @@
    "skin": "default",
    "image": "images/pelvis.png",
    "sizePx": [
-    250,
-    215
+    216,
+    194
    ],
    "sizeUnits": [
-    125,
-    107.5
+    108,
+    97
    ],
    "pivotPx": [
-    125,
-    149.28
+    104.4,
+    132.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -197,17 +228,18 @@
    "skin": "default",
    "image": "images/thigh-near.png",
    "sizePx": [
-    144,
-    448
+    118,
+    434
    ],
    "sizeUnits": [
-    72,
-    224
+    59,
+    217
    ],
    "pivotPx": [
-    65,
-    65.28
+    58.4,
+    54.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -217,17 +249,18 @@
    "skin": "default",
    "image": "images/shin-near.png",
    "sizePx": [
-    155,
-    412
+    170,
+    403
    ],
    "sizeUnits": [
-    77.5,
-    206
+    85,
+    201.5
    ],
    "pivotPx": [
-    104,
-    51.28
+    124.4,
+    44.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -237,17 +270,18 @@
    "skin": "default",
    "image": "images/foot-near.png",
    "sizePx": [
-    258,
-    135
+    235,
+    125
    ],
    "sizeUnits": [
-    129,
-    67.5
+    117.5,
+    62.5
    ],
    "pivotPx": [
-    63,
-    38.28
+    50.8,
+    31.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -257,17 +291,18 @@
    "skin": "default",
    "image": "images/torso.png",
    "sizePx": [
-    302,
-    415
+    284,
+    461
    ],
    "sizeUnits": [
-    151,
-    207.5
+    142,
+    230.5
    ],
    "pivotPx": [
-    151,
-    333.28
+    148.2,
+    350.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -277,17 +312,18 @@
    "skin": "default",
    "image": "images/head.png",
    "sizePx": [
-    215,
-    270
+    213,
+    260
    ],
    "sizeUnits": [
-    107.5,
-    135
+    106.5,
+    130
    ],
    "pivotPx": [
-    83,
-    257.28
+    82.6,
+    254.16
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -305,9 +341,10 @@
     17
    ],
    "pivotPx": [
-    -23,
-    148.28
+    -21.4,
+    146.16
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -317,17 +354,18 @@
    "skin": "default",
    "image": "images/upper-near.png",
    "sizePx": [
-    108,
-    316
+    107,
+    313
    ],
    "sizeUnits": [
-    54,
-    158
+    53.5,
+    156.5
    ],
    "pivotPx": [
-    65,
-    43.28
+    66.4,
+    39.96
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -337,17 +375,18 @@
    "skin": "default",
    "image": "images/forearm-near.png",
    "sizePx": [
-    96,
-    287
+    98,
+    283
    ],
    "sizeUnits": [
-    48,
-    143.5
+    49,
+    141.5
    ],
    "pivotPx": [
-    37,
-    37.28
+    37.4,
+    34.56
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -357,17 +396,18 @@
    "skin": "default",
    "image": "images/hand-near.png",
    "sizePx": [
-    123,
+    119,
     114
    ],
    "sizeUnits": [
-    61.5,
+    59.5,
     57
    ],
    "pivotPx": [
-    47,
-    19.28
+    42.2,
+    19.16
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -377,17 +417,18 @@
    "skin": "staff",
    "image": "images/staff.png",
    "sizePx": [
-    98,
+    99,
     1584
    ],
    "sizeUnits": [
-    49,
+    49.5,
     792
    ],
    "pivotPx": [
-    49,
-    747.62
+    49.8,
+    753.45
    ],
+   "art": "placeholder",
    "drawnIn": "setup pose (upright, as assembled)"
   },
   {
@@ -397,17 +438,18 @@
    "skin": "gun",
    "image": "images/gun.png",
    "sizePx": [
-    217,
-    157
+    218,
+    158
    ],
    "sizeUnits": [
-    108.5,
-    78.5
+    109,
+    79
    ],
    "pivotPx": [
-    64,
-    84
+    64.2,
+    84.2
    ],
+   "art": "placeholder",
    "drawnIn": "bone frame (barrel along +x)"
   },
   {
@@ -417,17 +459,18 @@
    "skin": "gun",
    "image": "images/muzzle-flash.png",
    "sizePx": [
-    162,
+    161,
     176
    ],
    "sizeUnits": [
-    81,
+    80.5,
     88
    ],
    "pivotPx": [
-    13,
-    88
+    12.2,
+    88.2
    ],
+   "art": "placeholder",
    "drawnIn": "bone frame (barrel along +x)"
   }
  ]

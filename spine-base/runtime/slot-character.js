@@ -3,6 +3,7 @@
 //
 //   const mage = new SlotCharacter(skeletonData);
 //   mage.setWeapon('staff');                       // 'staff' | 'gun' | 'none'  -> switches skin, constraints and idle
+//   mage.setCape(true);                            // show or hide the cape (it sways with Spine physics)
 //   await mage.play('staff/slam', { until: 'impact' });   // resolves when the event fires (or at the end if it never does)
 //   each frame: mage.update(dt); then draw mage.skeleton with your renderer
 //
@@ -13,6 +14,7 @@ export class SlotCharacter {
     const sd = new spine.AnimationStateData(skeletonData); sd.defaultMix = defaultMix;
     this.state = new spine.AnimationState(sd);
     this.weapon = 'none'; this.listeners = new Set();
+    this.cape = !!skeletonData.findSlot('cape')?.attachmentName;   // the kit decides whether the cape starts on
     this.state.addListener({ event: (entry, ev) => { for (const fn of this.listeners) fn(ev.data.name, entry.animation.name, entry.trackTime); } });
     this.skeleton.setToSetupPose();
     this.state.setAnimation(0, 'idle', true);
@@ -27,8 +29,13 @@ export class SlotCharacter {
     this.skeleton.setSkinByName(weapon === 'none' ? 'default' : weapon);
     // reset bones, slots AND constraint mixes: a skin change switches constraints off mid-blend, and an
     // inactive constraint cannot be mixed back to its setup value by the outgoing animation
-    this.skeleton.setToSetupPose();
+    this.skeleton.setToSetupPose(); this.setCape(this.cape);
     this.state.setAnimation(0, this.idle, true);
+  }
+  /** Show or hide the cape. Works with any weapon; the choice survives weapon changes. */
+  setCape(on) {
+    this.cape = !!on; const slot = this.skeleton.findSlot('cape'); if (!slot) return;
+    slot.setAttachment(this.cape ? this.skeleton.getAttachmentByName('cape', 'cape') : null);
   }
   /** Play a one-shot, then return to idle. Resolves at the `until` event, or when the clip completes. */
   play(name, { until = null, speed = 1 } = {}) {

@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T02:48:40.928Z",
+ "generated": "2026-11-19T03:14:39.408Z",
  "failures": 0,
  "checks": [
   {
@@ -10,7 +10,7 @@
   {
    "name": "human and dwarf share bones, slots, skins, constraints, animations and events",
    "ok": true,
-   "detail": "27 bones, 20 slots, skins default/staff/gun, 8 animations"
+   "detail": "31 bones, 21 slots, skins default/staff/gun, 8 animations"
   },
   {
    "name": "human staff idle: far hand stays on the grip",
@@ -25,7 +25,7 @@
   {
    "name": "human staff idle: near hand is free (also after switching weapons mid-slam)",
    "ok": true,
-   "detail": "IK mix 0.00, wrist 173 units from the staff"
+   "detail": "IK mix 0.00, wrist 158 units from the staff"
   },
   {
    "name": "human staff idle: staff foot rests on the ground",
@@ -60,7 +60,7 @@
   {
    "name": "human staff staff/slam: staff lifts clear before the slam",
    "ok": true,
-   "detail": "peak lift 73 units"
+   "detail": "peak lift 75 units"
   },
   {
    "name": "human staff staff/slam: near hand joins for a two-handed grip",
@@ -150,7 +150,7 @@
   {
    "name": "dwarf staff idle: near hand is free (also after switching weapons mid-slam)",
    "ok": true,
-   "detail": "IK mix 0.00, wrist 149 units from the staff"
+   "detail": "IK mix 0.00, wrist 135 units from the staff"
   },
   {
    "name": "dwarf staff idle: staff foot rests on the ground",
@@ -185,7 +185,7 @@
   {
    "name": "dwarf staff staff/slam: staff lifts clear before the slam",
    "ok": true,
-   "detail": "peak lift 49 units"
+   "detail": "peak lift 51 units"
   },
   {
    "name": "dwarf staff staff/slam: near hand joins for a two-handed grip",
@@ -205,7 +205,7 @@
   {
    "name": "dwarf gun idle: fist centre sits on the gun's grip point",
    "ok": true,
-   "detail": "≤ 0.00 units"
+   "detail": "≤ 0.29 units"
   },
   {
    "name": "dwarf gun idle: feet planted",
@@ -220,7 +220,7 @@
   {
    "name": "dwarf gun gun/fire: fist centre sits on the gun's grip point",
    "ok": true,
-   "detail": "≤ 0.00 units"
+   "detail": "≤ 0.29 units"
   },
   {
    "name": "dwarf gun gun/fire: feet planted",
@@ -261,6 +261,46 @@
    "name": "dwarf win: jumps and lands",
    "ok": true,
    "detail": "feet leave the ground by 11 units"
+  },
+  {
+   "name": "human cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again",
+   "ok": true,
+   "detail": "MeshAttachment, 18 vertices, 4 physics constraints"
+  },
+  {
+   "name": "dwarf cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again",
+   "ok": true,
+   "detail": "MeshAttachment, 18 vertices, 4 physics constraints"
+  },
+  {
+   "name": "human cape: swings during the slam",
+   "ok": true,
+   "detail": "cape tip sweeps 28.1° relative to the chest"
+  },
+  {
+   "name": "human cape: settles into a small idle sway and stays finite",
+   "ok": true,
+   "detail": "idle sway 2.7°"
+  },
+  {
+   "name": "human cape: reacts to the jump",
+   "ok": true,
+   "detail": "11.8°"
+  },
+  {
+   "name": "dwarf cape: swings during the slam",
+   "ok": true,
+   "detail": "cape tip sweeps 28.4° relative to the chest"
+  },
+  {
+   "name": "dwarf cape: settles into a small idle sway and stays finite",
+   "ok": true,
+   "detail": "idle sway 3.0°"
+  },
+  {
+   "name": "dwarf cape: reacts to the jump",
+   "ok": true,
+   "detail": "11.9°"
   }
  ],
  "pageErrors": []

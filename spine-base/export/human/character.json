@@ -1,0 +1,17 @@
+{
+ "format": "slot-character-kit/1",
+ "settings": {
+  "name": "Human",
+  "height": 722,
+  "head": 0.172,
+  "headWidth": 0.8,
+  "legs": 0.5235,
+  "arms": 0.313,
+  "shoulders": 0.14,
+  "build": 1,
+  "hands": 0.061,
+  "stance": 0.061,
+  "cape": false
+ },
+ "art": {}
+}
