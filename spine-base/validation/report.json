@@ -1,0 +1,267 @@
+{
+ "generated": "2026-11-19T02:48:40.928Z",
+ "failures": 0,
+ "checks": [
+  {
+   "name": "skeletons load in the Spine 4.2 runtime",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "human and dwarf share bones, slots, skins, constraints, animations and events",
+   "ok": true,
+   "detail": "27 bones, 20 slots, skins default/staff/gun, 8 animations"
+  },
+  {
+   "name": "human staff idle: far hand stays on the grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "human staff idle: feet planted",
+   "ok": true,
+   "detail": "ankle off by ≤ 0.00 units, foot angle ≤ 0.00°"
+  },
+  {
+   "name": "human staff idle: near hand is free (also after switching weapons mid-slam)",
+   "ok": true,
+   "detail": "IK mix 0.00, wrist 173 units from the staff"
+  },
+  {
+   "name": "human staff idle: staff foot rests on the ground",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "human staff idle: loops seamlessly",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "human staff staff/slam: far hand stays on the grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "human staff staff/slam: feet planted",
+   "ok": true,
+   "detail": "ankle off by ≤ 0.00 units, foot angle ≤ 0.00°"
+  },
+  {
+   "name": "human staff staff/slam: impact event fires once at 0.56 s",
+   "ok": true,
+   "detail": "[0.567]"
+  },
+  {
+   "name": "human staff staff/slam: staff foot is on the ground at impact",
+   "ok": true,
+   "detail": "y = 0.10"
+  },
+  {
+   "name": "human staff staff/slam: staff lifts clear before the slam",
+   "ok": true,
+   "detail": "peak lift 73 units"
+  },
+  {
+   "name": "human staff staff/slam: near hand joins for a two-handed grip",
+   "ok": true,
+   "detail": "36 frames gripping, wrist off by ≤ 0.00 units"
+  },
+  {
+   "name": "human staff staff/slam: near hand is released again at the end",
+   "ok": true,
+   "detail": "mix 0.00"
+  },
+  {
+   "name": "human gun idle: hand stays on the gun grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "human gun idle: fist centre sits on the gun's grip point",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "human gun idle: feet planted",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "human gun gun/fire: hand stays on the gun grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "human gun gun/fire: fist centre sits on the gun's grip point",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "human gun gun/fire: feet planted",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "human gun gun/fire: fire event fires once at 0.24 s",
+   "ok": true,
+   "detail": "[0.25]"
+  },
+  {
+   "name": "human gun gun/fire: barrel is level when the shot fires",
+   "ok": true,
+   "detail": "0.0°"
+  },
+  {
+   "name": "human gun gun/fire: recoil kicks the muzzle up",
+   "ok": true,
+   "detail": "15.9°"
+  },
+  {
+   "name": "human staff hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -12.6 units"
+  },
+  {
+   "name": "human gun hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -12.6 units"
+  },
+  {
+   "name": "human none hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -12.6 units"
+  },
+  {
+   "name": "human win: jumps and lands",
+   "ok": true,
+   "detail": "feet leave the ground by 26 units"
+  },
+  {
+   "name": "dwarf staff idle: far hand stays on the grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf staff idle: feet planted",
+   "ok": true,
+   "detail": "ankle off by ≤ 0.00 units, foot angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf staff idle: near hand is free (also after switching weapons mid-slam)",
+   "ok": true,
+   "detail": "IK mix 0.00, wrist 149 units from the staff"
+  },
+  {
+   "name": "dwarf staff idle: staff foot rests on the ground",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dwarf staff idle: loops seamlessly",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dwarf staff staff/slam: far hand stays on the grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf staff staff/slam: feet planted",
+   "ok": true,
+   "detail": "ankle off by ≤ 0.00 units, foot angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf staff staff/slam: impact event fires once at 0.56 s",
+   "ok": true,
+   "detail": "[0.567]"
+  },
+  {
+   "name": "dwarf staff staff/slam: staff foot is on the ground at impact",
+   "ok": true,
+   "detail": "y = 0.05"
+  },
+  {
+   "name": "dwarf staff staff/slam: staff lifts clear before the slam",
+   "ok": true,
+   "detail": "peak lift 49 units"
+  },
+  {
+   "name": "dwarf staff staff/slam: near hand joins for a two-handed grip",
+   "ok": true,
+   "detail": "36 frames gripping, wrist off by ≤ 0.00 units"
+  },
+  {
+   "name": "dwarf staff staff/slam: near hand is released again at the end",
+   "ok": true,
+   "detail": "mix 0.00"
+  },
+  {
+   "name": "dwarf gun idle: hand stays on the gun grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf gun idle: fist centre sits on the gun's grip point",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "dwarf gun idle: feet planted",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "dwarf gun gun/fire: hand stays on the gun grip",
+   "ok": true,
+   "detail": "wrist off by ≤ 0.00 units, angle ≤ 0.00°"
+  },
+  {
+   "name": "dwarf gun gun/fire: fist centre sits on the gun's grip point",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "dwarf gun gun/fire: feet planted",
+   "ok": true,
+   "detail": "≤ 0.00 units"
+  },
+  {
+   "name": "dwarf gun gun/fire: fire event fires once at 0.24 s",
+   "ok": true,
+   "detail": "[0.25]"
+  },
+  {
+   "name": "dwarf gun gun/fire: barrel is level when the shot fires",
+   "ok": true,
+   "detail": "0.0°"
+  },
+  {
+   "name": "dwarf gun gun/fire: recoil kicks the muzzle up",
+   "ok": true,
+   "detail": "15.9°"
+  },
+  {
+   "name": "dwarf staff hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -5.2 units"
+  },
+  {
+   "name": "dwarf gun hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -5.2 units"
+  },
+  {
+   "name": "dwarf none hit: knocked back and recovers",
+   "ok": true,
+   "detail": "hip pushed -5.2 units"
+  },
+  {
+   "name": "dwarf win: jumps and lands",
+   "ok": true,
+   "detail": "feet leave the ground by 11 units"
+  }
+ ],
+ "pageErrors": []
+}

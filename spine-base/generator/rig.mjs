@@ -1,0 +1,215 @@
+// Base 2D character rig for Spine 4.2 — human and dwarf on one bone/slot/constraint/animation naming.
+// Three-quarter view facing +x. Spine conventions: y up, rotation CCW in degrees, bone local +x along the bone.
+// Everything is authored in WORLD setup-pose coordinates (joints table) and converted to local bone values,
+// so proportions are data: change a joint, rebuild, and pieces, grips and animations follow.
+
+const D2R = Math.PI / 180;
+const r2 = (v) => Math.round(v * 100) / 100;
+const hyp = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+const norm = (d) => { while (d > 180) d -= 360; while (d <= -180) d += 360; return d; };
+
+export const HUMAN = {
+  id: 'human', file: 'Base-Human', height: 722,
+  J: {
+    hip: [0, 378], waist: [4, 452], neck: [16, 598], headTop: [26, 722],
+    shoulderN: [-44, 570], elbowN: [-58, 452], wristN: [-44, 346],
+    shoulderF: [52, 574], elbowF: [62, 458], wristF: [82, 356],
+    hipN: [-24, 372], kneeN: [-10, 206], ankleN: [-44, 44], toeN: [36, 8],
+    hipF: [28, 374], kneeF: [52, 210], ankleF: [50, 46], toeF: [126, 10],
+  },
+  hand: { len: 44, w: 40, grip: 24 },
+  limb: { upperArm: [38, 32], forearm: [32, 25], thigh: [60, 46], shin: [46, 31] },
+  torso: { chestHalf: 68, waistHalf: 50, neckW: 32 },
+  head: { w: 100, h: 126 },
+};
+export const DWARF = {
+  id: 'dwarf', file: 'Base-Dwarf', height: 468,
+  J: {
+    hip: [0, 172], waist: [4, 224], neck: [14, 326], headTop: [22, 468],
+    shoulderN: [-54, 302], elbowN: [-70, 224], wristN: [-58, 152],
+    shoulderF: [58, 306], elbowF: [72, 230], wristF: [90, 162],
+    hipN: [-28, 166], kneeN: [-28, 100], ankleN: [-42, 34], toeN: [32, 8],
+    hipF: [30, 168], kneeF: [44, 103], ankleF: [48, 36], toeF: [118, 10],
+  },
+  hand: { len: 50, w: 48, grip: 27 },
+  limb: { upperArm: [48, 42], forearm: [44, 36], thigh: [58, 50], shin: [50, 42] },
+  torso: { chestHalf: 82, waistHalf: 64, neckW: 44 },
+  head: { w: 132, h: 140 },
+};
+
+// ---- curves: CSS-style cubic bezier per segment -> Spine absolute control points
+const EASE = { ease: [0.4, 0, 0.6, 1], in: [0.5, 0, 0.9, 0.55], out: [0.1, 0.5, 0.4, 1], snap: [0.05, 0.75, 0.25, 1], soft: [0.3, 0, 0.7, 1] };
+function curveFor(t0, v0, t1, v1, ease) {
+  const e = EASE[ease]; const dt = t1 - t0, dv = v1 - v0;
+  return [r2(t0 + e[0] * dt), r2(v0 + e[1] * dv), r2(t0 + e[2] * dt), r2(v0 + e[3] * dv)];
+}
+/** rotate timeline: keys [[t, value, ease?]] (ease describes the segment AFTER the key; default 'ease') */
+function rot(keys) {
+  return keys.map(([t, v, ease = 'ease'], i) => {
+    const k = { time: r2(t), value: r2(v) }; const n = keys[i + 1];
+    if (n && ease === 'step') k.curve = 'stepped'; else if (n && ease !== 'linear') k.curve = curveFor(t, v, n[0], n[1], ease);
+    return k;
+  });
+}
+/** translate timeline: keys [[t, x, y, ease?]] */
+function tr(keys) {
+  return keys.map(([t, x, y, ease = 'ease'], i) => {
+    const k = { time: r2(t), x: r2(x), y: r2(y) }; const n = keys[i + 1];
+    if (n && ease === 'step') k.curve = 'stepped'; else if (n && ease !== 'linear') k.curve = [...curveFor(t, x, n[0], n[1], ease), ...curveFor(t, y, n[0], n[2], ease)];
+    return k;
+  });
+}
+const ikMix = (keys) => keys.map(([t, mix]) => ({ time: r2(t), mix: r2(mix) }));
+const rotMix = (keys) => keys.map(([t, m]) => ({ time: r2(t), mixRotate: r2(m), mixX: 0, mixY: 0, mixScaleX: 0, mixScaleY: 0, mixShearY: 0 }));
+
+export function buildRig(P) {
+  const J = P.J; const bones = []; const world = {};
+  function bone(name, parent, from, to, opt = {}) {
+    const rotW = to ? Math.atan2(to[1] - from[1], to[0] - from[0]) / D2R : (opt.rot ?? 0);
+    const len = to ? hyp(from, to) : (opt.length ?? 0);
+    const p = parent ? world[parent] : { x: 0, y: 0, rot: 0 };
+    const dx = from[0] - p.x, dy = from[1] - p.y, c = Math.cos(-p.rot * D2R), s = Math.sin(-p.rot * D2R);
+    const b = { name }; if (parent) b.parent = parent;
+    const lx = dx * c - dy * s, ly = dx * s + dy * c, lr = norm(rotW - p.rot);
+    if (Math.abs(lx) > 1e-6) b.x = r2(lx); if (Math.abs(ly) > 1e-6) b.y = r2(ly); if (Math.abs(lr) > 1e-6) b.rotation = r2(lr);
+    if (len) b.length = r2(len); if (opt.color) b.color = opt.color;
+    bones.push(b); world[name] = { x: from[0], y: from[1], rot: rotW, len };
+  }
+  const along = (a, b, d) => { const L = hyp(a, b); return [a[0] + (b[0] - a[0]) / L * d, a[1] + (b[1] - a[1]) / L * d]; };
+  const handTip = (elbow, wrist, lean) => { const d = [wrist[0] - elbow[0], wrist[1] - elbow[1]]; const L = Math.hypot(...d); const a = Math.atan2(d[1], d[0]) + lean * D2R; void L; return [wrist[0] + Math.cos(a) * P.hand.len, wrist[1] + Math.sin(a) * P.hand.len]; };
+  J.handTipN = handTip(J.elbowN, J.wristN, 6); J.handTipF = handTip(J.elbowF, J.wristF, 4);
+
+  // ---- body
+  bone('root', null, [0, 0]);
+  bone('hip', 'root', J.hip, null, { color: 'ffd23fff' });
+  bone('waist', 'hip', J.hip, J.waist);
+  bone('chest', 'waist', J.waist, J.neck);
+  bone('head', 'chest', J.neck, J.headTop);
+  for (const [s, S] of [['near', 'N'], ['far', 'F']]) {
+    bone(`upper-${s}`, 'chest', J['shoulder' + S], J['elbow' + S]);
+    bone(`forearm-${s}`, `upper-${s}`, J['elbow' + S], J['wrist' + S]);
+    bone(`hand-${s}`, `forearm-${s}`, J['wrist' + S], J['handTip' + S]);
+  }
+  for (const [s, S] of [['near', 'N'], ['far', 'F']]) {
+    bone(`thigh-${s}`, 'hip', J['hip' + S], J['knee' + S]);
+    bone(`shin-${s}`, `thigh-${s}`, J['knee' + S], J['ankle' + S]);
+    bone(`foot-${s}`, `shin-${s}`, J['ankle' + S], J['toe' + S]);
+  }
+  // foot controllers: move these to step or jump; the legs follow (IK) and the feet keep their angle
+  for (const [s, S] of [['near', 'N'], ['far', 'F']]) bone(`foot-${s}-target`, 'root', J['ankle' + S], null, { rot: world[`foot-${s}`].rot, length: 24, color: 'ff3f3fff' });
+
+  // ---- weapons: free bones with grip targets. A grip target is where the WRIST goes; its rotation is the hand's.
+  // Convention: hand local +x = toward the knuckles, +y = the grip axis (the shaft runs along it), grip point = hand.grip px from the wrist.
+  const RN = hyp(J.shoulderN, J.elbowN) + hyp(J.elbowN, J.wristN), RF = hyp(J.shoulderF, J.elbowF) + hyp(J.elbowF, J.wristF);
+  const g = P.hand.grip;
+  const staff = { x: J.toeF[0] - 20, gripY: J.shoulderF[1] - 0.72 * RF, nearUp: 0.26 * RN, lift: 0.33 * RF, top: 1.07 * P.height };
+  bone('staff', 'root', [staff.x, staff.gripY], null, { length: 60, rot: 90, color: '3fd0ffff' });   // +x up the shaft
+  // staff bone points UP the shaft, so its local frame is rotated 90°: hand +y (grip axis) = staff +x. The grip targets undo that.
+  bone('staff-grip-far', 'staff', [staff.x - g, staff.gripY], null, { rot: 0, length: 14, color: '3fd0ffff' });
+  bone('staff-grip-near', 'staff', [staff.x - g, staff.gripY + staff.nearUp], null, { rot: 0, length: 14, color: '3fd0ffff' });
+  bone('staff-foot', 'staff', [staff.x, 0], null, { rot: 0, color: '3fd0ffff' });
+  bone('staff-head', 'staff', [staff.x, staff.top - 30], null, { rot: 0, color: '3fd0ffff' });
+  const gunRest = { wrist: [J.shoulderN[0] + 0.52 * RN, J.shoulderN[1] - 0.66 * RN], rot: -32 };
+  const gunAim = { wrist: [J.shoulderN[0] + 0.86 * RN, J.shoulderN[1] - 0.06 * RN], rot: 0 };
+  const gripOf = (w) => [w.wrist[0] + Math.cos(w.rot * D2R) * g, w.wrist[1] + Math.sin(w.rot * D2R) * g];
+  const k = P.hand.len / 44;   // gun size follows the hand
+  bone('gun', 'hip', gripOf(gunRest), null, { rot: gunRest.rot, length: 50, color: 'ff9f3fff' });      // +x along the barrel, origin = grip point
+  bone('gun-grip-near', 'gun', gunRest.wrist, null, { rot: gunRest.rot, length: 14, color: 'ff9f3fff' });
+  { const a = gunRest.rot * D2R, o = gripOf(gunRest), mx = 74 * k, my = 20 * k; bone('gun-muzzle', 'gun', [o[0] + Math.cos(a) * mx - Math.sin(a) * my, o[1] + Math.sin(a) * mx + Math.cos(a) * my], null, { rot: gunRest.rot, color: 'ff9f3fff' }); }
+
+  // ---- slots, back to front
+  const slots = [
+    ['upper-far', 'upper-far'], ['forearm-far', 'forearm-far'], ['hand-far-back', 'hand-far'], ['weapon-far', 'staff', 'staff'], ['hand-far-front', 'hand-far'],
+    ['thigh-far', 'thigh-far'], ['shin-far', 'shin-far'], ['foot-far', 'foot-far'], ['pelvis', 'hip'],
+    ['thigh-near', 'thigh-near'], ['shin-near', 'shin-near'], ['foot-near', 'foot-near'], ['torso', 'chest'], ['head', 'head'], ['eyelids', 'head', null],
+    ['upper-near', 'upper-near'], ['forearm-near', 'forearm-near'], ['weapon-near', 'gun', 'gun'], ['muzzle-flash', 'gun-muzzle', null, 'additive'], ['hand-near', 'hand-near'],
+  ].map(([name, b, att, blend]) => { const s = { name, bone: b }; if (att !== null) s.attachment = att === undefined ? name : att; if (blend) s.blend = blend; return s; });
+
+  // ---- constraints. `order` is global and unique; skin constraints only run while their skin is active.
+  const T0 = { mixX: 0, mixY: 0, mixScaleX: 0, mixScaleY: 0, mixShearY: 0 };
+  const ik = [
+    { name: 'leg-near-ik', order: 0, bones: ['thigh-near', 'shin-near'], target: 'foot-near-target', bendPositive: false, stretch: true },
+    { name: 'leg-far-ik', order: 1, bones: ['thigh-far', 'shin-far'], target: 'foot-far-target', bendPositive: false, stretch: true },
+    { name: 'staff/far-arm-ik', order: 4, skin: true, bones: ['upper-far', 'forearm-far'], target: 'staff-grip-far', bendPositive: true },
+    { name: 'staff/near-arm-ik', order: 6, skin: true, bones: ['upper-near', 'forearm-near'], target: 'staff-grip-near', bendPositive: true, mix: 0 },
+    { name: 'gun/near-arm-ik', order: 8, skin: true, bones: ['upper-near', 'forearm-near'], target: 'gun-grip-near', bendPositive: true },
+  ];
+  const transform = [
+    { name: 'foot-near-rot', order: 2, bones: ['foot-near'], target: 'foot-near-target', mixRotate: 1, ...T0 },
+    { name: 'foot-far-rot', order: 3, bones: ['foot-far'], target: 'foot-far-target', mixRotate: 1, ...T0 },
+    { name: 'staff/far-hand-rot', order: 5, skin: true, bones: ['hand-far'], target: 'staff-grip-far', mixRotate: 1, ...T0 },
+    { name: 'staff/near-hand-rot', order: 7, skin: true, bones: ['hand-near'], target: 'staff-grip-near', mixRotate: 0, ...T0 },
+    { name: 'gun/near-hand-rot', order: 9, skin: true, bones: ['hand-near'], target: 'gun-grip-near', mixRotate: 1, ...T0 },
+  ];
+
+  // ---- animations (values are offsets from the setup pose). u scales body moves with the character's size.
+  // body moves scale with LEG length (a short-legged character crouches less in absolute terms), reach moves with arm length
+  const u = (J.hip[1] - J.ankleN[1]) / 334; const L = staff.lift;
+  const breathe = (d = 2) => ({
+    hip: { translate: tr([[0, 0, 0], [d / 2, 0, -3 * u], [d, 0, 0]]) },
+    chest: { rotate: rot([[0, 0], [d / 2, -1.2], [d, 0]]) },
+    head: { rotate: rot([[0, 0], [d / 2, 1.4], [d, 0]]) },
+  });
+  const animations = {};
+  animations.idle = { bones: { ...breathe(), 'upper-near': { rotate: rot([[0, 0], [1, 2.5], [2, 0]]) }, 'upper-far': { rotate: rot([[0, 0], [1, -2], [2, 0]]) } } };
+  animations['staff/idle'] = { bones: { ...breathe(), 'upper-near': { rotate: rot([[0, 0], [1, 2.5], [2, 0]]) }, 'forearm-near': { rotate: rot([[0, 0], [1, 2], [2, 0]]) } } };
+  animations['staff/slam'] = {
+    bones: {
+      staff: { translate: tr([[0, 0, 0], [0.12, 0, 0], [0.36, 0, L, 'soft'], [0.46, 0, L * 0.97, 'in'], [0.56, 0, 0, 'linear'], [0.62, 0, 0, 'out'], [0.68, 0, 5 * u, 'ease'], [0.76, 0, 0], [0.9, 0, 0]]),
+        rotate: rot([[0, 0], [0.36, 3, 'soft'], [0.46, 3, 'in'], [0.56, -2, 'out'], [0.76, 0], [0.9, 0]]) },
+      hip: { translate: tr([[0, 0, 0], [0.12, 0, -4 * u], [0.36, -3 * u, 5 * u, 'soft'], [0.46, -3 * u, 5 * u, 'in'], [0.56, 6 * u, -16 * u, 'out'], [0.66, 4 * u, -12 * u], [0.9, 0, 0]]) },
+      waist: { rotate: rot([[0, 0], [0.36, 3, 'soft'], [0.46, 3, 'in'], [0.56, -6, 'out'], [0.66, -4], [0.9, 0]]) },
+      chest: { rotate: rot([[0, 0], [0.36, 5, 'soft'], [0.46, 5, 'in'], [0.56, -9, 'out'], [0.66, -6], [0.9, 0]]) },
+      head: { rotate: rot([[0, 0], [0.36, 6, 'soft'], [0.46, 5, 'in'], [0.56, -10, 'out'], [0.68, -4], [0.9, 0]]) },
+    },
+    ik: { 'staff/near-arm-ik': ikMix([[0, 0], [0.12, 1], [0.72, 1], [0.9, 0]]) },
+    transform: { 'staff/near-hand-rot': rotMix([[0, 0], [0.12, 1], [0.72, 1], [0.9, 0]]) },
+    events: [{ time: 0.56, name: 'impact' }],
+  };
+  const aimD = [gripOf(gunAim)[0] - gripOf(gunRest)[0], gripOf(gunAim)[1] - gripOf(gunRest)[1]], aimR = gunAim.rot - gunRest.rot;
+  animations['gun/idle'] = { bones: { ...breathe(), gun: { translate: tr([[0, 0, 0], [1, 1.5 * u, 2 * u], [2, 0, 0]]), rotate: rot([[0, 0], [1, 1.5], [2, 0]]) }, 'upper-far': { rotate: rot([[0, 0], [1, -2], [2, 0]]) } } };
+  animations['gun/fire'] = {
+    bones: {
+      gun: { translate: tr([[0, 0, 0, 'out'], [0.16, aimD[0], aimD[1]], [0.24, aimD[0], aimD[1], 'snap'], [0.29, aimD[0] - 16 * u, aimD[1] + 8 * u, 'ease'], [0.44, aimD[0], aimD[1]], [0.54, aimD[0], aimD[1], 'soft'], [0.8, 0, 0]]),
+        rotate: rot([[0, 0, 'out'], [0.16, aimR], [0.24, aimR, 'snap'], [0.29, aimR + 16, 'ease'], [0.44, aimR], [0.54, aimR, 'soft'], [0.8, 0]]) },
+      hip: { translate: tr([[0, 0, 0], [0.16, 2 * u, -3 * u], [0.24, 2 * u, -3 * u, 'snap'], [0.29, -5 * u, -5 * u, 'ease'], [0.44, 2 * u, -3 * u], [0.8, 0, 0]]) },
+      chest: { rotate: rot([[0, 0], [0.16, -3], [0.24, -3, 'snap'], [0.29, 4, 'ease'], [0.44, -2], [0.8, 0]]) },
+      head: { rotate: rot([[0, 0], [0.16, 2], [0.24, 2, 'snap'], [0.29, 5, 'ease'], [0.44, 2], [0.8, 0]]) },
+      'upper-far': { rotate: rot([[0, 0], [0.16, -8], [0.29, -14], [0.8, 0]]) },
+    },
+    slots: { 'muzzle-flash': { attachment: [{ time: 0.24, name: 'muzzle-flash' }, { time: 0.3, name: null }] } },
+    events: [{ time: 0.24, name: 'fire' }],
+  };
+  animations.hit = {
+    bones: {
+      hip: { translate: tr([[0, 0, 0, 'snap'], [0.08, -14 * u, -5 * u, 'ease'], [0.3, 2 * u, 0], [0.5, 0, 0]]) },
+      waist: { rotate: rot([[0, 0, 'snap'], [0.08, 6, 'ease'], [0.3, -1.5], [0.5, 0]]) },
+      chest: { rotate: rot([[0, 0, 'snap'], [0.08, 9, 'ease'], [0.32, -2], [0.5, 0]]) },
+      head: { rotate: rot([[0, 0, 'snap'], [0.1, 13, 'ease'], [0.34, -3], [0.5, 0]]) },
+    },
+    events: [{ time: 0.02, name: 'hit' }],
+  };
+  const jump = 26 * u;
+  animations.win = {
+    bones: {
+      hip: { translate: tr([[0, 0, 0], [0.15, 0, -12 * u, 'out'], [0.38, 0, jump + 6 * u, 'in'], [0.56, 0, -10 * u, 'out'], [0.74, 0, 0], [1.2, 0, 0]]) },
+      'foot-near-target': { translate: tr([[0, 0, 0], [0.17, 0, 0, 'out'], [0.38, 0, jump, 'in'], [0.54, 0, 0], [1.2, 0, 0]]), rotate: rot([[0, 0], [0.17, 0], [0.38, -14], [0.54, 0], [1.2, 0]]) },
+      'foot-far-target': { translate: tr([[0, 0, 0], [0.17, 0, 0, 'out'], [0.38, 0, jump, 'in'], [0.54, 0, 0], [1.2, 0, 0]]), rotate: rot([[0, 0], [0.17, 0], [0.38, -14], [0.54, 0], [1.2, 0]]) },
+      chest: { rotate: rot([[0, 0], [0.15, -4], [0.38, 5], [0.56, -3], [0.8, 2], [1.2, 0]]) },
+      head: { rotate: rot([[0, 0], [0.15, -3], [0.38, 10], [0.6, 4], [0.9, 6], [1.2, 0]]) },
+      // fist pump on whichever arm is free: the arm that holds the weapon is driven by IK and ignores these keys
+      'upper-near': { rotate: rot([[0, 0], [0.15, -10], [0.38, 150, 'out'], [0.6, 138], [0.8, 150], [1.0, 140], [1.2, 0]]) },
+      'forearm-near': { rotate: rot([[0, 0], [0.38, 50], [0.6, 70], [0.8, 46], [1.2, 0]]) },
+      'upper-far': { rotate: rot([[0, 0], [0.15, -10], [0.38, 140, 'out'], [0.6, 128], [0.8, 140], [1.0, 130], [1.2, 0]]) },
+      'forearm-far': { rotate: rot([[0, 0], [0.38, 50], [0.6, 70], [0.8, 46], [1.2, 0]]) },
+    },
+    events: [{ time: 0.54, name: 'land' }],
+  };
+  animations.blink = { slots: { eyelids: { attachment: [{ time: 0, name: null }, { time: 2.2, name: 'eyes-closed' }, { time: 2.32, name: null }, { time: 3.6, name: null }] } } };
+
+  return {
+    P, bones, world, slots, ik, transform, animations,
+    events: { impact: {}, fire: {}, hit: {}, land: {} },
+    geo: { staff, gunRest, gunAim, RN, RF, k, grip: g },
+  };
+}

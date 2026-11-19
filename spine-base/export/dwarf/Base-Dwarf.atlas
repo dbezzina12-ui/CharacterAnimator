@@ -1,0 +1,44 @@
+Base-Dwarf.png
+size: 2048,1226
+filter: Linear,Linear
+pma: false
+upper-far
+bounds: 1008,2,124,249
+forearm-far
+bounds: 1636,2,124,230
+hand-far-back
+bounds: 708,1045,129,128
+hand-far-front
+bounds: 1347,1045,124,103
+thigh-far
+bounds: 1134,2,142,245
+shin-far
+bounds: 1528,2,106,233
+foot-far
+bounds: 839,1045,247,119
+pelvis
+bounds: 251,1045,312,165
+thigh-near
+bounds: 880,2,126,251
+shin-near
+bounds: 1396,2,130,235
+foot-near
+bounds: 1088,1045,257,114
+torso
+bounds: 103,2,359,324
+head
+bounds: 464,2,280,298
+eyes-closed
+bounds: 1473,1045,105,36
+upper-near
+bounds: 746,2,132,257
+forearm-near
+bounds: 1278,2,116,243
+hand-near
+bounds: 565,1045,141,131
+staff
+bounds: 2,2,99,1041
+gun
+bounds: 2,1045,247,179
+muzzle-flash
+bounds: 1762,2,182,200

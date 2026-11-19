@@ -1,0 +1,434 @@
+{
+ "character": "Base-Human",
+ "unitsToPixels": 2,
+ "heightUnits": 722,
+ "hand": {
+  "len": 44,
+  "w": 40,
+  "grip": 24
+ },
+ "drawOrderBackToFront": [
+  "upper-far",
+  "forearm-far",
+  "hand-far-back",
+  "weapon-far",
+  "hand-far-front",
+  "thigh-far",
+  "shin-far",
+  "foot-far",
+  "pelvis",
+  "thigh-near",
+  "shin-near",
+  "foot-near",
+  "torso",
+  "head",
+  "eyelids",
+  "upper-near",
+  "forearm-near",
+  "weapon-near",
+  "muzzle-flash",
+  "hand-near"
+ ],
+ "parts": [
+  {
+   "piece": "upper-far",
+   "slot": "upper-far",
+   "bone": "upper-far",
+   "skin": "default",
+   "image": "images/upper-far.png",
+   "sizePx": [
+    96,
+    309
+   ],
+   "sizeUnits": [
+    48,
+    154.5
+   ],
+   "pivotPx": [
+    41,
+    41.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "forearm-far",
+   "slot": "forearm-far",
+   "bone": "forearm-far",
+   "skin": "default",
+   "image": "images/forearm-far.png",
+   "sizePx": [
+    105,
+    275
+   ],
+   "sizeUnits": [
+    52.5,
+    137.5
+   ],
+   "pivotPx": [
+    35,
+    35.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "hand-far-back",
+   "slot": "hand-far-back",
+   "bone": "hand-far",
+   "skin": "default",
+   "image": "images/hand-far-back.png",
+   "sizePx": [
+    107,
+    110
+   ],
+   "sizeUnits": [
+    53.5,
+    55
+   ],
+   "pivotPx": [
+    47,
+    19.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "hand-far-front",
+   "slot": "hand-far-front",
+   "bone": "hand-far",
+   "skin": "default",
+   "image": "images/hand-far-front.png",
+   "sizePx": [
+    105,
+    92
+   ],
+   "sizeUnits": [
+    52.5,
+    46
+   ],
+   "pivotPx": [
+    40,
+    -8.72
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "thigh-far",
+   "slot": "thigh-far",
+   "bone": "thigh-far",
+   "skin": "default",
+   "image": "images/thigh-far.png",
+   "sizePx": [
+    160,
+    441
+   ],
+   "sizeUnits": [
+    80,
+    220.5
+   ],
+   "pivotPx": [
+    63,
+    63.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "shin-far",
+   "slot": "shin-far",
+   "bone": "shin-far",
+   "skin": "default",
+   "image": "images/shin-far.png",
+   "sizePx": [
+    98,
+    412
+   ],
+   "sizeUnits": [
+    49,
+    206
+   ],
+   "pivotPx": [
+    49,
+    49.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "foot-far",
+   "slot": "foot-far",
+   "bone": "foot-far",
+   "skin": "default",
+   "image": "images/foot-far.png",
+   "sizePx": [
+    248,
+    140
+   ],
+   "sizeUnits": [
+    124,
+    70
+   ],
+   "pivotPx": [
+    62,
+    38.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "pelvis",
+   "slot": "pelvis",
+   "bone": "hip",
+   "skin": "default",
+   "image": "images/pelvis.png",
+   "sizePx": [
+    250,
+    215
+   ],
+   "sizeUnits": [
+    125,
+    107.5
+   ],
+   "pivotPx": [
+    125,
+    149.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "thigh-near",
+   "slot": "thigh-near",
+   "bone": "thigh-near",
+   "skin": "default",
+   "image": "images/thigh-near.png",
+   "sizePx": [
+    144,
+    448
+   ],
+   "sizeUnits": [
+    72,
+    224
+   ],
+   "pivotPx": [
+    65,
+    65.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "shin-near",
+   "slot": "shin-near",
+   "bone": "shin-near",
+   "skin": "default",
+   "image": "images/shin-near.png",
+   "sizePx": [
+    155,
+    412
+   ],
+   "sizeUnits": [
+    77.5,
+    206
+   ],
+   "pivotPx": [
+    104,
+    51.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "foot-near",
+   "slot": "foot-near",
+   "bone": "foot-near",
+   "skin": "default",
+   "image": "images/foot-near.png",
+   "sizePx": [
+    258,
+    135
+   ],
+   "sizeUnits": [
+    129,
+    67.5
+   ],
+   "pivotPx": [
+    63,
+    38.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "torso",
+   "slot": "torso",
+   "bone": "chest",
+   "skin": "default",
+   "image": "images/torso.png",
+   "sizePx": [
+    302,
+    415
+   ],
+   "sizeUnits": [
+    151,
+    207.5
+   ],
+   "pivotPx": [
+    151,
+    333.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "head",
+   "slot": "head",
+   "bone": "head",
+   "skin": "default",
+   "image": "images/head.png",
+   "sizePx": [
+    215,
+    270
+   ],
+   "sizeUnits": [
+    107.5,
+    135
+   ],
+   "pivotPx": [
+    83,
+    257.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "eyes-closed",
+   "slot": "eyelids",
+   "bone": "head",
+   "skin": "default",
+   "image": "images/eyes-closed.png",
+   "sizePx": [
+    83,
+    34
+   ],
+   "sizeUnits": [
+    41.5,
+    17
+   ],
+   "pivotPx": [
+    -23,
+    148.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "upper-near",
+   "slot": "upper-near",
+   "bone": "upper-near",
+   "skin": "default",
+   "image": "images/upper-near.png",
+   "sizePx": [
+    108,
+    316
+   ],
+   "sizeUnits": [
+    54,
+    158
+   ],
+   "pivotPx": [
+    65,
+    43.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "forearm-near",
+   "slot": "forearm-near",
+   "bone": "forearm-near",
+   "skin": "default",
+   "image": "images/forearm-near.png",
+   "sizePx": [
+    96,
+    287
+   ],
+   "sizeUnits": [
+    48,
+    143.5
+   ],
+   "pivotPx": [
+    37,
+    37.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "hand-near",
+   "slot": "hand-near",
+   "bone": "hand-near",
+   "skin": "default",
+   "image": "images/hand-near.png",
+   "sizePx": [
+    123,
+    114
+   ],
+   "sizeUnits": [
+    61.5,
+    57
+   ],
+   "pivotPx": [
+    47,
+    19.28
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "staff",
+   "slot": "weapon-far",
+   "bone": "staff",
+   "skin": "staff",
+   "image": "images/staff.png",
+   "sizePx": [
+    98,
+    1584
+   ],
+   "sizeUnits": [
+    49,
+    792
+   ],
+   "pivotPx": [
+    49,
+    747.62
+   ],
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "gun",
+   "slot": "weapon-near",
+   "bone": "gun",
+   "skin": "gun",
+   "image": "images/gun.png",
+   "sizePx": [
+    217,
+    157
+   ],
+   "sizeUnits": [
+    108.5,
+    78.5
+   ],
+   "pivotPx": [
+    64,
+    84
+   ],
+   "drawnIn": "bone frame (barrel along +x)"
+  },
+  {
+   "piece": "muzzle-flash",
+   "slot": "muzzle-flash",
+   "bone": "gun-muzzle",
+   "skin": "gun",
+   "image": "images/muzzle-flash.png",
+   "sizePx": [
+    162,
+    176
+   ],
+   "sizeUnits": [
+    81,
+    88
+   ],
+   "pivotPx": [
+    13,
+    88
+   ],
+   "drawnIn": "bone frame (barrel along +x)"
+  }
+ ]
+}

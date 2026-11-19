@@ -1,0 +1,44 @@
+Base-Human.png
+size: 2048,1747
+filter: Linear,Linear
+pma: false
+upper-far
+bounds: 1081,2,96,309
+forearm-far
+bounds: 1277,2,105,275
+hand-far-back
+bounds: 856,1588,107,110
+hand-far-front
+bounds: 965,1588,105,92
+thigh-far
+bounds: 248,2,160,441
+shin-far
+bounds: 714,2,98,412
+foot-far
+bounds: 221,1588,248,140
+pelvis
+bounds: 1601,2,250,215
+thigh-near
+bounds: 102,2,144,448
+shin-near
+bounds: 814,2,155,412
+foot-near
+bounds: 471,1588,258,135
+torso
+bounds: 410,2,302,415
+head
+bounds: 1384,2,215,270
+eyes-closed
+bounds: 1072,1588,83,34
+upper-near
+bounds: 971,2,108,316
+forearm-near
+bounds: 1179,2,96,287
+hand-near
+bounds: 731,1588,123,114
+staff
+bounds: 2,2,98,1584
+gun
+bounds: 2,1588,217,157
+muzzle-flash
+bounds: 1853,2,162,176
