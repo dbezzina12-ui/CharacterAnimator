@@ -1,6 +1,6 @@
 // Character Kit: shape a character with sliders, watch it run in the real Spine 4.2 runtime, swap in painted art, export the kit.
 // Nothing here decides game outcomes; the exported skeleton only reports animation events (impact, fire, hit, land) to the game.
-import { buildKit, kitFiles, paintSheet, sliceSheet, templateSheet, brief, PRESETS, LIMITS, PIECE_INFO, SHEET_ORDER } from '../generator/kit.js';
+import { buildKit, kitFiles, paintSheet, sliceSheet, templateSheet, brief, PRESETS, LIMITS, PIECE_INFO, sheetParts } from '../generator/kit.js';
 import { SlotCharacter } from '../runtime/slot-character.js';
 import { zip, unzip } from './zip.js';
 
@@ -65,7 +65,7 @@ try {
 function mount(k) {
   const atlas = new spine.TextureAtlas(k.atlas.text); const tex = new spine.GLTexture(mctx, k.atlas.canvas); atlas.pages[0].setTexture(tex);
   const data = new spine.SkeletonJson(new spine.AtlasAttachmentLoader(atlas)).readSkeletonData(k.json);
-  const ch = new SlotCharacter(data); ch.setWeapon(state.weapon); ch.setCape(!!k.P.cape);
+  const ch = new SlotCharacter(data); ch.setWeapon(state.weapon); ch.setCape(k.P.cape || false);
   const log = []; ch.onEvent((ev, anim, t) => { log.unshift(`<b>◆</b> ${anim}  ${ev}  ${t.toFixed(2)}s`); log.length = Math.min(log.length, 5); $('#log').innerHTML = log.join('\n'); });
   if (view) view.tex.dispose(); view = { char: ch, tex, data };
 }
@@ -124,7 +124,7 @@ function buildControls() {
     return el('div', { className: 'slider' }, el('label', { htmlFor: `s-${key}`, textContent: label }), el('output', { id: `o-${key}`, htmlFor: `s-${key}` }),
       el('input', { type: 'range', id: `s-${key}`, min, max, step, oninput: (e) => { state.settings[key] = +e.target.value; queue(); } })); }));
   $('#name').oninput = (e) => { state.settings.name = e.target.value; queue(); };
-  $('#cape').onchange = (e) => { state.settings.cape = e.target.checked; rebuild(); };
+  $('#cape').onchange = (e) => { state.settings.cape = e.target.value; rebuild(); };
   $('#bones').onchange = (e) => { state.bones = e.target.checked; };
   $('#slow').onchange = (e) => { state.speed = e.target.checked ? 0.25 : 1; };
   for (const b of document.querySelectorAll('[data-weapon]')) b.onclick = () => setWeapon(b.dataset.weapon);
@@ -133,16 +133,16 @@ function buildControls() {
 function syncUI() {
   const s = state.settings;
   for (const [key, , fmt] of SLIDERS) { const i = $(`#s-${key}`); if (document.activeElement !== i) i.value = s[key]; $(`#o-${key}`).textContent = fmt(+s[key]); }
-  if (document.activeElement !== $('#name')) $('#name').value = s.name || ''; $('#cape').checked = !!s.cape;
+  if (document.activeElement !== $('#name')) $('#name').value = s.name || ''; $('#cape').value = s.cape || 'none';
   if (document.activeElement !== $('#settings')) $('#settings').value = JSON.stringify(s, null, 1);
   if (state.tab === 'art' && !(document.activeElement?.id || '').startsWith('a-')) drawPieces();   // never rebuild the editor under a slider that is being dragged
 }
 function thumb(c, p) { const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); const k = Math.min((c.width - 8) / p.px[0], (c.height - 8) / p.px[1]); g.imageSmoothingQuality = 'high'; g.drawImage(p.canvas, (c.width - p.px[0] * k) / 2, (c.height - p.px[1] * k) / 2, p.px[0] * k, p.px[1] * k); }
 function drawPieces() {
-  if (!kit) return; const box = $('#pieces');
-  box.replaceChildren(...SHEET_ORDER.map((name) => { const c = el('canvas', { width: 112, height: 112 }); thumb(c, kit.by[name].blank ? { ...kit.by[name].ph, canvas: kit.by[name].ph.canvas } : kit.by[name]);
+  if (!kit) return; const box = $('#pieces'); const names = sheetParts(kit); if (!names.includes(state.selected)) state.selected = 'head';
+  box.replaceChildren(...names.map((name) => { const c = el('canvas', { width: 112, height: 112 }); thumb(c, kit.by[name].blank ? { ...kit.by[name].ph, canvas: kit.by[name].ph.canvas } : kit.by[name]);
     return el('button', { className: `piece${state.art[name] ? ' custom' : ''}`, onclick: () => { state.selected = name; drawPieces(); } }, c, name); }));
-  [...box.children].forEach((b, i) => b.setAttribute('aria-pressed', SHEET_ORDER[i] === state.selected));
+  [...box.children].forEach((b, i) => b.setAttribute('aria-pressed', names[i] === state.selected));
   const name = state.selected, p = kit.by[name], a = state.art[name], info = PIECE_INFO[name]; const ed = $('#editor');
   const slider = (key, label, min, max, step, fmt) => el('div', { className: 'slider' }, el('label', { htmlFor: `a-${key}`, textContent: label }), el('output', { textContent: fmt(a[key] ?? (key === 'scale' ? 1 : 0)) }),
     el('input', { type: 'range', id: `a-${key}`, min, max, step, value: a[key] ?? (key === 'scale' ? 1 : 0), oninput: (e) => { a[key] = +e.target.value; e.target.previousSibling.textContent = fmt(a[key]); queue(); }, onchange: (e) => { e.target.blur(); drawPieces(); } }));

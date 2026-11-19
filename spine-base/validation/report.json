@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T03:14:39.408Z",
+ "generated": "2026-11-19T03:42:18.289Z",
  "failures": 0,
  "checks": [
   {
@@ -10,7 +10,7 @@
   {
    "name": "human and dwarf share bones, slots, skins, constraints, animations and events",
    "ok": true,
-   "detail": "31 bones, 21 slots, skins default/staff/gun, 8 animations"
+   "detail": "37 bones, 25 slots, skins default/staff/gun, 8 animations"
   },
   {
    "name": "human staff idle: far hand stays on the grip",
@@ -265,12 +265,12 @@
   {
    "name": "human cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again",
    "ok": true,
-   "detail": "MeshAttachment, 18 vertices, 4 physics constraints"
+   "detail": "MeshAttachment, 18 vertices, 10 physics constraints"
   },
   {
    "name": "dwarf cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again",
    "ok": true,
-   "detail": "MeshAttachment, 18 vertices, 4 physics constraints"
+   "detail": "MeshAttachment, 18 vertices, 10 physics constraints"
   },
   {
    "name": "human cape: swings during the slam",
@@ -301,6 +301,26 @@
    "name": "dwarf cape: reacts to the jump",
    "ok": true,
    "detail": "11.9°"
+  },
+  {
+   "name": "human vampire cape: five parts show (three sway as meshes, collar and mantle ride the chest); 'back' shows one",
+   "ok": true,
+   "detail": "mesh region mesh region mesh"
+  },
+  {
+   "name": "dwarf vampire cape: five parts show (three sway as meshes, collar and mantle ride the chest); 'back' shows one",
+   "ok": true,
+   "detail": "mesh region mesh region mesh"
+  },
+  {
+   "name": "human vampire cape: shoulder panels swing in the slam and settle",
+   "ok": true,
+   "detail": "near 25.1°, far 26.8°, 2.5° from rest after 4 s"
+  },
+  {
+   "name": "dwarf vampire cape: shoulder panels swing in the slam and settle",
+   "ok": true,
+   "detail": "near 22.7°, far 26.5°, 2.6° from rest after 4 s"
   }
  ],
  "pageErrors": []

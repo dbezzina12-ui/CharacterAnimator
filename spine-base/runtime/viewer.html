@@ -25,7 +25,7 @@ label{display:inline-flex;gap:6px;align-items:center}input{accent-color:var(--ac
 <div id="bar">
   <div class="grp"><span>Weapon</span><button data-weapon="staff" aria-pressed="true">Staff</button><button data-weapon="gun" aria-pressed="false">Gun</button><button data-weapon="none" aria-pressed="false">Unarmed</button></div>
   <div class="grp"><span>Play</span><span id="anims" class="grp"></span></div>
-  <div class="grp"><label><input type="checkbox" id="cape"> cape</label><label><input type="checkbox" id="bones"> bones</label><label><input type="checkbox" id="slow"> slow motion</label></div>
+  <div class="grp"><label>cape <select id="cape"><option value="">none</option><option value="back">back</option><option value="wrap">vampire wrap</option></select></label><label><input type="checkbox" id="bones"> bones</label><label><input type="checkbox" id="slow"> slow motion</label></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@esotericsoftware/spine-webgl@4.2.73/dist/iife/spine-webgl.js"></script>
 <script type="module">
@@ -45,7 +45,7 @@ try {
   for (const ch of chars) ch.onEvent((ev, anim, t) => { log.unshift(`${ch.id}  ${anim}  ${ev} @ ${t.toFixed(3)}s`); log.length = Math.min(log.length, 6); $('#log').textContent = log.join('\n'); });
   function setWeapon(w) { state.weapon = w; for (const ch of chars) ch.setWeapon(w); document.querySelectorAll('[data-weapon]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.weapon === w)); const box = $('#anims'); box.innerHTML = ''; for (const [name, until] of ACTIONS[w]) { const b = document.createElement('button'); b.textContent = name.split('/').pop(); b.onclick = () => chars.forEach((ch) => ch.play(name, { until })); box.append(b); } }
   document.querySelectorAll('[data-weapon]').forEach((b) => (b.onclick = () => setWeapon(b.dataset.weapon)));
-  $('#cape').onchange = (e) => { for (const ch of chars) ch.setCape(e.target.checked); };
+  $('#cape').onchange = (e) => { for (const ch of chars) ch.setCape(e.target.value || false); };
   $('#bones').onchange = (e) => { state.bones = e.target.checked; }; $('#slow').onchange = (e) => { state.speed = e.target.checked ? 0.25 : 1; };
   function resize() { const r = canvas.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1); canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr); }
   new ResizeObserver(resize).observe(canvas); resize();
@@ -59,7 +59,7 @@ try {
   function tick(now) { const dt = Math.min(0.05, (now - last) / 1000) * state.speed; last = now; if (!state.paused) for (const ch of chars) ch.update(dt); draw(); requestAnimationFrame(tick); }
   setWeapon('staff'); requestAnimationFrame(tick);
   // test hooks: deterministic stepping for headless validation
-  window.Viewer = { chars, state, setWeapon, draw, setCape(on) { for (const ch of chars) ch.setCape(on); $('#cape').checked = on; }, step(dt) { for (const ch of chars) ch.update(dt); }, bone(id, name) { const b = chars.find((c) => c.id === id).skeleton.findBone(name); return b ? { x: b.worldX, y: b.worldY, rot: b.getWorldRotationX(), active: b.active } : null; },
+  window.Viewer = { chars, state, setWeapon, draw, setCape(on) { for (const ch of chars) ch.setCape(on); $('#cape').value = chars[0].cape || ''; }, step(dt) { for (const ch of chars) ch.update(dt); }, bone(id, name) { const b = chars.find((c) => c.id === id).skeleton.findBone(name); return b ? { x: b.worldX, y: b.worldY, rot: b.getWorldRotationX(), active: b.active } : null; },
     info(id) { const d = chars.find((c) => c.id === id).skeleton.data; return { bones: d.bones.length, slots: d.slots.length, skins: d.skins.map((s) => s.name), animations: d.animations.map((a) => [a.name, +a.duration.toFixed(3)]), ik: d.ikConstraints.map((c) => c.name), physics: d.physicsConstraints.map((c) => c.name), transform: d.transformConstraints.map((c) => c.name), events: d.events.map((e) => e.name) }; } };
 } catch (e) { const el = $('#err'); el.hidden = false; el.textContent = 'Could not start the viewer: ' + e.message; console.error(e); window.ViewerError = String(e.message || e); }
 </script>

@@ -40,27 +40,27 @@ const rt = await page.evaluate(async () => {
   const before = JSON.stringify(App.kit.json); App.state.settings = { name: 'x' }; App.rebuild(); await App.openKit(new File([blob], 'k.zip')); 
   return { names: files.map((f) => f.name), size: blob.size, same, reopened: JSON.stringify(App.kit.json) === before, file: App.kit.file };
 });
-check('kit zip contains the Spine files, part images, sheets, brief and settings', ['RoundTrip.json', 'RoundTrip.atlas', 'RoundTrip.png', 'images/torso.png', 'images/cape.png', 'character.json', 'parts.json', 'paint-sheet.png', 'paint-sheet.json', 'template.png', 'ART-BRIEF.md'].every((n) => rt.names.includes(n)), `${rt.names.length} files, ${(rt.size / 1024).toFixed(0)} KB`);
+check('kit zip contains the Spine files, part images, sheets, brief and settings', ['RoundTrip.json', 'RoundTrip.atlas', 'RoundTrip.png', 'images/torso.png', 'images/cape.png', 'images/cape-collar.png', 'character.json', 'parts.json', 'paint-sheet.png', 'paint-sheet.json', 'template.png', 'ART-BRIEF.md'].every((n) => rt.names.includes(n)), `${rt.names.length} files, ${(rt.size / 1024).toFixed(0)} KB`);
 check('zip written by the app reads back byte for byte', rt.same);
 check('opening a saved kit restores the same skeleton', rt.reopened, rt.file);
 // paint sheet round trip: slicing the unpainted sheet must put every part back where the placeholder was
 const sh = await page.evaluate(async () => {
-  document.querySelectorAll('#presets button')[0].click(); const ph = Object.fromEntries(App.kit.pieces.map((p) => [p.name, p.rect]));
+  document.querySelectorAll('#presets button')[0].click(); App.state.settings.cape = 'wrap'; App.rebuild(); const ph = Object.fromEntries(App.kit.pieces.map((p) => [p.name, p.rect]));
   const sheet = App.getSheet(); const blob = await new Promise((r) => sheet.canvas.toBlob(r, 'image/png')); await App.loadSheet(new File([blob], 's.png'));
   const worst = App.kit.pieces.filter((p) => p.custom).map((p) => ({ name: p.name, off: Math.hypot(p.rect.x + p.rect.w / 2 - ph[p.name].x - ph[p.name].w / 2, p.rect.y + p.rect.h / 2 - ph[p.name].y - ph[p.name].h / 2), size: Math.max(Math.abs(p.rect.w - ph[p.name].w), Math.abs(p.rect.h - ph[p.name].h)) })).sort((a, b) => b.off - a.off);
   // and at half resolution, the way an image model returns it
   const small = document.createElement('canvas'); small.width = 1536; small.height = 1024; small.getContext('2d').drawImage(sheet.canvas, 0, 0, 1536, 1024); App.state.art = {}; App.rebuild();
   await App.loadSheet(new File([await new Promise((r) => small.toBlob(r, 'image/png'))], 's2.png'));
   const worst2 = App.kit.pieces.filter((p) => p.custom).map((p) => ({ name: p.name, off: Math.hypot(p.rect.x + p.rect.w / 2 - ph[p.name].x - ph[p.name].w / 2, p.rect.y + p.rect.h / 2 - ph[p.name].y - ph[p.name].h / 2), size: Math.max(Math.abs(p.rect.w - ph[p.name].w), Math.abs(p.rect.h - ph[p.name].h)) })).sort((a, b) => b.off - a.off);
-  return { n: worst.length, worst: worst[0], n2: worst2.length, worst2: worst2[0], checks: window.AppChecks, sheet: [sheet.width, sheet.height, sheet.pxPerUnit] };
+  return { cells: sheet.cells.length, n: worst.length, worst: worst[0], n2: worst2.length, worst2: worst2[0], checks: window.AppChecks, sheet: [sheet.width, sheet.height, sheet.pxPerUnit] };
 });
-check('paint sheet: every part is cut out and lands on its placeholder', sh.n === 21 && sh.worst.off < 1 && sh.worst.size < 4, `${sh.n} parts, worst centre offset ${sh.worst.off.toFixed(2)} units (${sh.worst.name}); sheet ${sh.sheet[0]}×${sh.sheet[1]} at ${sh.sheet[2]} px/unit`);
-check('paint sheet returned at 1536×1024 still lands on the placeholders', sh.n2 === 21 && sh.worst2.off < 1.5 && sh.worst2.size < 5, `${sh.n2} parts, worst centre offset ${sh.worst2.off.toFixed(2)} units (${sh.worst2.name})`);
+check('paint sheet: every part is cut out and lands on its placeholder', sh.n === sh.cells && sh.worst.off < 1 && sh.worst.size < 4, `${sh.n} parts, worst centre offset ${sh.worst.off.toFixed(2)} units (${sh.worst.name}); sheet ${sh.sheet[0]}×${sh.sheet[1]} at ${sh.sheet[2]} px/unit`);
+check('paint sheet returned at 1536×1024 still lands on the placeholders', sh.n2 === sh.cells && sh.worst2.off < 1.5 && sh.worst2.size < 5, `${sh.n2} parts, worst centre offset ${sh.worst2.off.toFixed(2)} units (${sh.worst2.name})`);
 check('rig checks still pass with art from the sheet', sh.checks.every((c) => c[0] === 'ok'));
 await page.evaluate(() => { App.setTab('art'); }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(outDir, 'app-art-tab.png') });
 const sheetPng = await page.evaluate(async () => { const b = await new Promise((r) => App.getSheet().canvas.toBlob(r, 'image/png')); const u = new Uint8Array(await b.arrayBuffer()); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); });
 fs.writeFileSync(path.join(outDir, 'app-paint-sheet.png'), Buffer.from(sheetPng, 'base64'));
-await page.evaluate(() => { App.state.art = {}; App.state.settings.cape = true; App.rebuild(); App.setTab('export'); }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(outDir, 'app-export-tab.png') });
+await page.evaluate(() => { App.state.art = {}; App.state.settings.cape = 'wrap'; App.rebuild(); App.setTab('export'); }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(outDir, 'app-export-tab.png') });
 // phone, light and dark
 const phone = await open({ width: 400, height: 800 }, { deviceScaleFactor: 2, colorScheme: 'dark' }); await phone.waitForTimeout(500);
 const over = await phone.evaluate(() => document.documentElement.scrollWidth - window.innerWidth); check('phone width: no sideways scroll', over <= 0, `${over}px`);

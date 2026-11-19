@@ -7,10 +7,12 @@
   "w": 46.07,
   "grip": 27.29
  },
- "cape": false,
+ "cape": "none",
  "drawOrderBackToFront": [
   "cape",
+  "cape-collar",
   "upper-far",
+  "cape-far",
   "forearm-far",
   "hand-far-back",
   "weapon-far",
@@ -23,9 +25,11 @@
   "shin-near",
   "foot-near",
   "torso",
+  "cape-mantle",
   "head",
   "eyelids",
   "upper-near",
+  "cape-near",
   "forearm-near",
   "weapon-near",
   "muzzle-flash",
@@ -49,6 +53,90 @@
    "pivotPx": [
     236.54,
     32.69
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"
+  },
+  {
+   "piece": "cape-collar",
+   "slot": "cape-collar",
+   "bone": "chest",
+   "skin": "default",
+   "image": "images/cape-collar.png",
+   "sizePx": [
+    377,
+    225
+   ],
+   "sizeUnits": [
+    188.5,
+    112.5
+   ],
+   "pivotPx": [
+    158,
+    389.32
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "cape-far",
+   "slot": "cape-far",
+   "bone": "cape-far-1",
+   "skin": "default",
+   "image": "images/cape-far.png",
+   "sizePx": [
+    241,
+    539
+   ],
+   "sizeUnits": [
+    120.5,
+    269.5
+   ],
+   "pivotPx": [
+    130.34,
+    21.48
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"
+  },
+  {
+   "piece": "cape-mantle",
+   "slot": "cape-mantle",
+   "bone": "chest",
+   "skin": "default",
+   "image": "images/cape-mantle.png",
+   "sizePx": [
+    351,
+    171
+   ],
+   "sizeUnits": [
+    175.5,
+    85.5
+   ],
+   "pivotPx": [
+    191,
+    234.32
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "cape-near",
+   "slot": "cape-near",
+   "bone": "cape-near-1",
+   "skin": "default",
+   "image": "images/cape-near.png",
+   "sizePx": [
+    260,
+    539
+   ],
+   "sizeUnits": [
+    130,
+    269.5
+   ],
+   "pivotPx": [
+    145.02,
+    20.7
    ],
    "art": "placeholder",
    "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"

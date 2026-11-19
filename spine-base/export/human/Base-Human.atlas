@@ -1,46 +1,54 @@
 Base-Human.png
-size: 2048,1784
+size: 2048,1987
 filter: Linear,Linear
 pma: false
 cape
 bounds: 103,2,354,1000
+cape-collar
+bounds: 329,1588,308,197
+cape-far
+bounds: 459,2,200,919
+cape-mantle
+bounds: 1020,1588,304,158
+cape-near
+bounds: 661,2,216,918
 upper-far
-bounds: 1283,2,102,317
+bounds: 1703,2,102,317
 forearm-far
-bounds: 1596,2,110,281
+bounds: 2,1588,110,281
 hand-far-back
-bounds: 1192,1588,102,111
+bounds: 123,1871,102,111
 hand-far-front
-bounds: 1296,1588,104,93
+bounds: 227,1871,104,93
 thigh-far
-bounds: 865,2,136,433
+bounds: 1285,2,136,433
 shin-far
-bounds: 1003,2,106,407
+bounds: 1423,2,106,407
 foot-far
-bounds: 603,1588,229,130
+bounds: 1546,1588,229,130
 pelvis
-bounds: 2,1588,216,194
+bounds: 639,1588,216,194
 thigh-near
-bounds: 745,2,118,434
+bounds: 1165,2,118,434
 shin-near
-bounds: 1111,2,170,403
+bounds: 1531,2,170,403
 foot-near
-bounds: 834,1588,235,125
+bounds: 1777,1588,235,125
 torso
-bounds: 459,2,284,461
+bounds: 879,2,284,461
 head
-bounds: 1708,2,213,260
+bounds: 114,1588,213,260
 eyes-closed
-bounds: 1402,1588,83,34
+bounds: 333,1871,83,34
 upper-near
-bounds: 1387,2,107,313
+bounds: 1807,2,107,313
 forearm-near
-bounds: 1496,2,98,283
+bounds: 1916,2,98,283
 hand-near
-bounds: 1071,1588,119,114
+bounds: 2,1871,119,114
 staff
 bounds: 2,2,99,1584
 gun
-bounds: 383,1588,218,158
+bounds: 1326,1588,218,158
 muzzle-flash
-bounds: 220,1588,161,176
+bounds: 857,1588,161,176

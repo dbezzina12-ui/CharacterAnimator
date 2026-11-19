@@ -97,8 +97,8 @@ for (const id of ['human', 'dwarf']) {
 
 // ---- cape: one mesh on a four-bone chain with Spine physics
 {
-  const cape = await page.evaluate(() => window.Viewer.chars.map((ch) => { const sl = ch.skeleton.findSlot('cape'); const off = !sl.getAttachment(); ch.setCape(true); const a = sl.getAttachment(); ch.setWeapon('gun'); const kept = !!sl.getAttachment(); ch.setCape(false); const hidden = !sl.getAttachment(); return { id: ch.id, off, type: a && a.constructor.name, bonesUsed: a && a.bones ? new Set(a.bones.filter((_, i, arr) => { let k = 0, j = 0; while (j < i) { j += arr[j] + 1; k = j; } return i !== k && false; })).size : 0, verts: a ? a.worldVerticesLength / 2 : 0, kept, hidden, physics: ch.skeleton.physicsConstraints.length }; }));
-  for (const c of cape) check(`${c.id} cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again`, c.off && c.type === 'MeshAttachment' && c.verts >= 10 && c.kept && c.hidden && c.physics === 4, `${c.type}, ${c.verts} vertices, ${c.physics} physics constraints`);
+  const cape = await page.evaluate(() => window.Viewer.chars.map((ch) => { const sl = ch.skeleton.findSlot('cape'); const off = !sl.getAttachment(); ch.setCape(true); const a = sl.getAttachment(); ch.setWeapon('gun'); const kept = !!sl.getAttachment(); ch.setCape(false); const hidden = !sl.getAttachment(); return { id: ch.id, off, type: a instanceof spine.MeshAttachment ? 'MeshAttachment' : 'other', bonesUsed: a && a.bones ? new Set(a.bones.filter((_, i, arr) => { let k = 0, j = 0; while (j < i) { j += arr[j] + 1; k = j; } return i !== k && false; })).size : 0, verts: a ? a.worldVerticesLength / 2 : 0, kept, hidden, physics: ch.skeleton.physicsConstraints.length }; }));
+  for (const c of cape) check(`${c.id} cape: hidden by default, shows as a weighted mesh, survives a weapon change, hides again`, c.off && c.type === 'MeshAttachment' && c.verts >= 10 && c.kept && c.hidden && c.physics === 10, `${c.type}, ${c.verts} vertices, ${c.physics} physics constraints`);
   await page.evaluate(() => window.Viewer.setCape(true));
   const REST = { human: null, dwarf: null };   // angles are measured from the first sample so they never straddle the ±180° seam
   const rel = (f, id) => { let x = f[id]['cape-4'].rot - f[id].chest.rot; REST[id] ??= x; x -= REST[id]; while (x > 180) x -= 360; while (x < -180) x += 360; return x; };
@@ -109,6 +109,16 @@ for (const id of ['human', 'dwarf']) {
     check(`${id} cape: settles into a small idle sway and stays finite`, Math.max(...s0) - Math.min(...s0) < 14 && s1.every((b) => Number.isFinite(b.x) && Number.isFinite(b.rot)), `idle sway ${(Math.max(...s0) - Math.min(...s0)).toFixed(1)}°`);
     const win = await run('none', 'win', 1.6); const w = win.frames.map((f) => rel(f, id)); check(`${id} cape: reacts to the jump`, Math.max(...w) - Math.min(...w) > 4, `${(Math.max(...w) - Math.min(...w)).toFixed(1)}°`);
   }
+  // vampire wrap: back panel + collar + mantle + a panel over each shoulder
+  const wrap = await page.evaluate(() => window.Viewer.chars.map((ch) => { ch.setCape('wrap'); const on = ['cape', 'cape-collar', 'cape-far', 'cape-mantle', 'cape-near'].map((n) => { const a = ch.skeleton.findSlot(n).getAttachment(); return !a ? null : a instanceof spine.MeshAttachment ? 'mesh' : a instanceof spine.RegionAttachment ? 'region' : 'other'; }); ch.setCape('back'); const back = ['cape', 'cape-collar', 'cape-far', 'cape-mantle', 'cape-near'].filter((n) => ch.skeleton.findSlot(n).getAttachment()); ch.setCape('wrap'); return { id: ch.id, on, back }; }));
+  for (const w of wrap) check(`${w.id} vampire cape: five parts show (three sway as meshes, collar and mantle ride the chest); 'back' shows one`, w.on.join() === 'mesh,region,mesh,region,mesh' && w.back.join() === 'cape', w.on.join(' '));
+  await page.evaluate(() => { window.Viewer.setCape('wrap'); });
+  const sway = await page.evaluate(async () => { const V = window.Viewer; V.setWeapon('staff'); for (let i = 0; i < 60; i++) V.step(1 / 60); const rest = {}; const read = (ch, n) => ch.skeleton.findBone(n).getWorldRotationX() - ch.skeleton.findBone('chest').getWorldRotationX();
+    for (const ch of V.chars) { rest[ch.id] = { n: read(ch, 'cape-near-3'), f: read(ch, 'cape-far-3') }; ch.state.setAnimation(0, 'staff/slam', false); ch.state.addAnimation(0, 'staff/idle', true, 0); }
+    const out = Object.fromEntries(V.chars.map((ch) => [ch.id, { n: [0, 0], f: [0, 0], end: 0 }])); const wrapA = (x) => { while (x > 180) x -= 360; while (x < -180) x += 360; return x; };
+    for (let i = 0; i < 300; i++) { V.step(1 / 60); for (const ch of V.chars) for (const [k, b] of [['n', 'cape-near-3'], ['f', 'cape-far-3']]) { const d = wrapA(read(ch, b) - rest[ch.id][k]); if (i < 80) { out[ch.id][k][0] = Math.min(out[ch.id][k][0], d); out[ch.id][k][1] = Math.max(out[ch.id][k][1], d); } else if (i > 240) out[ch.id].end = Math.max(out[ch.id].end, Math.abs(d)); } }
+    return out; });
+  for (const id of ['human', 'dwarf']) { const s = sway[id]; check(`${id} vampire cape: shoulder panels swing in the slam and settle`, s.n[1] - s.n[0] > 3 && s.f[1] - s.f[0] > 3 && s.end < 8, `near ${(s.n[1] - s.n[0]).toFixed(1)}°, far ${(s.f[1] - s.f[0]).toFixed(1)}°, ${s.end.toFixed(1)}° from rest after 4 s`); }
   await page.evaluate(() => window.Viewer.setCape(false));
 }
 
@@ -134,6 +144,10 @@ await strip('closeup-gun.png', 'gun', 'gun/fire', [0, 0.22]);
 await page.setViewportSize({ width: 1100, height: 760 }); await page.evaluate(() => window.Viewer.setCape(true));
 await strip('cape-slam.png', 'staff', 'staff/slam', [0, 0.4, 0.58, 0.8, 1.2]);
 await strip('cape-win.png', 'none', 'win', [0.3, 0.45, 0.7]);
+await page.evaluate(() => window.Viewer.setCape('wrap'));
+await strip('wrap-slam.png', 'staff', 'staff/slam', [0, 0.4, 0.58, 0.8, 1.2]);
+await strip('wrap-gun.png', 'gun', 'gun/fire', [0, 0.22, 0.3]);
+await strip('wrap-win.png', 'none', 'win', [0, 0.38, 0.6]);
 await browser.close(); server.close();
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify({ generated: new Date().toISOString(), failures, checks: results, pageErrors: errors }, null, 1));
 console.log(`\n${results.length - failures}/${results.length} checks passed${errors.length ? '\npage errors: ' + errors.join(' | ') : ''}`);

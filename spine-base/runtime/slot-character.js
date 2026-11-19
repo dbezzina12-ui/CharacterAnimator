@@ -3,18 +3,20 @@
 //
 //   const mage = new SlotCharacter(skeletonData);
 //   mage.setWeapon('staff');                       // 'staff' | 'gun' | 'none'  -> switches skin, constraints and idle
-//   mage.setCape(true);                            // show or hide the cape (it sways with Spine physics)
+//   mage.setCape(true);                            // true | false | 'back' | 'wrap'  (capes sway with Spine physics)
 //   await mage.play('staff/slam', { until: 'impact' });   // resolves when the event fires (or at the end if it never does)
 //   each frame: mage.update(dt); then draw mage.skeleton with your renderer
 //
 // Game outcomes never depend on this: play() only reports when the presentation reached a marker.
+const CAPE_SLOTS = ['cape', 'cape-collar', 'cape-far', 'cape-mantle', 'cape-near'];   // 'back' uses the first, 'wrap' (vampire cape) all five
 export class SlotCharacter {
   constructor(skeletonData, { defaultMix = 0.12, blink = true } = {}) {
     this.skeleton = new spine.Skeleton(skeletonData);
     const sd = new spine.AnimationStateData(skeletonData); sd.defaultMix = defaultMix;
     this.state = new spine.AnimationState(sd);
     this.weapon = 'none'; this.listeners = new Set();
-    this.cape = !!skeletonData.findSlot('cape')?.attachmentName;   // the kit decides whether the cape starts on
+    const worn = CAPE_SLOTS.filter((n) => skeletonData.findSlot(n)?.attachmentName);   // the kit decides which cape, if any, starts on
+    this.capeStyle = worn.length > 1 ? 'wrap' : 'back'; this.cape = worn.length ? this.capeStyle : false;
     this.state.addListener({ event: (entry, ev) => { for (const fn of this.listeners) fn(ev.data.name, entry.animation.name, entry.trackTime); } });
     this.skeleton.setToSetupPose();
     this.state.setAnimation(0, 'idle', true);
@@ -32,10 +34,10 @@ export class SlotCharacter {
     this.skeleton.setToSetupPose(); this.setCape(this.cape);
     this.state.setAnimation(0, this.idle, true);
   }
-  /** Show or hide the cape. Works with any weapon; the choice survives weapon changes. */
+  /** Show or hide the cape: true = the style this character was built with, or name one ('back', 'wrap'). Works with any weapon. */
   setCape(on) {
-    this.cape = !!on; const slot = this.skeleton.findSlot('cape'); if (!slot) return;
-    slot.setAttachment(this.cape ? this.skeleton.getAttachmentByName('cape', 'cape') : null);
+    this.cape = on === true ? this.capeStyle : on === 'back' || on === 'wrap' ? on : false;
+    for (const name of CAPE_SLOTS) { const slot = this.skeleton.findSlot(name); if (slot) slot.setAttachment(this.cape && (name === 'cape' || this.cape === 'wrap') ? this.skeleton.getAttachmentByName(name, name) : null); }
   }
   /** Play a one-shot, then return to idle. Resolves at the `until` event, or when the clip completes. */
   play(name, { until = null, speed = 1 } = {}) {

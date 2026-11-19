@@ -9,7 +9,9 @@ const r2 = (v) => Math.round(v * 100) / 100;
 const mk = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; };
 export const PIECE_NAMES = Object.keys(PIECE_INFO);
 /** Order used on the sheets: body from the top down, then the extras. */
-export const SHEET_ORDER = ['head', 'torso', 'pelvis', 'upper-near', 'forearm-near', 'hand-near', 'upper-far', 'forearm-far', 'hand-far-back', 'hand-far-front', 'thigh-near', 'shin-near', 'foot-near', 'thigh-far', 'shin-far', 'foot-far', 'eyes-closed', 'gun', 'muzzle-flash', 'cape', 'staff'];
+export const SHEET_ORDER = ['head', 'torso', 'pelvis', 'upper-near', 'forearm-near', 'hand-near', 'upper-far', 'forearm-far', 'hand-far-back', 'hand-far-front', 'thigh-near', 'shin-near', 'foot-near', 'thigh-far', 'shin-far', 'foot-far', 'eyes-closed', 'gun', 'muzzle-flash', 'cape-collar', 'cape-mantle', 'cape-near', 'cape-far', 'cape', 'staff'];
+/** The parts that belong on this character's sheets: cape parts only appear for the cape style it wears. */
+export const sheetParts = (kit) => SHEET_ORDER.filter((n) => !n.startsWith('cape') || (kit.P.cape && (n === 'cape' || kit.P.cape === 'wrap')));
 
 function alphaBounds(c, min = 0) {
   const d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height).data; const W = c.width, H = c.height;
@@ -82,7 +84,7 @@ export function buildKit(config = {}, { scale = 2, art = {} } = {}) {
     events: R.events, animations: R.animations,
   };
   return { P: R.P, R, scale: S, file: P.file, pieces, by, atlas: { canvas: atlasCanvas, w: W, h: AH, text: atlasText }, json, parts,
-    partsDoc: { character: P.file, unitsToPixels: S, heightUnits: P.height, hand: P.hand, cape: !!P.cape, drawOrderBackToFront: R.slots.map((s) => s.name), parts } };
+    partsDoc: { character: P.file, unitsToPixels: S, heightUnits: P.height, hand: P.hand, cape: P.cape || 'none', drawOrderBackToFront: R.slots.map((s) => s.name), parts } };
 }
 
 /** One image, weighted across a bone chain so it bends smoothly. Vertices run down the left edge and back up the right (all on the hull). */
@@ -106,13 +108,13 @@ function meshAttachment(p, chain, world, boneIndex) {
 /** Annotated template: the assembled setup pose with its skeleton, and every piece at export size with its pivot marked. */
 export function templateSheet(kit) {
   const { R, scale: S, by } = kit; const H = R.P.height; const z = Math.min(1.6, 1150 / (H * 1.12));
-  const Wc = 2600, Hc = Math.max(1500, Math.round(H * 1.25 * z) + 200); const c = mk(Wc, Hc); const g = c.getContext('2d');
+  const Wc = 2600, Hc = Math.max(R.P.cape === 'wrap' ? 2150 : 1500, Math.round(H * 1.25 * z) + 200); /* the vampire cape adds a row of tall parts */ const c = mk(Wc, Hc); const g = c.getContext('2d');
   g.fillStyle = '#eef1f5'; g.fillRect(0, 0, Wc, Hc);
   g.fillStyle = C.line; g.font = '700 34px system-ui, sans-serif'; g.fillText(`${kit.file} — template sheet`, 40, 56);
   g.font = '18px system-ui, sans-serif'; g.fillStyle = '#44506a'; g.fillText('Left: setup pose (three-quarter, facing right) with the skeleton. Right: every piece at export size with its pivot (the bone it hangs on) marked. Paint over each piece without moving it.', 40, 88);
   const ox = 440, oy = Hc - 110; const X = (x) => ox + x * z, Y = (y) => oy - y * z;
   g.strokeStyle = '#b8c0cc'; g.lineWidth = 2; g.beginPath(); g.moveTo(60, oy); g.lineTo(840, oy); g.stroke();
-  const order = [...(R.P.cape ? ['cape'] : []), 'upper-far', 'forearm-far', 'hand-far-back', 'staff', 'hand-far-front', 'thigh-far', 'shin-far', 'foot-far', 'pelvis', 'thigh-near', 'shin-near', 'foot-near', 'torso', 'head', 'upper-near', 'forearm-near', 'hand-near'];
+  const order = R.slots.filter((s) => s.attachment && PIECE_INFO[s.attachment].frame !== 'bone').map((s) => s.attachment);   // what the setup pose shows, back to front
   for (const n of order) { const p = by[n]; g.save(); g.translate(X(p.rect.x + p.rect.w / 2), Y(p.rect.y + p.rect.h / 2)); g.rotate(-p.rot * D2R); g.drawImage(p.canvas, -p.rect.w * z / 2, -p.rect.h * z / 2, p.rect.w * z, p.rect.h * z); g.restore(); }
   for (const [name, w] of Object.entries(R.world)) {
     if (name === 'root' || name.startsWith('gun') || (name.startsWith('cape') && !R.P.cape)) continue; const len = w.len || 0; const ex = w.x + Math.cos(w.rot * D2R) * len, ey = w.y + Math.sin(w.rot * D2R) * len;
@@ -121,8 +123,9 @@ export function templateSheet(kit) {
   }
   g.fillStyle = '#44506a'; g.font = '16px system-ui, sans-serif'; g.fillText(`height ${H} units · green = bones · red = IK targets and staff grips · purple = cape chain`, 60, oy + 40);
   let x = 920, y = 140, rowH = 0; const k = 0.62 * (2 / S); const staffH = Hc - 220;
-  for (const n of SHEET_ORDER) {
+  for (const n of sheetParts(kit)) {
     const p = by[n]; const kk = n === 'staff' ? Math.min(k, staffH / p.px[1]) : k; const w = p.px[0] * kk, h = p.px[1] * kk; if (n !== 'staff' && x + Math.max(w, 150) + 180 > Wc) { x = 920; y += rowH + 70; rowH = 0; }
+    if (n !== 'staff' && y + h + 60 > Hc) continue;   // out of room: the paint sheet still has every part
     if (n === 'staff') { x = Wc - 150; y = 140; }
     g.fillStyle = '#fff'; g.fillRect(x - 6, y - 6, w + 12, h + 12); g.strokeStyle = '#c3cad6'; g.lineWidth = 1; g.strokeRect(x - 6, y - 6, w + 12, h + 12);
     g.drawImage(p.canvas, x, y, w, h);
@@ -141,7 +144,7 @@ export function paintSheet(kit, { key = '#ff00ff', width = 2400 } = {}) {
   // the tall parts (staff, cape) stand in a column block on the left; everything else is shelved in rows beside them
   const layout = (zz) => {
     const out = []; const cellOf = (name) => { const r = kit.by[name].ph.rect; const m = Math.max(10, 0.12 * Math.min(r.w, r.h)); const box = { x: r.x - m, y: r.y - m, w: r.w + 2 * m, h: r.h + 2 * m }; return { name, w: Math.round(box.w * zz), h: Math.round(box.h * zz), box }; };
-    const all = SHEET_ORDER.map(cellOf).sort((p, q) => q.h - p.h); const tall = all.filter((c2) => c2.h > Hmax * 0.4), rest = all.filter((c2) => c2.h <= Hmax * 0.4);
+    const all = sheetParts(kit).map(cellOf).sort((p, q) => q.h - p.h); const tall = all.filter((c2) => c2.h > Hmax * 0.4), rest = all.filter((c2) => c2.h <= Hmax * 0.4);
     let left = pad, bottom = 0; for (const c2 of tall) { out.push({ ...c2, x: left, y: pad }); left += Math.max(c2.w, 70) + pad; bottom = Math.max(bottom, pad + c2.h + label + pad); }
     let x = left, y = pad, rowH = 0;
     for (const c2 of rest) { if (x + c2.w + pad > width) { x = left; y += rowH + label + pad; rowH = 0; } out.push({ ...c2, x, y }); x += Math.max(c2.w, 110) + pad; rowH = Math.max(rowH, c2.h); }
@@ -201,17 +204,17 @@ The attached paint sheet (${sheet ? `${sheet.width}×${sheet.height} px` : '3:2'
 - Do not paint open hands, pointing fingers or a hand at a different angle. The rig rotates the fist to match the weapon.
 
 ## Parts
-${SHEET_ORDER.map((n) => { const p = kit.by[n]; return `- ${n}: ${Math.round(p.ph.rect.w)}×${Math.round(p.ph.rect.h)} units${PART_NOTES[n] ? ' — ' + PART_NOTES[n] : ''}`; }).join('\n')}
+${sheetParts(kit).map((n) => { const p = kit.by[n]; return `- ${n}: ${Math.round(p.ph.rect.w)}×${Math.round(p.ph.rect.h)} units${PART_NOTES[n] ? ' — ' + PART_NOTES[n] : ''}`; }).join('\n')}
 
 ## This character
-Name: ${q.name || kit.file}. Height ${P.height} units (${Math.round(P.height / (P.head.h || 1) * 10) / 10} heads tall). ${P.cape ? 'Wears a cape.' : 'No cape (the cape part can stay as it is).'}
+Name: ${q.name || kit.file}. Height ${P.height} units (${Math.round(P.height / (P.head.h || 1) * 10) / 10} heads tall). ${P.cape === 'wrap' ? 'Wears a vampire cape: five cape parts (back, collar, mantle, near and far panels). The outside is dark, the lining is the accent colour.' : P.cape ? 'Wears a cape down the back (one part).' : 'No cape.'}
 
 ## Changing the body shape instead of the art
 The shape is a small JSON object. Edit the numbers and paste it into the Character Kit app (Export → Character settings → Apply), or save it as a file and run \`node spine-base/generator/build.mjs --config file.json --out outdir\`.
 \`\`\`json
 ${JSON.stringify(q, null, 1)}
 \`\`\`
-height is in units (1 unit = ${kit.scale} px at export). Everything else is a ratio: head = head height ÷ height, headWidth = head width ÷ head height, legs = hip height ÷ height, arms = shoulder-to-wrist ÷ height, shoulders = shoulder span ÷ height, build = thickness (1 = average adult, about 1.9 = stocky dwarf), hands = fist length ÷ height, stance = half the gap between the ankles ÷ height, cape = true or false.
+height is in units (1 unit = ${kit.scale} px at export). Everything else is a ratio: head = head height ÷ height, headWidth = head width ÷ head height, legs = hip height ÷ height, arms = shoulder-to-wrist ÷ height, shoulders = shoulder span ÷ height, build = thickness (1 = average adult, about 1.9 = stocky dwarf), hands = fist length ÷ height, stance = half the gap between the ankles ÷ height, cape = "none", "back" (hangs down the back) or "wrap" (vampire cape with collar, mantle and front panels).
 `;
 }
 const PART_NOTES = {
@@ -224,7 +227,9 @@ const PART_NOTES = {
   'thigh-near': 'near thigh, hip to knee', 'shin-near': 'near shin, knee to ankle', 'foot-near': 'near foot, flat on the ground, toe to the right',
   'thigh-far': 'far thigh', 'shin-far': 'far shin', 'foot-far': 'far foot',
   staff: 'upright; the hands hold it between the two dark bands', gun: 'barrel pointing right; the fist closes around the grip', 'muzzle-flash': 'flash pointing right, bright on transparent',
-  cape: 'hangs straight down from the shoulders; the rig bends and sways it',
+  cape: 'back panel; hangs straight down from the shoulders; the rig bends and sways it',
+  'cape-collar': 'stand-up collar behind the head, seen from the inside', 'cape-mantle': 'lies over both shoulders in front of the chest and closes at the throat',
+  'cape-near': 'panel hanging over the near shoulder and upper arm; the forearm comes out in front of it', 'cape-far': 'panel hanging over the far shoulder, seen past the front of the body',
 };
 
 const pngBytes = (canvas) => new Promise((res) => canvas.toBlob(async (b) => res(new Uint8Array(await b.arrayBuffer())), 'image/png'));

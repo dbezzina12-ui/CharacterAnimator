@@ -7,10 +7,12 @@
   "w": 40.52,
   "grip": 24
  },
- "cape": false,
+ "cape": "none",
  "drawOrderBackToFront": [
   "cape",
+  "cape-collar",
   "upper-far",
+  "cape-far",
   "forearm-far",
   "hand-far-back",
   "weapon-far",
@@ -23,9 +25,11 @@
   "shin-near",
   "foot-near",
   "torso",
+  "cape-mantle",
   "head",
   "eyelids",
   "upper-near",
+  "cape-near",
   "forearm-near",
   "weapon-near",
   "muzzle-flash",
@@ -49,6 +53,90 @@
    "pivotPx": [
     259.04,
     27.33
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"
+  },
+  {
+   "piece": "cape-collar",
+   "slot": "cape-collar",
+   "bone": "chest",
+   "skin": "default",
+   "image": "images/cape-collar.png",
+   "sizePx": [
+    308,
+    197
+   ],
+   "sizeUnits": [
+    154,
+    98.5
+   ],
+   "pivotPx": [
+    119.2,
+    453.56
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "cape-far",
+   "slot": "cape-far",
+   "bone": "cape-far-1",
+   "skin": "default",
+   "image": "images/cape-far.png",
+   "sizePx": [
+    200,
+    919
+   ],
+   "sizeUnits": [
+    100,
+    459.5
+   ],
+   "pivotPx": [
+    107.7,
+    18.16
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"
+  },
+  {
+   "piece": "cape-mantle",
+   "slot": "cape-mantle",
+   "bone": "chest",
+   "skin": "default",
+   "image": "images/cape-mantle.png",
+   "sizePx": [
+    304,
+    158
+   ],
+   "sizeUnits": [
+    152,
+    79
+   ],
+   "pivotPx": [
+    156.2,
+    312.56
+   ],
+   "art": "placeholder",
+   "drawnIn": "setup pose (upright, as assembled)"
+  },
+  {
+   "piece": "cape-near",
+   "slot": "cape-near",
+   "bone": "cape-near-1",
+   "skin": "default",
+   "image": "images/cape-near.png",
+   "sizePx": [
+    216,
+    918
+   ],
+   "sizeUnits": [
+    108,
+    459
+   ],
+   "pivotPx": [
+    120.3,
+    18.06
    ],
    "art": "placeholder",
    "drawnIn": "setup pose (upright); the rig bends it as a mesh across the cape bones"

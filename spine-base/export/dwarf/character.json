@@ -11,7 +11,7 @@
   "build": 1.9,
   "hands": 0.107,
   "stance": 0.09,
-  "cape": false
+  "cape": "none"
  },
  "art": {}
 }

@@ -11,10 +11,11 @@ const norm = (d) => { while (d > 180) d -= 360; while (d <= -180) d += 360; retu
 /** Proportion presets. Every value except height is a ratio, so height alone scales the whole character.
  *  head: head height / height · headWidth: head width / head height · legs: hip height / height · arms: shoulder-to-wrist / height
  *  shoulders: shoulder joint span / height · build: limb and trunk thickness (1 = average adult) · hands: fist length / height
- *  stance: half the distance between the ankles / height · cape: show the cape in the setup pose */
+ *  stance: half the distance between the ankles / height
+ *  cape: 'none' | 'back' (hangs down the back) | 'wrap' (vampire cape: high collar, mantle over the shoulders, front panels) */
 export const PRESETS = {
-  human: { name: 'Human', height: 722, head: 0.172, headWidth: 0.8, legs: 0.5235, arms: 0.313, shoulders: 0.14, build: 1, hands: 0.061, stance: 0.061, cape: false },
-  dwarf: { name: 'Dwarf', height: 468, head: 0.3, headWidth: 0.94, legs: 0.3675, arms: 0.327, shoulders: 0.245, build: 1.9, hands: 0.107, stance: 0.09, cape: false },
+  human: { name: 'Human', height: 722, head: 0.172, headWidth: 0.8, legs: 0.5235, arms: 0.313, shoulders: 0.14, build: 1, hands: 0.061, stance: 0.061, cape: 'none' },
+  dwarf: { name: 'Dwarf', height: 468, head: 0.3, headWidth: 0.94, legs: 0.3675, arms: 0.327, shoulders: 0.245, build: 1.9, hands: 0.107, stance: 0.09, cape: 'none' },
 };
 export const LIMITS = {
   height: [300, 1000, 1], head: [0.12, 0.36, 0.002], headWidth: [0.65, 1.1, 0.01], legs: [0.3, 0.58, 0.0025], arms: [0.24, 0.4, 0.001],
@@ -27,7 +28,7 @@ const pascal = (s) => String(s).replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ')
 export function proportions(params = {}) {
   const base = PRESETS[String(params.preset || '').toLowerCase()] || PRESETS.human; const q = { ...base, ...params };
   for (const k of Object.keys(LIMITS)) q[k] = clampTo(Number.isFinite(+q[k]) ? +q[k] : base[k], LIMITS[k]);
-  q.cape = !!q.cape; q.name = String(q.name || 'Character').slice(0, 40);
+  q.cape = q.cape === true ? 'back' : q.cape === 'back' || q.cape === 'wrap' ? q.cape : 'none'; q.name = String(q.name || 'Character').slice(0, 40);
   const H = q.height, s = H / 722, bs = q.build * s, e = Math.min(0.5, Math.max(-0.15, (q.build - 1) * 0.31));
   const pol = (o, deg, len) => [o[0] + Math.cos(deg * D2R) * len, o[1] + Math.sin(deg * D2R) * len];
   const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
@@ -52,7 +53,7 @@ export function proportions(params = {}) {
   const J = Object.fromEntries(Object.entries({ hip, waist, neck, headTop, shoulderN, elbowN, wristN, shoulderF, elbowF, wristF, hipN, kneeN, ankleN, toeN, hipF, kneeF, ankleF, toeF }).map(([k, v]) => [k, r1(v)]));
   const id = String(q.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'character';
   return {
-    id, file: params.file || (PRESETS[id] ? 'Base-' + pascal(q.name) : pascal(q.name)), height: H, cape: q.cape, params: q, J,
+    id, file: params.file || (PRESETS[id] ? 'Base-' + pascal(q.name) : pascal(q.name)), height: H, cape: q.cape === 'none' ? '' : q.cape, params: q, J,
     hand: { len: r2(handLen), w: r2(0.92 * handLen), grip: r2(0.545 * handLen) },
     limb: { upperArm: [38 * bs, 32 * bs].map(r2), forearm: [32 * bs, 25 * bs].map(r2), thigh: [2 * thighR, 2 * kneeR].map(r2), shin: [2 * kneeR, 2 * ankleR].map(r2) },
     torso: { chestHalf: r2(chestHalf), waistHalf: r2(waistHalf), hipHalf: r2(hipHalf), neckW: r2(32 * bs) },
@@ -143,21 +144,26 @@ export function buildRig(P) {
   bone('gun-grip-near', 'gun', gunRest.wrist, null, { rot: gunRest.rot, length: 14, color: 'ff9f3fff' });
   { const a = gunRest.rot * D2R, o = gripOf(gunRest), mx = 74 * k, my = 20 * k; bone('gun-muzzle', 'gun', [o[0] + Math.cos(a) * mx - Math.sin(a) * my, o[1] + Math.sin(a) * mx + Math.cos(a) * my], null, { rot: gunRest.rot, color: 'ff9f3fff' }); }
 
-  // ---- cape: a four-bone chain hanging from the upper back. One mesh image is weighted across it; physics makes it sway.
-  const T = J.neck[1] - J.hip[1];
+  // ---- cape: bone chains hanging from the chest. Each cape image is a mesh weighted across its chain; physics makes it sway.
+  // 'back' uses only the back chain. 'wrap' (vampire cape) is longer and adds a panel over each shoulder; its collar and mantle are rigid on the chest.
+  const wrap = P.cape === 'wrap', T = J.neck[1] - J.hip[1], rs = P.limb.upperArm[0] / 2 + 1.5;
+  const chain = (prefix, top, end, n) => { const pt = (i) => [top[0] + (end[0] - top[0]) * i / n, top[1] + (end[1] - top[1]) * i / n]; const names = [];
+    for (let i = 0; i < n; i++) { names.push(`${prefix}-${i + 1}`); bone(names[i], i ? names[i - 1] : 'chest', pt(i), pt(i + 1), { color: 'c77dffff' }); } return { top, end, bones: names }; };
   const capeTop = [J.neck[0] - 0.3 * (J.neck[0] - J.shoulderN[0]), J.neck[1] - 0.05 * T];
-  const capeEndY = J.ankleN[1] + 0.4 * (J.kneeN[1] - J.ankleN[1]); const capeLen = capeTop[1] - capeEndY;
-  const capeEnd = [capeTop[0] - 0.1 * capeLen, capeEndY]; const CAPE_N = 4;
-  const capePt = (i) => [capeTop[0] + (capeEnd[0] - capeTop[0]) * i / CAPE_N, capeTop[1] + (capeEnd[1] - capeTop[1]) * i / CAPE_N];
-  for (let i = 0; i < CAPE_N; i++) bone(`cape-${i + 1}`, i ? `cape-${i}` : 'chest', capePt(i), capePt(i + 1), { color: 'c77dffff' });
+  const capeEndY = J.ankleN[1] + (wrap ? 0.12 : 0.4) * (J.kneeN[1] - J.ankleN[1]);
+  const cape = chain('cape', capeTop, [capeTop[0] - (wrap ? 0.06 : 0.1) * (capeTop[1] - capeEndY), capeEndY], 4);
+  const panelY = J.kneeN[1] - 0.35 * (J.kneeN[1] - J.ankleN[1]);
+  const nTop = [J.shoulderN[0] - rs * 0.1, J.shoulderN[1] + rs * 0.9], fTop = [J.shoulderF[0] + rs * 0.3, J.shoulderF[1] + rs * 0.8];
+  const capeNear = chain('cape-near', nTop, [nTop[0] - 0.05 * (nTop[1] - panelY), panelY], 3);
+  const capeFar = chain('cape-far', fTop, [fTop[0] + 0.05 * (fTop[1] - panelY), panelY], 3);
 
   // ---- slots, back to front
   const slots = [
-    ['cape', 'cape-1', P.cape ? 'cape' : null],
-    ['upper-far', 'upper-far'], ['forearm-far', 'forearm-far'], ['hand-far-back', 'hand-far'], ['weapon-far', 'staff', 'staff'], ['hand-far-front', 'hand-far'],
+    ['cape', 'cape-1', P.cape ? 'cape' : null], ['cape-collar', 'chest', wrap ? 'cape-collar' : null],
+    ['upper-far', 'upper-far'], ['cape-far', 'cape-far-1', wrap ? 'cape-far' : null], ['forearm-far', 'forearm-far'], ['hand-far-back', 'hand-far'], ['weapon-far', 'staff', 'staff'], ['hand-far-front', 'hand-far'],
     ['thigh-far', 'thigh-far'], ['shin-far', 'shin-far'], ['foot-far', 'foot-far'], ['pelvis', 'hip'],
-    ['thigh-near', 'thigh-near'], ['shin-near', 'shin-near'], ['foot-near', 'foot-near'], ['torso', 'chest'], ['head', 'head'], ['eyelids', 'head', null],
-    ['upper-near', 'upper-near'], ['forearm-near', 'forearm-near'], ['weapon-near', 'gun', 'gun'], ['muzzle-flash', 'gun-muzzle', null, 'additive'], ['hand-near', 'hand-near'],
+    ['thigh-near', 'thigh-near'], ['shin-near', 'shin-near'], ['foot-near', 'foot-near'], ['torso', 'chest'], ['cape-mantle', 'chest', wrap ? 'cape-mantle' : null], ['head', 'head'], ['eyelids', 'head', null],
+    ['upper-near', 'upper-near'], ['cape-near', 'cape-near-1', wrap ? 'cape-near' : null], ['forearm-near', 'forearm-near'], ['weapon-near', 'gun', 'gun'], ['muzzle-flash', 'gun-muzzle', null, 'additive'], ['hand-near', 'hand-near'],
   ].map(([name, b, att, blend]) => { const s = { name, bone: b }; if (att !== null) s.attachment = att === undefined ? name : att; if (blend) s.blend = blend; return s; });
 
   // ---- constraints. `order` is global and unique; skin constraints only run while their skin is active.
@@ -178,12 +184,18 @@ export function buildRig(P) {
   ];
 
   // Spine 4.2 physics: each cape bone lags behind the body, swings past and settles; lower bones are looser and heavier under gravity.
-  const phys = (i, o) => ({ name: `cape/${i}`, order: 9 + i, bone: `cape-${i}`, rotate: 1, mass: 1, wind: 0, mix: 1, ...o });
+  // The shoulder panels are draped over the arms, so they are a little stiffer than the free-hanging back.
+  let order = 10; const phys = (bone2, o) => ({ name: bone2.replace(/-(\d)$/, '/$1'), order: order++, bone: bone2, rotate: 1, mass: 1, wind: 0, mix: 1, ...o });
   const physics = [
-    phys(1, { inertia: 0.45, strength: 70, damping: 0.55, gravity: 8 }),
-    phys(2, { inertia: 0.6, strength: 50, damping: 0.45, gravity: 16 }),
-    phys(3, { inertia: 0.75, strength: 36, damping: 0.4, gravity: 24, mass: 0.8 }),
-    phys(4, { inertia: 0.85, strength: 28, damping: 0.35, gravity: 30, mass: 0.6 }),
+    phys('cape-1', { inertia: 0.45, strength: 70, damping: 0.55, gravity: 8 }),
+    phys('cape-2', { inertia: 0.6, strength: 50, damping: 0.45, gravity: 16 }),
+    phys('cape-3', { inertia: 0.75, strength: 36, damping: 0.4, gravity: 24, mass: 0.8 }),
+    phys('cape-4', { inertia: 0.85, strength: 28, damping: 0.35, gravity: 30, mass: 0.6 }),
+    ...['cape-near', 'cape-far'].flatMap((p) => [
+      phys(`${p}-1`, { inertia: 0.35, strength: 90, damping: 0.6, gravity: 6 }),
+      phys(`${p}-2`, { inertia: 0.55, strength: 56, damping: 0.5, gravity: 16 }),
+      phys(`${p}-3`, { inertia: 0.75, strength: 36, damping: 0.42, gravity: 26, mass: 0.7 }),
+    ]),
   ];
 
   // ---- animations (values are offsets from the setup pose). u scales body moves with the character's size.
@@ -197,6 +209,8 @@ export function buildRig(P) {
     'cape-2': { rotate: rot([[0, 0], [d / 2, 1.6], [d, 0]]) },
     'cape-3': { rotate: rot([[0, 1.2], [d / 2, -1.8], [d, 1.2]]) },
     'cape-4': { rotate: rot([[0, -2], [d / 2, 2.4], [d, -2]]) },
+    'cape-near-2': { rotate: rot([[0, 0.8], [d / 2, -1], [d, 0.8]]) }, 'cape-near-3': { rotate: rot([[0, -1.4], [d / 2, 1.6], [d, -1.4]]) },
+    'cape-far-2': { rotate: rot([[0, -0.8], [d / 2, 1], [d, -0.8]]) }, 'cape-far-3': { rotate: rot([[0, 1.2], [d / 2, -1.6], [d, 1.2]]) },
   });
   const animations = {};
   animations.idle = { bones: { ...breathe(), 'upper-near': { rotate: rot([[0, 0], [1, 2.5], [2, 0]]) }, 'upper-far': { rotate: rot([[0, 0], [1, -2], [2, 0]]) } } };
@@ -258,6 +272,6 @@ export function buildRig(P) {
   return {
     P, bones, world, slots, ik, transform, physics, animations,
     events: { impact: {}, fire: {}, hit: {}, land: {} },
-    geo: { staff, gunRest, gunAim, RN, RF, k, grip: g, cape: { top: capeTop, end: capeEnd, bones: Array.from({ length: CAPE_N }, (_, i) => `cape-${i + 1}`) } },
+    geo: { staff, gunRest, gunAim, RN, RF, k, grip: g, cape, capeNear, capeFar },
   };
 }

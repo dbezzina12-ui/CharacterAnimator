@@ -6,7 +6,7 @@
 export const C = {
   line: '#2a2230', skin: '#e4b48f', skinFar: '#c79672', skinFarLit: '#d3a27d',
   shirt: '#93a9ba', shirtFar: '#748a9c', pants: '#4c586e', pantsFar: '#3d475a', shoe: '#43362f', shoeFar: '#352b26',
-  hair: '#3b2b23', cape: '#8f2f3b', capeDark: '#712432',
+  hair: '#3b2b23', cape: '#8f2f3b', capeDark: '#712432', cloak: '#25212e', cloakLit: '#383344', lining: '#9c2233', liningDark: '#761a29', clasp: '#d9a441',
   wood: '#8b5b35', woodDark: '#5d3b21', metal: '#b3bcc9', metalDark: '#6c7584', crystal: '#4ad8c7', flash: '#ffd45a',
 };
 const LW = 3;
@@ -87,20 +87,66 @@ const headBox = (R) => { const { J, P } = R; const H = P.head; return { c: [(J.n
 const EYES = [[0.2, 0.13], [0.66, 0.09]];   // [centre, half-width] as fractions of the head's half-width: near eye, far eye
 
 export const PIECES = {
-  // ---------------- cape (one image; the rig bends it as a mesh across four bones)
+  // ---------------- capes. 'cape' is the back panel of either style (one image; the rig bends it as a mesh across four bones).
   cape: (ctx, R) => {
-    const { J, P } = R; const g = R.geo.cape; const ra = P.limb.upperArm[0] / 2, span = J.shoulderF[0] - J.shoulderN[0], nW = P.torso.neckW;
-    const tl = [J.shoulderN[0] - ra * 0.9, J.shoulderN[1] + ra * 0.6], tr = [J.neck[0] + nW * 0.3, J.neck[1] - nW * 0.1];
-    const by = g.end[1], bl = [g.end[0] - 0.78 * span, by + 4], br = [g.end[0] + 0.6 * span, by + 10], len = tl[1] - by;
-    const hem = [0.2, 0.4, 0.6, 0.8].map((f, i) => { const p = lerp(br, bl, f); return [p[0], p[1] + (i % 2 ? 0.012 : -0.022) * len]; });
-    const outline = [[tl[0], tl[1], 1], [(tl[0] + tr[0]) / 2, (tl[1] + tr[1]) / 2 + ra * 0.5], [tr[0], tr[1], 1], [tr[0] + 0.16 * span, by + len * 0.5], [br[0], br[1], 1], ...hem, [bl[0], bl[1], 1], [tl[0] - 0.3 * span, by + len * 0.45]];
-    blob(ctx, outline); ctx.fillStyle = C.cape; ctx.fill();
+    const { J, P } = R; const g = R.geo.cape; const ra = P.limb.upperArm[0] / 2, span = J.shoulderF[0] - J.shoulderN[0], nW = P.torso.neckW; const wrap = P.cape === 'wrap';
+    // the vampire cape is wider, reaches the ankles, shows its red lining from the front and ends in a scalloped hem
+    const tl = wrap ? [J.shoulderN[0] - ra * 1.2, J.shoulderN[1] + ra * 0.5] : [J.shoulderN[0] - ra * 0.9, J.shoulderN[1] + ra * 0.6], tr = wrap ? [J.shoulderF[0] + ra * 0.9, J.shoulderF[1] + ra * 0.4] : [J.neck[0] + nW * 0.3, J.neck[1] - nW * 0.1];
+    const by = g.end[1], bl = [g.end[0] - (wrap ? 1.0 : 0.78) * span, by + 4], br = [g.end[0] + (wrap ? 1.3 : 0.6) * span, by + 10], len = tl[1] - by;
+    const hem = wrap ? [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => { const q = lerp(br, bl, i / 10); return i % 2 ? [q[0], q[1] + 0.04 * len] : [q[0], q[1], 1]; })
+      : [0.2, 0.4, 0.6, 0.8].map((f, i) => { const q = lerp(br, bl, f); return [q[0], q[1] + (i % 2 ? 0.012 : -0.022) * len]; });
+    const outline = [[tl[0], tl[1], 1], [(tl[0] + tr[0]) / 2, (tl[1] + tr[1]) / 2 + ra * 0.5], [tr[0], tr[1], 1], [tr[0] + (wrap ? 0.3 : 0.16) * span, by + len * 0.5], [br[0], br[1], 1], ...hem, [bl[0], bl[1], 1], [tl[0] - (wrap ? 0.42 : 0.3) * span, by + len * 0.45]];
+    blob(ctx, outline); ctx.fillStyle = wrap ? C.lining : C.cape; ctx.fill();
     ctx.save(); ctx.clip();
-    for (const [f0, f1, w] of [[0.18, 0.12, 0.07], [0.5, 0.42, 0.09], [0.8, 0.74, 0.07]]) {   // folds fanning out from the shoulders
-      const a = lerp(tl, tr, f0 * 0.8 + 0.1), b = lerp(bl, br, f1); poly(ctx, [[a[0] - 2, a[1]], [a[0] + 2, a[1]], [b[0] + w * span, b[1] - 12], [b[0] - w * span, b[1] - 12]]); ctx.fillStyle = C.capeDark; ctx.fill();
+    for (const [f0, f1, w] of wrap ? [[0.1, 0.08, 0.06], [0.32, 0.28, 0.07], [0.55, 0.5, 0.08], [0.76, 0.72, 0.07], [0.94, 0.92, 0.06]] : [[0.18, 0.12, 0.07], [0.5, 0.42, 0.09], [0.8, 0.74, 0.07]]) {   // folds fanning out from the shoulders
+      const s0 = lerp(tl, tr, f0 * 0.8 + 0.1), s1 = lerp(bl, br, f1); poly(ctx, [[s0[0] - 2, s0[1]], [s0[0] + 2, s0[1]], [s1[0] + w * span, s1[1] - 12], [s1[0] - w * span, s1[1] - 12]]); ctx.fillStyle = wrap ? C.liningDark : C.capeDark; ctx.fill();
     }
-    ctx.fillStyle = 'rgba(0,0,0,0.16)'; ctx.fillRect(bl[0] - span, by - 30, 4 * span, 0.06 * len + 30);
+    ctx.fillStyle = 'rgba(0,0,0,0.16)'; ctx.fillRect(bl[0] - span, by - 30, 5 * span, 0.06 * len + 30);
+    if (wrap) { ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fillRect(tl[0] - span, tl[1] - 0.2 * len, 5 * span, 0.3 * len); }   // shadow where the body stands in front of it
     ctx.restore(); blob(ctx, outline); ink(ctx);
+  },
+  // Vampire cape, part 2: the stand-up collar behind the head (rigid on the chest). We look into it, so it shows the lining with a dark rim.
+  'cape-collar': (ctx, R) => {
+    const { J, P } = R; const ra = P.limb.upperArm[0] / 2, nW = P.torso.neckW, hh = P.head.h, nk = J.neck, sN = J.shoulderN, sF = J.shoulderF;
+    const shape = [[sN[0] + ra * 0.2, sN[1] + ra * 0.7, 1], [nk[0] - nW * 2.15, nk[1] + hh * 0.26], [nk[0] - nW * 1.95, nk[1] + hh * 0.62, 1], [nk[0] - nW * 0.9, nk[1] + hh * 0.44], [nk[0] + nW * 0.2, nk[1] + hh * 0.4],
+      [nk[0] + nW * 1.3, nk[1] + hh * 0.42], [nk[0] + nW * 2.35, nk[1] + hh * 0.56, 1], [nk[0] + nW * 2.4, nk[1] + hh * 0.22], [sF[0] - ra * 0.1, sF[1] + ra * 0.6, 1], [nk[0], nk[1] - nW * 0.5]];
+    blob(ctx, shape); ctx.fillStyle = C.lining; ctx.fill();
+    ctx.save(); ctx.clip(); blob(ctx, shape); ctx.lineWidth = ra * 0.8; ctx.strokeStyle = C.cloak; ctx.lineJoin = 'round'; ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(nk[0] - nW * 1.1, nk[1] - nW, nW * 2.6, hh);   // the back of the collar is in the head's shadow
+    ctx.restore(); blob(ctx, shape); ink(ctx);
+  },
+  // Part 3: the mantle. It lies over both shoulders in front of the torso and closes at the throat with a clasp.
+  'cape-mantle': (ctx, R) => {
+    const { J, P } = R; const r = P.limb.upperArm[0] / 2 + 1.5, nW = P.torso.neckW, nk = J.neck, sN = J.shoulderN, sF = J.shoulderF; const c = [nk[0] + nW * 0.12, nk[1] - nW];
+    const shape = [[sN[0] - r * 1.2, sN[1] - r * 0.5], [sN[0] - r * 0.4, sN[1] + r * 1.15], [nk[0] - nW * 0.8, nk[1] + nW * 0.2, 1], [c[0], c[1], 1], [nk[0] + nW * 0.85, nk[1] + nW * 0.1, 1], [sF[0] + r * 0.2, sF[1] + r],
+      [sF[0] + r, sF[1] - r * 0.3], [sF[0] + r * 0.5, sF[1] - r * 1.6, 1], [c[0] + nW * 0.1, c[1] - nW * 0.75], [sN[0] + r * 0.8, sN[1] - r * 1.9], [sN[0] - r, sN[1] - r * 1.6, 1]];
+    blob(ctx, shape); ctx.fillStyle = C.cloak; ctx.fill();
+    ctx.save(); ctx.clip();
+    poly(ctx, [[sN[0] - r * 1.4, sN[1] + r * 1.4], [sN[0] + r * 0.4, sN[1] + r * 1.4], [sN[0] + r * 0.9, sN[1] - r * 2.2], [sN[0] - r * 1.4, sN[1] - r * 2.2]]); ctx.fillStyle = C.cloakLit; ctx.fill();
+    poly(ctx, [[nk[0] - nW * 0.8, nk[1] + nW * 0.2], [c[0], c[1]], [nk[0] + nW * 0.85, nk[1] + nW * 0.1], [nk[0] + nW * 1.1, nk[1] - nW * 0.15], [c[0] + 1, c[1] - nW * 0.34], [nk[0] - nW * 1.05, nk[1] - nW * 0.05]]); ctx.fillStyle = C.lining; ctx.fill();   // lining turned out along the opening
+    ctx.restore(); blob(ctx, shape); ink(ctx);
+    ctx.beginPath(); ctx.arc(c[0], c[1] - nW * 0.2, nW * 0.2, 0, Math.PI * 2); paint(ctx, C.clasp, 2);
+  },
+  // Parts 4 and 5: the panels that hang over each shoulder and arm (meshes on their own three-bone chains). Forearms and hands come out in front of them.
+  'cape-near': (ctx, R) => {
+    const { J, P } = R; const r = P.limb.upperArm[0] / 2 + 1.5, sN = J.shoulderN, by = R.geo.capeNear.end[1], len = sN[1] + r - by;
+    const shape = [[sN[0] - r * 1.25, sN[1] + r * 0.15], [sN[0] - r * 0.3, sN[1] + r * 1.2], [sN[0] + r * 1.2, sN[1] + r * 0.75, 1], [sN[0] + r * 1.75, sN[1] - 0.25 * len], [sN[0] + r * 2.1, sN[1] - 0.6 * len], [sN[0] + r * 1.9, by + 4, 1],
+      [sN[0] - r * 0.4, by - 0.015 * len], [sN[0] - r * 2.9, by + 8, 1], [sN[0] - r * 2.5, sN[1] - 0.5 * len], [sN[0] - r * 1.7, sN[1] - 0.12 * len]];
+    blob(ctx, shape); ctx.fillStyle = C.cloak; ctx.fill();
+    ctx.save(); ctx.clip();
+    poly(ctx, [[sN[0] - r * 0.9, sN[1] + r], [sN[0] - r * 0.1, sN[1] + r], [sN[0] - r * 0.6, by - 10], [sN[0] - r * 1.9, by - 10]]); ctx.fillStyle = C.cloakLit; ctx.fill();
+    poly(ctx, [[sN[0] + r * 0.5, sN[1]], [sN[0] + r * 0.9, sN[1]], [sN[0] + r * 1.1, by - 10], [sN[0] + r * 0.5, by - 10]]); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill();
+    poly(ctx, [[sN[0] + r * 1.2, sN[1] + r * 0.75], [sN[0] + r * 1.75, sN[1] - 0.25 * len], [sN[0] + r * 2.1, sN[1] - 0.6 * len], [sN[0] + r * 1.9, by - 10], [sN[0] + r * 3, by - 10], [sN[0] + r * 3, sN[1] + r * 2]]); ctx.lineWidth = r * 0.55; ctx.strokeStyle = C.lining; ctx.lineJoin = 'round'; ctx.stroke();   // lining along the front edge
+    ctx.restore(); blob(ctx, shape); ink(ctx);
+  },
+  'cape-far': (ctx, R) => {
+    const { J, P } = R; const r = P.limb.upperArm[0] / 2 + 1.5, sF = J.shoulderF, by = R.geo.capeFar.end[1], len = sF[1] + r - by;
+    const shape = [[sF[0] - r, sF[1] + r * 0.8, 1], [sF[0] + r * 0.3, sF[1] + r * 1.1], [sF[0] + r * 1.3, sF[1] + r * 0.1], [sF[0] + r * 1.9, sF[1] - 0.3 * len], [sF[0] + r * 2.4, sF[1] - 0.65 * len], [sF[0] + r * 2.3, by + 6, 1],
+      [sF[0] - r * 0.2, by - 0.012 * len], [sF[0] - r * 2.2, by, 1], [sF[0] - r * 1.8, sF[1] - 0.4 * len]];
+    blob(ctx, shape); ctx.fillStyle = C.cloak; ctx.fill();
+    ctx.save(); ctx.clip();
+    poly(ctx, [[sF[0] + r * 0.4, sF[1] + r], [sF[0] + r * 1.0, sF[1] + r], [sF[0] + r * 1.7, by - 10], [sF[0] + r * 0.9, by - 10]]); ctx.fillStyle = C.cloakLit; ctx.fill();
+    ctx.restore(); blob(ctx, shape); ink(ctx);
   },
   // ---------------- arms
   'upper-near': (ctx, R) => { const { J, P } = R; const [d0, d1] = P.limb.upperArm; limb(ctx, J.shoulderN, J.elbowN, d0 / 2, d1 / 2, C.skin, { br: d0 * 0.05, from: [0.16, 0], over: sleeve(ctx, C.shirt, J.shoulderN, J.elbowN, d0, 0.5) }); },
@@ -205,7 +251,8 @@ function shoe(ctx, R, S, fill) {
 }
 /** Which bone each piece hangs on. frame 'bone' = drawn in the bone's own frame; mesh = bent across a bone chain. */
 export const PIECE_INFO = {
-  cape: { bone: 'cape-1', mesh: 'cape' },
+  cape: { bone: 'cape-1', mesh: 'cape' }, 'cape-collar': { bone: 'chest', cape: 'wrap' }, 'cape-far': { bone: 'cape-far-1', mesh: 'capeFar', cape: 'wrap' },
+  'cape-mantle': { bone: 'chest', cape: 'wrap' }, 'cape-near': { bone: 'cape-near-1', mesh: 'capeNear', cape: 'wrap' },
   'upper-far': { bone: 'upper-far' }, 'forearm-far': { bone: 'forearm-far' }, 'hand-far-back': { bone: 'hand-far' }, 'hand-far-front': { bone: 'hand-far' },
   'thigh-far': { bone: 'thigh-far' }, 'shin-far': { bone: 'shin-far' }, 'foot-far': { bone: 'foot-far' }, pelvis: { bone: 'hip' },
   'thigh-near': { bone: 'thigh-near' }, 'shin-near': { bone: 'shin-near' }, 'foot-near': { bone: 'foot-near' }, torso: { bone: 'chest' }, head: { bone: 'head' },

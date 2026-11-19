@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-19T03:16:31.363Z",
+ "generated": "2026-11-19T03:42:28.354Z",
  "failures": 0,
  "checks": [
   {
@@ -15,7 +15,7 @@
   {
    "name": "a full rebuild is fast enough to follow a slider",
    "ok": true,
-   "detail": "57 ms"
+   "detail": "66 ms"
   },
   {
    "name": "dwarf preset: grips and feet hold",
@@ -45,7 +45,7 @@
   {
    "name": "kit zip contains the Spine files, part images, sheets, brief and settings",
    "ok": true,
-   "detail": "30 files, 1673 KB"
+   "detail": "34 files, 1824 KB"
   },
   {
    "name": "zip written by the app reads back byte for byte",
@@ -60,12 +60,12 @@
   {
    "name": "paint sheet: every part is cut out and lands on its placeholder",
    "ok": true,
-   "detail": "21 parts, worst centre offset 0.38 units (upper-near); sheet 2400×1600 at 1.84 px/unit"
+   "detail": "25 parts, worst centre offset 0.41 units (hand-near); sheet 2400×1600 at 1.72 px/unit"
   },
   {
    "name": "paint sheet returned at 1536×1024 still lands on the placeholders",
    "ok": true,
-   "detail": "21 parts, worst centre offset 0.95 units (torso)"
+   "detail": "25 parts, worst centre offset 0.91 units (hand-far-back)"
   },
   {
    "name": "rig checks still pass with art from the sheet",

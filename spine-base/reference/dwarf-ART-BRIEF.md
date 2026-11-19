@@ -36,11 +36,10 @@ The attached paint sheet (2400×1600 px) shows every part in its own box on a fl
 - eyes-closed: 53×18 units — only the closed eyelids, to cover the open eyes during a blink
 - gun: 124×90 units — barrel pointing right; the fist closes around the grip
 - muzzle-flash: 91×100 units — flash pointing right, bright on transparent
-- cape: 173×280 units — hangs straight down from the shoulders; the rig bends and sways it
 - staff: 50×521 units — upright; the hands hold it between the two dark bands
 
 ## This character
-Name: Dwarf. Height 468 units (3.3 heads tall). No cape (the cape part can stay as it is).
+Name: Dwarf. Height 468 units (3.3 heads tall). No cape.
 
 ## Changing the body shape instead of the art
 The shape is a small JSON object. Edit the numbers and paste it into the Character Kit app (Export → Character settings → Apply), or save it as a file and run `node spine-base/generator/build.mjs --config file.json --out outdir`.
@@ -56,7 +55,7 @@ The shape is a small JSON object. Edit the numbers and paste it into the Charact
  "build": 1.9,
  "hands": 0.107,
  "stance": 0.09,
- "cape": false
+ "cape": "none"
 }
 ```
-height is in units (1 unit = 2 px at export). Everything else is a ratio: head = head height ÷ height, headWidth = head width ÷ head height, legs = hip height ÷ height, arms = shoulder-to-wrist ÷ height, shoulders = shoulder span ÷ height, build = thickness (1 = average adult, about 1.9 = stocky dwarf), hands = fist length ÷ height, stance = half the gap between the ankles ÷ height, cape = true or false.
+height is in units (1 unit = 2 px at export). Everything else is a ratio: head = head height ÷ height, headWidth = head width ÷ head height, legs = hip height ÷ height, arms = shoulder-to-wrist ÷ height, shoulders = shoulder span ÷ height, build = thickness (1 = average adult, about 1.9 = stocky dwarf), hands = fist length ÷ height, stance = half the gap between the ankles ÷ height, cape = "none", "back" (hangs down the back) or "wrap" (vampire cape with collar, mantle and front panels).

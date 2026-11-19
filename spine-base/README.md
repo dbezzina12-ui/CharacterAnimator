@@ -2,7 +2,7 @@
 
 A production base for slot-game characters, and an app that builds new ones from it. Every character shares one
 skeleton layout (bones, slots, skins, constraints, animations, events) in a three-quarter view facing right, with a
-staff, a gun and an optional cape. The placeholder art is a plain figure in a T-shirt and trousers. Each part is its
+staff, a gun and an optional cape (a plain back cape or a vampire-style wrap). The placeholder art is a plain figure in a T-shirt and trousers. Each part is its
 own image drawn upright in the setup pose, so real art replaces it one PNG at a time without touching the rig.
 
 ## The app
@@ -30,7 +30,7 @@ node spine-base/generator/build.mjs --config my-character.json --out out/my-char
 
   `my-character.json` is either the settings object or a `character.json` from a saved kit (its `art/*.png` are read
   from beside it). Settings: `name`, `height` (units; 1 unit = 2 px at export) and ratios `head`, `headWidth`, `legs`,
-  `arms`, `shoulders`, `build`, `hands`, `stance`, plus `cape` (true/false). Ranges are in `LIMITS` in `generator/rig.js`.
+  `arms`, `shoulders`, `build`, `hands`, `stance`, plus `cape` (`"none"`, `"back"` or `"wrap"`). Ranges are in `LIMITS` in `generator/rig.js`.
 
 | | |
 |---|---|
@@ -40,7 +40,7 @@ node spine-base/generator/build.mjs --config my-character.json --out out/my-char
 | Sheets and part lists for the base characters | `reference/<id>-template.png`, `-paint-sheet.png`, `-parts.json`, `-ART-BRIEF.md` |
 | JS adapter for the game | `runtime/slot-character.js` |
 | Side-by-side viewer | `runtime/viewer.html` |
-| Checks | `scripts/validate.mjs` (rig, 60 checks), `scripts/app-test.mjs` (app, 16 checks) → `validation/` |
+| Checks | `scripts/validate.mjs` (rig, 64 checks), `scripts/app-test.mjs` (app, 16 checks) → `validation/` |
 
 ```bash
 npm run base:build        # rebuild the two base characters
@@ -50,11 +50,11 @@ npm run base:app-test     # drive the app headlessly: sliders, zip round trip, p
 
 ## The rig
 
-**31 bones.** `root → hip → waist → chest → head`; per side `upper → forearm → hand` (on the chest) and
+**37 bones.** `root → hip → waist → chest → head`; per side `upper → forearm → hand` (on the chest) and
 `thigh → shin → foot` (on the hip). "near" is the side toward the camera, "far" the side away from it.
 Controllers: `foot-near-target`, `foot-far-target` (move these to step or jump; the legs follow and the
 feet keep their angle), `staff` with `staff-grip-far`, `staff-grip-near`, `staff-foot`, `staff-head`, and
-`gun` with `gun-grip-near`, `gun-muzzle`. The cape hangs on `cape-1 → cape-2 → cape-3 → cape-4` from the chest.
+`gun` with `gun-grip-near`, `gun-muzzle`. Capes hang from the chest on `cape-1…4` (back) and `cape-near-1…3`, `cape-far-1…3` (the vampire cape's shoulder panels).
 
 **16 body pieces**, back to front (the `cape` slot sits behind all of them): `upper-far`, `forearm-far`, `hand-far-back`, *(weapon-far)*,
 `hand-far-front`, `thigh-far`, `shin-far`, `foot-far`, `pelvis`, `thigh-near`, `shin-near`, `foot-near`,
@@ -78,10 +78,17 @@ with the body.
 **Joints.** A part that sits in front of its parent has no outline at its root end, and the torso carries the cap
 of the near shoulder, so limbs read as continuous and a raised arm still has a shoulder.
 
-**Cape.** One image on the `cape` slot, a weighted mesh across the four cape bones so it bends smoothly. Each bone
-has a Spine 4.2 physics constraint (looser and heavier toward the hem), so the cape lags, swings and settles with
-whatever the body does, and the idles add a slow breeze. It is hidden unless the character's settings turn it on;
-`setCape(true/false)` toggles it at runtime with any weapon.
+**Capes.** Two styles, chosen per character with the `cape` setting.
+- `back`: one image on the `cape` slot behind everything, a weighted mesh across the four cape bones so it bends smoothly.
+- `wrap` (vampire cape): five parts. The back panel (longer, lining side showing, scalloped hem); `cape-collar`, the
+  stand-up collar behind the head; `cape-mantle`, over both shoulders in front of the torso with the clasp; and
+  `cape-near` / `cape-far`, panels hanging over each shoulder and upper arm, each a mesh on its own three-bone chain.
+  The forearms and hands are drawn in front of the panels, so the arms come out of the cape to hold the staff or gun.
+
+Every cape bone has a Spine 4.2 physics constraint (looser and heavier toward the hem), so the cloth lags, swings and
+settles with whatever the body does, and the idles add a slow breeze. Collar and mantle are rigid on the chest.
+`setCape(true | false | 'back' | 'wrap')` switches at runtime with any weapon. Every kit carries all five cape
+parts so the structure is identical everywhere; the sheets only show the parts of the style the character wears.
 
 **Feet** are planted by leg IK (with stretch, so a rise never pops the knee) and their angle is locked
 to the foot targets.
@@ -136,7 +143,8 @@ Use the app's Art tab (paint sheet or one part at a time). What the artist needs
 the gun's grip point; feet planted; staff foot on the ground in idle and at the impact event; two-handed grip during
 the slam and release after; barrel level at the shot, recoil after; events once at the right time; seamless idle
 loops; weapon switching mid-animation; the cape hidden by default, shown as a weighted mesh, kept across a weapon
-change, swinging during the slam and the jump and settling afterwards. 60 checks, all passing.
+change, swinging during the slam and the jump and settling afterwards; the vampire cape showing its five parts with
+both shoulder panels swinging in the slam and settling. 64 checks, all passing.
 
 `scripts/app-test.mjs` drives the app: the five in-app rig checks pass for both presets and four extreme shapes, a
 rebuild takes about 60 ms, the zip reads back byte for byte and reopens to the same skeleton, and the paint sheet

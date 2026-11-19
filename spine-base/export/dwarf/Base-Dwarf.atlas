@@ -1,46 +1,54 @@
 Base-Dwarf.png
-size: 2048,1271
+size: 2048,1429
 filter: Linear,Linear
 pma: false
 cape
 bounds: 103,2,345,559
+cape-collar
+bounds: 504,1045,377,225
+cape-far
+bounds: 450,2,241,539
+cape-mantle
+bounds: 1435,1045,351,171
+cape-near
+bounds: 693,2,260,539
 upper-far
-bounds: 1343,2,125,254
+bounds: 1848,2,125,254
 forearm-far
-bounds: 2,1045,117,224
+bounds: 883,1045,117,224
 hand-far-back
-bounds: 945,1045,117,126
+bounds: 137,1297,117,126
 hand-far-front
-bounds: 1278,1045,119,103
+bounds: 470,1297,119,103
 thigh-far
-bounds: 1061,2,141,257
+bounds: 1566,2,141,257
 shin-far
-bounds: 1597,2,121,229
+bounds: 129,1045,121,229
 foot-far
-bounds: 1064,1045,212,104
+bounds: 256,1297,212,104
 pelvis
-bounds: 554,1045,254,164
+bounds: 1788,1045,254,164
 thigh-near
-bounds: 1204,2,137,257
+bounds: 1709,2,137,257
 shin-near
-bounds: 1720,2,143,228
+bounds: 252,1045,143,228
 foot-near
-bounds: 1399,1045,217,100
+bounds: 591,1297,217,100
 torso
-bounds: 450,2,327,358
+bounds: 955,2,327,358
 head
-bounds: 779,2,280,293
+bounds: 1284,2,280,293
 eyes-closed
-bounds: 1618,1045,105,36
+bounds: 810,1297,105,36
 upper-near
-bounds: 1470,2,125,250
+bounds: 2,1045,125,250
 forearm-near
-bounds: 1865,2,105,226
+bounds: 397,1045,105,226
 hand-near
-bounds: 810,1045,133,130
+bounds: 2,1297,133,130
 staff
 bounds: 2,2,99,1041
 gun
-bounds: 305,1045,247,179
+bounds: 1186,1045,247,179
 muzzle-flash
-bounds: 121,1045,182,200
+bounds: 1002,1045,182,200
